@@ -65,6 +65,18 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<Mar
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
     },
+    [JONES_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
+      unwrapper: Deployments.JonesUSDCIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.JonesUSDCIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+    },
+    [PENDLE_PT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
+      unwrapper: Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtGLP2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+    },
   },
   [Network.ARBITRUM_GOERLI]: {
     [ATLAS_PTSI_MARKET_ID_MAP[Network.ARBITRUM_GOERLI]!]: {

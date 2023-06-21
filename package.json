@@ -1,6 +1,6 @@
 {
-  "name": "zap-sdk",
-  "version": "1.0.0",
+  "name": "@dolomite-exchange/zap-sdk",
+  "version": "0.0.1",
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "main": "build/src/index.js",
   "scripts": {
