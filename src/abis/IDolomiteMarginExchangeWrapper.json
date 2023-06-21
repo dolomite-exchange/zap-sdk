@@ -1,0 +1,80 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_tradeOriginator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_outputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_orderData",
+        "type": "bytes"
+      }
+    ],
+    "name": "exchange",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_outputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_desiredInputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_orderData",
+        "type": "bytes"
+      }
+    ],
+    "name": "getExchangeCost",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
