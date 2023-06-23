@@ -17,54 +17,62 @@ export interface AccountInfo {
 }
 
 export interface ApiToken {
-  marketId: MarketId
-  symbol: string
-  name: string
-  tokenAddress: Address
-  decimals: number
+  marketId: MarketId;
+  symbol: string;
+  name: string;
+  tokenAddress: Address;
+  decimals: number;
 }
 
 export interface ApiMarket {
-  marketId: MarketId
-  symbol: string
-  name: string
-  tokenAddress: Address
-  decimals: number
-  isolationModeUnwrapperInfo: ApiUnwrapperInfo | undefined
-  liquidityTokenUnwrapperInfo: ApiUnwrapperInfo | undefined
-  isolationModeWrapperInfo: ApiWrapperInfo | undefined
-  liquidityTokenWrapperInfo: ApiWrapperInfo | undefined
+  marketId: MarketId;
+  symbol: string;
+  name: string;
+  tokenAddress: Address;
+  decimals: number;
+  isolationModeUnwrapperInfo: ApiUnwrapperInfo | undefined;
+  liquidityTokenUnwrapperInfo: ApiUnwrapperInfo | undefined;
+  isolationModeWrapperInfo: ApiWrapperInfo | undefined;
+  liquidityTokenWrapperInfo: ApiWrapperInfo | undefined;
 }
 
 export interface ApiUnwrapperInfo {
-  unwrapperAddress: Address
-  outputMarketId: number
+  unwrapperAddress: Address;
+  outputMarketId: number;
 }
 
 export interface ApiWrapperInfo {
-  wrapperAddress: Address
-  inputMarketId: number
+  wrapperAddress: Address;
+  inputMarketId: number;
 }
 
 export interface ApiMarketHelper {
-  marketId: MarketId
-  isolationModeUnwrapperHelper: ApiUnwrapperHelper | undefined
-  liquidityTokenUnwrapperHelper: ApiUnwrapperHelper | undefined
-  isolationModeWrapperHelper: ApiWrapperHelper | undefined
-  liquidityTokenWrapperHelper: ApiWrapperHelper | undefined
+  marketId: MarketId;
+  isolationModeUnwrapperHelper: ApiUnwrapperHelper | undefined;
+  liquidityTokenUnwrapperHelper: ApiUnwrapperHelper | undefined;
+  isolationModeWrapperHelper: ApiWrapperHelper | undefined;
+  liquidityTokenWrapperHelper: ApiWrapperHelper | undefined;
 }
 
-export interface EstimateOutputResults {
-  amountOut: Integer,
-  tradeData: string
+export interface EstimateOutputResult {
+  amountOut: Integer;
+  tradeData: string;
 }
 
 export interface ApiUnwrapperHelper {
-  estimateOutputFunction: (amountIn: Integer, outputMarketId: number) => Promise<EstimateOutputResults>
+  estimateOutputFunction: (
+    amountIn: Integer,
+    outputMarketId: number,
+    config: ZapConfig,
+  ) => Promise<EstimateOutputResult>;
 }
 
 export interface ApiWrapperHelper {
-  estimateOutputFunction: (amountIn: Integer, inputMarketId: number) => Promise<EstimateOutputResults>
+  estimateOutputFunction: (
+    amountIn: Integer,
+    inputMarketId: number,
+    config: ZapConfig,
+  ) => Promise<EstimateOutputResult>;
 }
 
 export enum GenericTraderType {
@@ -94,37 +102,41 @@ export interface GenericTraderParam {
 }
 
 export interface MarketIndex {
-  marketId: MarketId
-  borrow: Integer
-  supply: Integer
+  marketId: MarketId;
+  borrow: Integer;
+  supply: Integer;
 }
 
 export interface AggregatorOutput {
-  traderAddress: Address,
-  tradeData: string,
-  expectedAmountOut: Integer
+  traderAddress: Address;
+  tradeData: string;
+  expectedAmountOut: Integer;
+}
+
+export interface ZapConfig {
+  slippageTolerance: number;
 }
 
 export interface ZapOutputParam {
   /**
    * The sequence of market IDs used to create the zap
    */
-  marketIdsPath: number[],
+  marketIdsPath: number[];
   /**
    * The expected output amounts for each market in the path
    */
-  amountWeisPath: Integer[],
+  amountWeisPath: Integer[];
   /**
    * The trader params used for making a generic trade
    */
-  traderParams: GenericTraderParam[],
+  traderParams: GenericTraderParam[];
   /**
    * The maker accounts used for GenericTraderType.InternalLiquidity
    */
-  makerAccounts: AccountInfo[],
+  makerAccounts: AccountInfo[];
   /**
    * The minimum output amount that was inputted into the Zap function. Not the same as
    * amountWeisPath[amountWeisPath.length - 1]
    */
-  amountOutMin: Integer,
+  amountOutMin: Integer;
 }

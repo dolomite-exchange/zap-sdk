@@ -2,6 +2,13 @@ import * as Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts
 import BigNumber from 'bignumber.js';
 import { Address, MarketId, Network } from './ApiTypes';
 
+interface Converter {
+  unwrapper: Address;
+  wrapper: Address;
+  unwrapperMarketId: number;
+  wrapperMarketId: number;
+}
+
 export const INTEGERS = {
   ZERO: new BigNumber(0),
   ONE: new BigNumber(1),
@@ -44,12 +51,10 @@ const PENDLE_PT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
-interface Converter {
-  unwrapper: Address;
-  wrapper: Address;
-  unwrapperMarketId: number;
-  wrapperMarketId: number;
-}
+const GLP_ISOLATION_MODE_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: Deployments.GLPIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
 
 export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<MarketId, Converter | undefined>> = {
   [Network.ARBITRUM_ONE]: {
@@ -103,4 +108,40 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<Ma
 export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTrader[Network.ARBITRUM_ONE].address,
   [Network.ARBITRUM_GOERLI]: undefined,
+}
+
+const PENDLE_MARKET_MAP: Record<Network, Record<Address, Address | undefined>> = {
+  [Network.ARBITRUM_ONE]: {
+    [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
+      '0x7D49E5Adc0EAAD9C027857767638613253eF125f',
+  },
+  [Network.ARBITRUM_GOERLI]: {},
+};
+
+const S_GLP_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: '0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf',
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
+export function isPtGlpToken(network: Network, tokenAddress: Address): boolean {
+  return !!PENDLE_MARKET_MAP[network][tokenAddress];
+}
+
+export function getGlpIsolationModeAddress(network: Network): Address | undefined {
+  return GLP_ISOLATION_MODE_MAP[network];
+}
+
+export function getGlpIsolationModeMarketId(network: Network): number | undefined {
+  return GLP_MARKET_ID_MAP[network];
+}
+
+export function getSGlpAddress(network: Network): Address | undefined {
+  return S_GLP_MAP[network];
+}
+
+export function getPendleMarketForIsolationModeToken(
+  network: Network,
+  isolationModeToken: Address,
+): Address | undefined {
+  return PENDLE_MARKET_MAP[network][isolationModeToken];
 }

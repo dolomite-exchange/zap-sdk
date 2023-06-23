@@ -7,7 +7,7 @@ export async function delay(ms: number): Promise<void> {
   });
 }
 
-export function toChecksumOpt(address: Address): Address | undefined {
+export function toChecksumOpt(address: Address | undefined): Address | undefined {
   if (!address) {
     return undefined;
   }

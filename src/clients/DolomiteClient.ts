@@ -13,6 +13,7 @@ import { StandardEstimator } from '../lib/estimators/StandardEstimator';
 import { GraphqlMarketResult } from '../lib/graphql-types';
 import GraphqlPageable from '../lib/GraphqlPageable';
 import Logger from '../lib/Logger';
+import { toChecksumOpt } from '../lib/Utils';
 import IsolationModeClient from './IsolationModeClient';
 
 const defaultAxiosConfig = {
@@ -21,7 +22,7 @@ const defaultAxiosConfig = {
 
 export default class DolomiteClient {
   private readonly subgraphUrl: string;
-  private readonly networkId: Network;
+  private readonly network: Network;
   private readonly web3Provider: ethers.providers.Provider;
 
   public constructor(
@@ -30,7 +31,7 @@ export default class DolomiteClient {
     web3Provider: ethers.providers.Provider,
   ) {
     this.subgraphUrl = subgraphUrl;
-    this.networkId = networkId;
+    this.network = networkId;
     this.web3Provider = web3Provider;
   }
 
@@ -50,7 +51,7 @@ export default class DolomiteClient {
   public async getDolomiteMarketHelpers(
     marketsMap: Record<MarketId, ApiMarket>,
   ): Promise<Record<MarketId, ApiMarketHelper>> {
-    const standardEstimator = new StandardEstimator(this.web3Provider, marketsMap);
+    const standardEstimator = new StandardEstimator(this.network, this.web3Provider, marketsMap);
     return Object.values(marketsMap).reduce<Record<MarketId, ApiMarketHelper>>((acc, market) => {
       const marketHelper: ApiMarketHelper = {
         marketId: market.marketId,
@@ -66,11 +67,13 @@ export default class DolomiteClient {
           estimateOutputFunction: async (
             amountIn,
             outputMarketId,
+            config,
           ) => standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
             isolationModeUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
+            config,
           ),
         }
       }
@@ -80,11 +83,13 @@ export default class DolomiteClient {
           estimateOutputFunction: async (
             amountIn,
             outputMarketId,
+            config,
           ) => standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
             liquidityTokenUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
+            config,
           ),
         }
       }
@@ -94,11 +99,13 @@ export default class DolomiteClient {
           estimateOutputFunction: async (
             amountIn,
             inputMarketId,
+            config,
           ) => standardEstimator.getWrappedAmount(
             market.tokenAddress,
             isolationModeWrapper.wrapperAddress,
             amountIn,
             inputMarketId,
+            config,
           ),
         }
       }
@@ -108,11 +115,13 @@ export default class DolomiteClient {
           estimateOutputFunction: async (
             amountIn,
             inputMarketId,
+            config,
           ) => standardEstimator.getWrappedAmount(
             market.tokenAddress,
             liquidityTokenWrapper.wrapperAddress,
             amountIn,
             inputMarketId,
+            config,
           ),
         }
       }
@@ -175,7 +184,7 @@ export default class DolomiteClient {
     }
 
     const markets: Promise<ApiMarket | undefined>[] = result.data.marketRiskInfos.map(async (market) => {
-      const isolationModeClient = new IsolationModeClient(this.networkId);
+      const isolationModeClient = new IsolationModeClient(this.network);
       let isolationModeUnwrapperInfo: ApiUnwrapperInfo | undefined;
       let isolationModeWrapperInfo: ApiWrapperInfo | undefined;
       if (isolationModeClient.isIsolationModeToken(market.token)) {
@@ -219,7 +228,7 @@ export default class DolomiteClient {
         marketId: Number(market.token.marketId),
         symbol: market.token.symbol,
         name: market.token.name,
-        tokenAddress: ethers.utils.getAddress(market.token.id),
+        tokenAddress: toChecksumOpt(market.token.id)!,
         decimals: Number(market.token.decimals),
         isolationModeUnwrapperInfo,
         isolationModeWrapperInfo,

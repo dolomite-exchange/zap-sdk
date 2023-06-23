@@ -12,7 +12,7 @@ import {
   GenericTraderType,
   Integer,
   MarketId,
-  Network,
+  Network, ZapConfig,
   ZapOutputParam,
 } from './lib/ApiTypes';
 import { INTEGERS } from './lib/Constants';
@@ -20,6 +20,8 @@ import { LocalCache } from './lib/LocalCache';
 import { removeDuplicates, toChecksumOpt, zapOutputParamToJson } from './lib/Utils';
 
 const ONE_HOUR = 60 * 60;
+
+const THIRTY_BASIS_POINTS = 0.003;
 
 export class DolomiteZap {
   public readonly network: Network;
@@ -56,6 +58,7 @@ export class DolomiteZap {
    * @param tokenOut
    * @param amountOutMin The minimum amount out required for the swap to be considered valid
    * @param txOrigin The address that will execute the transaction
+   * @param config The additional config for zapping
    * @return {Promise<ZapOutputParam[]>} A list of outputs that can be used to execute the trade. The outputs are
    * sorted by execution, with the best ones being first.
    */
@@ -65,6 +68,7 @@ export class DolomiteZap {
     tokenOut: ApiToken,
     amountOutMin: Integer,
     txOrigin: Address,
+    config: ZapConfig = { slippageTolerance: THIRTY_BASIS_POINTS },
   ): Promise<ZapOutputParam[]> {
     const marketsMap = await this.getMarketsMap();
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
@@ -82,7 +86,7 @@ export class DolomiteZap {
     } else if (amountOutMin.lte(INTEGERS.ZERO)) {
       return Promise.reject(new Error('Invalid amountOutMin. Must be greater than 0'));
     } else if (!toChecksumOpt(txOrigin)) {
-      return Promise.reject(new Error('Invalid txOrigin'));
+      return Promise.reject(new Error('Invalid address for txOrigin'));
     }
 
     const marketIdsPath: number[] = [inputMarket.marketId];
@@ -101,6 +105,7 @@ export class DolomiteZap {
       const { amountOut, tradeData } = await unwrapperHelper.estimateOutputFunction(
         amountIn,
         unwrapperInfo.outputMarketId,
+        config,
       );
 
       amountsPaths.forEach(amountsPath => amountsPath.push(amountOut));
@@ -169,6 +174,7 @@ export class DolomiteZap {
           const outputEstimate = await wrapperHelper.estimateOutputFunction(
             amountInForEstimation,
             wrapperInfo.inputMarketId,
+            config,
           );
           return {
             amountOut: outputEstimate.amountOut,

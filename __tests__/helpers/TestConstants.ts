@@ -110,6 +110,25 @@ export const PLV_GLP_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
+const PT_GLP_MARKET_ID = 11;
+export const PT_GLP_MARKET: ApiMarket = {
+  marketId: PT_GLP_MARKET_ID,
+  symbol: 'dPT-GLP-28MAR2024',
+  name: 'Dolomite Isolation: PT GLP 28MAR2024',
+  tokenAddress: '0x7b07E78561a3C2C1Eade652A2a92Da150743F4D7',
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID]!.unwrapper,
+    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID]!.unwrapperMarketId,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID]!.wrapper,
+    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID]!.wrapperMarketId,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
+
 export function setUnwrapperMarketIdByMarketId(
   marketId: number,
   outputMarketId: number,
