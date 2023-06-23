@@ -1,6 +1,6 @@
 {
   "name": "@dolomite-exchange/zap-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "main": "build/src/index.js",
   "scripts": {
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/dolomite-exchange/zap-sdk#readme",
   "dependencies": {
     "@dolomite-exchange/dolomite-margin-modules": "0.0.2",
+    "@pendle/sdk-v2": "^2.3.4",
     "axios": "^1.1.3",
     "bignumber.js": "^9.1.1",
     "dotenv-flow": "^0.4.0",
