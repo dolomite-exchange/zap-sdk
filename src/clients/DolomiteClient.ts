@@ -24,6 +24,7 @@ export default class DolomiteClient {
   private readonly subgraphUrl: string;
   private readonly network: Network;
   private readonly web3Provider: ethers.providers.Provider;
+  private marketsToAdd: ApiMarket[];
 
   public constructor(
     subgraphUrl: string,
@@ -33,6 +34,20 @@ export default class DolomiteClient {
     this.subgraphUrl = subgraphUrl;
     this.network = networkId;
     this.web3Provider = web3Provider;
+    this.marketsToAdd = [];
+  }
+
+  public setMarketsToAdd(
+    marketsToAdd: ApiMarket[],
+  ): void {
+    for (let i = 0; i < marketsToAdd.length; i += 1) {
+      if (marketsToAdd[i].name.includes('Dolomite Isolation:')) {
+        if (!marketsToAdd[i].isolationModeUnwrapperInfo || !marketsToAdd[i].isolationModeWrapperInfo) {
+          throw new Error(`Missing isolation mode data for market ${marketsToAdd[i].marketId}`);
+        }
+      }
+    }
+    this.marketsToAdd = marketsToAdd;
   }
 
   public async getDolomiteMarketsMap(
@@ -42,7 +57,7 @@ export default class DolomiteClient {
       blockTag,
       pageIndex,
     ));
-    return marketsList.reduce<Record<MarketId, ApiMarket>>((acc, market) => {
+    return (marketsList.concat(...this.marketsToAdd)).reduce<Record<MarketId, ApiMarket>>((acc, market) => {
       acc[market.marketId] = market;
       return acc;
     }, {});

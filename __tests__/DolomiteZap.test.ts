@@ -1,7 +1,7 @@
 import Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { DolomiteZap, GenericTraderType, INTEGERS, Network } from '../src';
+import { ApiMarket, DolomiteZap, GenericTraderType, INTEGERS, Network } from '../src';
 import { BYTES_EMPTY } from '../src/lib/Constants';
 import {
   ARB_MARKET,
@@ -24,6 +24,59 @@ describe('DolomiteZap', () => {
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   const NO_CACHE = -1;
   const zap = new DolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
+
+  describe('#setMarketsToAdd', () => {
+    it('should work normally', () => {
+      const NEW_MARKET: ApiMarket = {
+        marketId: 9999,
+        symbol: 'NEW',
+        name: 'New Market',
+        decimals: 18,
+        tokenAddress: '0x1234567812345678123456781234567812345678',
+        isolationModeWrapperInfo: undefined,
+        liquidityTokenWrapperInfo: undefined,
+        isolationModeUnwrapperInfo: undefined,
+        liquidityTokenUnwrapperInfo: undefined,
+      };
+      zap.setMarketsToAdd([NEW_MARKET]);
+    });
+
+    it('should work when there is isolation mode data', () => {
+      const NEW_MARKET: ApiMarket = {
+        marketId: 9999,
+        symbol: 'NEW',
+        name: 'New Market',
+        decimals: 18,
+        tokenAddress: '0x1234567812345678123456781234567812345678',
+        isolationModeWrapperInfo: {
+          wrapperAddress: '0x1234567812345678123456781234567812345678',
+          inputMarketId: 2,
+        },
+        liquidityTokenWrapperInfo: undefined,
+        isolationModeUnwrapperInfo: {
+          unwrapperAddress: '0x1234567812345678123456781234567812345678',
+          outputMarketId: 2,
+        },
+        liquidityTokenUnwrapperInfo: undefined,
+      };
+      zap.setMarketsToAdd([NEW_MARKET]);
+    });
+
+    it('should fail when isolation mode data is missing', () => {
+      const NEW_MARKET: ApiMarket = {
+        marketId: 9999,
+        symbol: 'NEW',
+        name: 'Dolomite Isolation: New Market',
+        decimals: 18,
+        tokenAddress: '0x1234567812345678123456781234567812345678',
+        isolationModeWrapperInfo: undefined,
+        liquidityTokenWrapperInfo: undefined,
+        isolationModeUnwrapperInfo: undefined,
+        liquidityTokenUnwrapperInfo: undefined,
+      };
+      expect(() => zap.setMarketsToAdd([NEW_MARKET])).toThrow('Missing isolation mode data for market 9999');
+    });
+  });
 
   describe('#getSwapExactTokensForTokensData', () => {
     describe('Isolation Mode tokens', () => {

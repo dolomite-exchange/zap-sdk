@@ -115,6 +115,7 @@ export interface AggregatorOutput {
 
 export interface ZapConfig {
   slippageTolerance: number;
+  blockTag: BlockTag;
 }
 
 export interface ZapOutputParam {

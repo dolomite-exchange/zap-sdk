@@ -1,4 +1,4 @@
-import { Network } from '../lib/ApiTypes';
+import { ApiToken, Network } from '../lib/ApiTypes';
 import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP, LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP } from '../lib/Constants';
 import { GraphqlToken } from '../lib/graphql-types';
 
@@ -11,7 +11,7 @@ export default class IsolationModeClient {
 
   // ==================== Isolation Mode Getters ====================
 
-  public isIsolationModeToken(token: GraphqlToken): boolean {
+  public isIsolationModeToken(token: GraphqlToken | ApiToken): boolean {
     return token.name.includes('Dolomite Isolation:') || token.symbol === 'dfsGLP';
   }
 

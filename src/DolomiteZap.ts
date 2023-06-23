@@ -51,6 +51,10 @@ export class DolomiteZap {
     this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
   }
 
+  public setMarketsToAdd(marketsToAdd: ApiMarket[]): void {
+    this.client.setMarketsToAdd(marketsToAdd);
+  }
+
   /**
    *
    * @param tokenIn
@@ -68,7 +72,7 @@ export class DolomiteZap {
     tokenOut: ApiToken,
     amountOutMin: Integer,
     txOrigin: Address,
-    config: ZapConfig = { slippageTolerance: THIRTY_BASIS_POINTS },
+    config: ZapConfig = { slippageTolerance: THIRTY_BASIS_POINTS, blockTag: 'latest' },
   ): Promise<ZapOutputParam[]> {
     const marketsMap = await this.getMarketsMap();
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);

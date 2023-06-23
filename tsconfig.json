@@ -8,29 +8,28 @@
       "es2017",
       "dom"
     ],
-    "outDir": "build",
+    "outDir": "dist",
     "types": [
       "node",
-      "jest",
+      "jest"
     ],
     "skipLibCheck": true,
     "declaration": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "inlineSourceMap": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "sourceMap": true,
     "strict": true
   },
   "compileOnSave": true,
   "include": [
-    "__tests__/**/*.ts",
-    "src/**/*.ts",
+    "src",
     "environment.d.ts",
   ],
 }
