@@ -1,10 +1,10 @@
 {
   "name": "@dolomite-exchange/zap-sdk",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
-    "coverage": "NODE_ENV=test jest --coverage --runInBand --forceExit --coverageReporters=text-lcov --detectOpenHandles | node_modules/.bin/coveralls",
+    "coverage": "NODE_ENV=test jest --coverage --runInBand --forceExit --coverageReporters=text-lcov | node_modules/.bin/coveralls",
     "build": "rm -rf dist/ && node_modules/.bin/tsc --module commonjs"
   },
   "repository": {
@@ -17,6 +17,7 @@
     "url": "https://github.com/dolomite-exchange/zap-sdk/issues"
   },
   "homepage": "https://github.com/dolomite-exchange/zap-sdk#readme",
+  "files": ["dist"],
   "dependencies": {
     "@dolomite-exchange/dolomite-margin-modules": "0.0.2",
     "@pendle/sdk-v2": "^2.3.4",

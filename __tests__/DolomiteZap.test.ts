@@ -25,6 +25,20 @@ describe('DolomiteZap', () => {
   const NO_CACHE = -1;
   const zap = new DolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
 
+  describe('#setDefaultSlippageTolerance', () => {
+    it('should work normally', () => {
+      zap.setDefaultSlippageTolerance(0.1);
+      expect(zap.defaultSlippageTolerance).toEqual(0.1);
+    });
+  });
+
+  describe('#setDefaultBlockTag', () => {
+    it('should work normally', () => {
+      zap.setDefaultBlockTag(123123);
+      expect(zap.defaultBlockTag).toEqual(123123);
+    });
+  });
+
   describe('#setMarketsToAdd', () => {
     it('should work normally', () => {
       const NEW_MARKET: ApiMarket = {

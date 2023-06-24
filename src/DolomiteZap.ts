@@ -7,7 +7,7 @@ import {
   AggregatorOutput,
   ApiMarket,
   ApiMarketHelper,
-  ApiToken,
+  ApiToken, BlockTag,
   GenericTraderParam,
   GenericTraderType,
   Integer,
@@ -28,6 +28,8 @@ export class DolomiteZap {
   public readonly subgraphUrl: string;
   public readonly web3Provider: ethers.providers.Provider;
 
+  private _defaultSlippageTollerance: number;
+  private _defaultBlockTag: BlockTag;
   private client: DolomiteClient;
   private paraswapAggregator: ParaswapAggregator;
   private marketsCache: LocalCache<Record<MarketId, ApiMarket>>;
@@ -39,16 +41,36 @@ export class DolomiteZap {
     subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
     cacheSeconds: number = ONE_HOUR,
+    defaultSlippageTolerance: number = THIRTY_BASIS_POINTS,
+    defaultBlockTag: BlockTag = 'latest',
   ) {
     this.network = network;
     this.subgraphUrl = subgraphUrl;
     this.web3Provider = web3Provider;
+    this._defaultSlippageTollerance = defaultSlippageTolerance;
+    this._defaultBlockTag = defaultBlockTag;
 
     this.client = new DolomiteClient(subgraphUrl, network, web3Provider);
     this.paraswapAggregator = new ParaswapAggregator(network);
     this.marketsCache = new LocalCache<Record<MarketId, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<MarketId, ApiMarketHelper>>(cacheSeconds);
     this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
+  }
+
+  public get defaultSlippageTolerance(): number {
+    return this._defaultSlippageTollerance;
+  }
+
+  public setDefaultSlippageTolerance(slippageTolerance: number): void {
+    this._defaultSlippageTollerance = slippageTolerance;
+  }
+
+  public get defaultBlockTag(): BlockTag {
+    return this._defaultBlockTag;
+  }
+
+  public setDefaultBlockTag(blockTag: BlockTag): void {
+    this._defaultBlockTag = blockTag;
   }
 
   public setMarketsToAdd(marketsToAdd: ApiMarket[]): void {
@@ -72,7 +94,7 @@ export class DolomiteZap {
     tokenOut: ApiToken,
     amountOutMin: Integer,
     txOrigin: Address,
-    config: ZapConfig = { slippageTolerance: THIRTY_BASIS_POINTS, blockTag: 'latest' },
+    config: ZapConfig = { slippageTolerance: this.defaultSlippageTolerance, blockTag: this._defaultBlockTag },
   ): Promise<ZapOutputParam[]> {
     const marketsMap = await this.getMarketsMap();
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
