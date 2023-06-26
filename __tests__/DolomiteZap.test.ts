@@ -92,6 +92,31 @@ describe('DolomiteZap', () => {
     });
   });
 
+  describe('#getIsolationModeConverterByMarketId', () => {
+    it('should return valid value for valid market ID', () => {
+      expect(zap.getIsolationModeConverterByMarketId(6)).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(9)).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(10)).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(11)).toBeDefined();
+    });
+
+    it('should return valid value for valid market ID', () => {
+      expect(zap.getIsolationModeConverterByMarketId(0)).toBeUndefined();
+      expect(zap.getIsolationModeConverterByMarketId(2)).toBeUndefined();
+    });
+  });
+
+  describe('#getLiquidityTokenConverterByMarketId', () => {
+    it('should return valid value for valid market ID', () => {
+      expect(zap.getLiquidityTokenConverterByMarketId(8)).toBeDefined();
+    });
+
+    it('should return valid value for valid market ID', () => {
+      expect(zap.getLiquidityTokenConverterByMarketId(0)).toBeUndefined();
+      expect(zap.getLiquidityTokenConverterByMarketId(2)).toBeUndefined();
+    });
+  });
+
   describe('#getSwapExactTokensForTokensData', () => {
     describe('Isolation Mode tokens', () => {
       it('should work when there is no Isolation Mode tokens nor Liquidity tokens involved', async () => {

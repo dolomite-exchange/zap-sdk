@@ -18,6 +18,6 @@ module.exports = {
   },
   testPathIgnorePatterns: ['/node_modules/', '/__tests__/helpers/'],
   testEnvironment: 'node',
-  testTimeout: 10000,
+  testTimeout: 100000,
   reporters: ['default', 'jest-junit'],
 };

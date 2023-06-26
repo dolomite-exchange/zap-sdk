@@ -2,7 +2,7 @@ import * as Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts
 import BigNumber from 'bignumber.js';
 import { Address, MarketId, Network } from './ApiTypes';
 
-interface Converter {
+export interface ApiMarketConverter {
   unwrapper: Address;
   wrapper: Address;
   unwrapperMarketId: number;
@@ -56,7 +56,7 @@ const GLP_ISOLATION_MODE_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
-export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<MarketId, Converter | undefined>> = {
+export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<MarketId, ApiMarketConverter | undefined>> = {
   [Network.ARBITRUM_ONE]: {
     [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
       unwrapper: Deployments.GLPIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
@@ -93,7 +93,7 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<Mar
   },
 };
 
-export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<MarketId, Converter>> = {
+export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<MarketId, ApiMarketConverter>> = {
   [Network.ARBITRUM_ONE]: {
     [MAGIC_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
       unwrapper: Deployments.MagicGLPUnwrapperTraderV2[Network.ARBITRUM_ONE].address,

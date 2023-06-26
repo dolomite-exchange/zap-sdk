@@ -15,7 +15,12 @@ import {
   Network, ZapConfig,
   ZapOutputParam,
 } from './lib/ApiTypes';
-import { INTEGERS } from './lib/Constants';
+import {
+  ApiMarketConverter,
+  INTEGERS,
+  ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
+  LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
+} from './lib/Constants';
 import { LocalCache } from './lib/LocalCache';
 import { removeDuplicates, toChecksumOpt, zapOutputParamToJson } from './lib/Utils';
 
@@ -75,6 +80,14 @@ export class DolomiteZap {
 
   public setMarketsToAdd(marketsToAdd: ApiMarket[]): void {
     this.client.setMarketsToAdd(marketsToAdd);
+  }
+
+  public getIsolationModeConverterByMarketId(marketId: MarketId): ApiMarketConverter | undefined {
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][marketId];
+  }
+
+  public getLiquidityTokenConverterByMarketId(marketId: MarketId): ApiMarketConverter | undefined {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][marketId];
   }
 
   /**
