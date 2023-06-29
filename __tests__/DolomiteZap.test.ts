@@ -7,7 +7,8 @@ import {
   ARB_MARKET,
   GLP_MARKET,
   MAGIC_GLP_MARKET,
-  PLV_GLP_MARKET, PT_GLP_MARKET,
+  PLV_GLP_MARKET,
+  PT_GLP_MARKET,
   setUnwrapperMarketIdByMarketId,
   USDC_MARKET,
   WETH_MARKET,
@@ -65,11 +66,13 @@ describe('DolomiteZap', () => {
         isolationModeWrapperInfo: {
           wrapperAddress: '0x1234567812345678123456781234567812345678',
           inputMarketId: 2,
+          readableName: 'NEW Isolation Mode Wrapper',
         },
         liquidityTokenWrapperInfo: undefined,
         isolationModeUnwrapperInfo: {
           unwrapperAddress: '0x1234567812345678123456781234567812345678',
           outputMarketId: 2,
+          readableName: 'NEW Isolation Mode Unwrapper',
         },
         liquidityTokenUnwrapperInfo: undefined,
       };

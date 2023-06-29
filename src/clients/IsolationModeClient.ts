@@ -31,6 +31,14 @@ export default class IsolationModeClient {
     return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapper;
   }
 
+  public getIsolationModeUnwrapperReadableNameByMarketId(token: GraphqlToken): string | undefined {
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapperReadableName;
+  }
+
+  public getIsolationModeWrapperReadableNameByMarketId(token: GraphqlToken): string | undefined {
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapperReadableName;
+  }
+
   // ==================== Liquidity Token Getters ====================
 
   public isLiquidityToken(token: GraphqlToken): boolean {
@@ -51,5 +59,13 @@ export default class IsolationModeClient {
 
   public getLiquidityTokenWrapperByToken(token: GraphqlToken): string {
     return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].wrapper;
+  }
+
+  public getLiquidityTokenUnwrapperReadableNameByToken(token: GraphqlToken): string {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].unwrapperReadableName;
+  }
+
+  public getLiquidityTokenWrapperReadableNameByToken(token: GraphqlToken): string {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].wrapperReadableName;
   }
 }

@@ -7,6 +7,8 @@ export interface ApiMarketConverter {
   wrapper: Address;
   unwrapperMarketId: number;
   wrapperMarketId: number;
+  unwrapperReadableName: string;
+  wrapperReadableName: string;
 }
 
 export const INTEGERS = {
@@ -56,6 +58,7 @@ const GLP_ISOLATION_MODE_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
+// eslint-disable-next-line max-len
 export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<MarketId, ApiMarketConverter | undefined>> = {
   [Network.ARBITRUM_ONE]: {
     [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
@@ -63,32 +66,42 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<Mar
       wrapper: Deployments.GLPIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperReadableName: 'GLP Isolation Mode Unwrapper',
+      wrapperReadableName: 'GLP Isolation Mode Wrapper',
     },
     [PLV_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
       unwrapper: Deployments.PlutusVaultGLPIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PlutusVaultGLPIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperReadableName: 'plvGLP Isolation Mode Unwrapper',
+      wrapperReadableName: 'plvGLP Isolation Mode Wrapper',
     },
     [JONES_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
       unwrapper: Deployments.JonesUSDCIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.JonesUSDCIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperReadableName: 'jUSDC Isolation Mode Unwrapper',
+      wrapperReadableName: 'jUSDC Isolation Mode Wrapper',
     },
     [PENDLE_PT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
       unwrapper: Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendlePtGLP2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperReadableName: 'PT-GLP Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-GLP Isolation Mode Wrapper',
     },
   },
   [Network.ARBITRUM_GOERLI]: {
     [ATLAS_PTSI_MARKET_ID_MAP[Network.ARBITRUM_GOERLI]!]: {
-      unwrapper: '',
-      wrapper: '',
+      unwrapper: '0x000000000000000000000000000000000000dead',
+      wrapper: '0x000000000000000000000000000000000000dead',
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_GOERLI],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_GOERLI],
+      unwrapperReadableName: 'PTSI Isolation Mode Unwrapper',
+      wrapperReadableName: 'PTSI Isolation Mode Wrapper',
     },
   },
 };
@@ -100,6 +113,8 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<Ma
       wrapper: Deployments.MagicGLPWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperReadableName: 'magicGLP Unwrapper',
+      wrapperReadableName: 'magicGLP Wrapper',
     },
   },
   [Network.ARBITRUM_GOERLI]: {},

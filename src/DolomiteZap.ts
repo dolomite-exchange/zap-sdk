@@ -7,12 +7,15 @@ import {
   AggregatorOutput,
   ApiMarket,
   ApiMarketHelper,
-  ApiToken, BlockTag,
+  ApiToken,
+  BlockTag,
   GenericTraderParam,
   GenericTraderType,
   Integer,
   MarketId,
-  Network, ZapConfig,
+  MinimalApiToken,
+  Network,
+  ZapConfig,
   ZapOutputParam,
 } from './lib/ApiTypes';
 import {
@@ -34,7 +37,6 @@ export class DolomiteZap {
   public readonly web3Provider: ethers.providers.Provider;
 
   private _defaultSlippageTollerance: number;
-  private _defaultBlockTag: BlockTag;
   private client: DolomiteClient;
   private paraswapAggregator: ParaswapAggregator;
   private marketsCache: LocalCache<Record<MarketId, ApiMarket>>;
@@ -48,6 +50,7 @@ export class DolomiteZap {
     cacheSeconds: number = ONE_HOUR,
     defaultSlippageTolerance: number = THIRTY_BASIS_POINTS,
     defaultBlockTag: BlockTag = 'latest',
+    partnerAddress: Address | undefined = undefined,
   ) {
     this.network = network;
     this.subgraphUrl = subgraphUrl;
@@ -56,10 +59,16 @@ export class DolomiteZap {
     this._defaultBlockTag = defaultBlockTag;
 
     this.client = new DolomiteClient(subgraphUrl, network, web3Provider);
-    this.paraswapAggregator = new ParaswapAggregator(network);
+    this.paraswapAggregator = new ParaswapAggregator(network, partnerAddress);
     this.marketsCache = new LocalCache<Record<MarketId, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<MarketId, ApiMarketHelper>>(cacheSeconds);
     this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
+  }
+
+  private _defaultBlockTag: BlockTag;
+
+  public get defaultBlockTag(): BlockTag {
+    return this._defaultBlockTag;
   }
 
   public get defaultSlippageTolerance(): number {
@@ -68,10 +77,6 @@ export class DolomiteZap {
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {
     this._defaultSlippageTollerance = slippageTolerance;
-  }
-
-  public get defaultBlockTag(): BlockTag {
-    return this._defaultBlockTag;
   }
 
   public setDefaultBlockTag(blockTag: BlockTag): void {
@@ -102,9 +107,9 @@ export class DolomiteZap {
    * sorted by execution, with the best ones being first.
    */
   public async getSwapExactTokensForTokensParams(
-    tokenIn: ApiToken,
+    tokenIn: ApiToken | MinimalApiToken,
     amountIn: Integer,
-    tokenOut: ApiToken,
+    tokenOut: ApiToken | MinimalApiToken,
     amountOutMin: Integer,
     txOrigin: Address,
     config: ZapConfig = { slippageTolerance: this.defaultSlippageTolerance, blockTag: this._defaultBlockTag },
@@ -156,6 +161,7 @@ export class DolomiteZap {
           makerAccountIndex: 0,
           trader: unwrapperInfo.unwrapperAddress,
           tradeData,
+          readableName: unwrapperInfo.readableName,
         });
       });
     }
@@ -201,6 +207,7 @@ export class DolomiteZap {
           makerAccountIndex: 0,
           trader: aggregatorOutputs[i].traderAddress,
           tradeData: aggregatorOutputs[i].tradeData,
+          readableName: aggregatorOutputs[i].readableName,
         });
       });
     }
@@ -215,16 +222,18 @@ export class DolomiteZap {
             wrapperInfo.inputMarketId,
             config,
           );
+          const traderParam: GenericTraderParam = {
+            traderType: isIsolationModeWrapper
+              ? GenericTraderType.IsolationModeWrapper
+              : GenericTraderType.ExternalLiquidity,
+            makerAccountIndex: 0,
+            trader: wrapperInfo.wrapperAddress,
+            tradeData: outputEstimate.tradeData,
+            readableName: wrapperInfo.readableName,
+          };
           return {
             amountOut: outputEstimate.amountOut,
-            traderParam: {
-              traderType: isIsolationModeWrapper
-                ? GenericTraderType.IsolationModeWrapper
-                : GenericTraderType.ExternalLiquidity,
-              makerAccountIndex: 0,
-              trader: wrapperInfo.wrapperAddress,
-              tradeData: outputEstimate.tradeData,
-            },
+            traderParam,
           }
         }),
       );

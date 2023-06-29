@@ -198,7 +198,7 @@ export default class DolomiteClient {
       return Promise.reject(result.errors[0]);
     }
 
-    const markets: Promise<ApiMarket | undefined>[] = result.data.marketRiskInfos.map(async (market) => {
+    const marketPromises: Promise<ApiMarket | undefined>[] = result.data.marketRiskInfos.map(async (market) => {
       const isolationModeClient = new IsolationModeClient(this.network);
       let isolationModeUnwrapperInfo: ApiUnwrapperInfo | undefined;
       let isolationModeWrapperInfo: ApiWrapperInfo | undefined;
@@ -207,14 +207,16 @@ export default class DolomiteClient {
         const outputMarketId = isolationModeClient.getIsolationModeUnwrapperMarketIdByMarketId(market.token);
         const wrapperAddress = isolationModeClient.getIsolationModeWrapperByMarketId(market.token);
         const inputMarketId = isolationModeClient.getIsolationModeWrapperMarketIdByMarketId(market.token);
+        const unwrapperReadableName = isolationModeClient.getIsolationModeUnwrapperReadableNameByMarketId(market.token);
+        const wrapperReadableName = isolationModeClient.getIsolationModeWrapperReadableNameByMarketId(market.token);
 
-        if (!unwrapperAddress || typeof outputMarketId === 'undefined') {
+        if (!unwrapperAddress || typeof outputMarketId === 'undefined' || !unwrapperReadableName) {
           Logger.warn({
             message: 'Isolation Mode token cannot find unwrapper info!',
             marketId: market.token.marketId,
           });
           return undefined;
-        } else if (!wrapperAddress || typeof inputMarketId === 'undefined') {
+        } else if (!wrapperAddress || typeof inputMarketId === 'undefined' || !wrapperReadableName) {
           Logger.warn({
             message: 'Isolation Mode token cannot find wrapper info!',
             marketId: market.token.marketId,
@@ -222,8 +224,8 @@ export default class DolomiteClient {
           return undefined;
         }
 
-        isolationModeUnwrapperInfo = { unwrapperAddress, outputMarketId };
-        isolationModeWrapperInfo = { wrapperAddress, inputMarketId };
+        isolationModeUnwrapperInfo = { unwrapperAddress, outputMarketId, readableName: unwrapperReadableName };
+        isolationModeWrapperInfo = { wrapperAddress, inputMarketId, readableName: wrapperReadableName };
       }
 
       let liquidityTokenUnwrapperInfo: ApiUnwrapperInfo | undefined;
@@ -232,10 +234,12 @@ export default class DolomiteClient {
         liquidityTokenUnwrapperInfo = {
           unwrapperAddress: isolationModeClient.getLiquidityTokenUnwrapperByToken(market.token),
           outputMarketId: isolationModeClient.getLiquidityTokenUnwrapperMarketIdByToken(market.token),
+          readableName: isolationModeClient.getLiquidityTokenUnwrapperReadableNameByToken(market.token),
         };
         liquidityTokenWrapperInfo = {
           wrapperAddress: isolationModeClient.getLiquidityTokenWrapperByToken(market.token),
           inputMarketId: isolationModeClient.getLiquidityTokenWrapperMarketIdByToken(market.token),
+          readableName: isolationModeClient.getLiquidityTokenWrapperReadableNameByToken(market.token),
         };
       }
 
@@ -253,6 +257,6 @@ export default class DolomiteClient {
       return apiMarket;
     });
 
-    return (await Promise.all(markets)).filter(market => !!market) as ApiMarket[];
+    return (await Promise.all(marketPromises)).filter(market => !!market) as ApiMarket[];
   }
 }

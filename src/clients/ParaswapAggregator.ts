@@ -8,8 +8,10 @@ import AggregatorClient from './AggregatorClient';
 const API_URL = 'https://apiv5.paraswap.io';
 
 export default class ParaswapAggregator extends AggregatorClient {
-  public constructor(network: Network) {
+  private readonly partnerAddress: Address | undefined;
+  public constructor(network: Network, partnerAddress: Address | undefined) {
     super(network);
+    this.partnerAddress = partnerAddress;
   }
 
   public isValidForNetwork(): boolean {
@@ -67,6 +69,8 @@ export default class ParaswapAggregator extends AggregatorClient {
       destAmount: minOutputAmountWei.toFixed(),
       userAddress: traderAddress,
       receiver: traderAddress,
+      partnerAddress: this.partnerAddress,
+      positiveSlippageToUser: !this.partnerAddress, // if there's no partner address, positive slippage goes to the user
     })
       .then(response => response.data)
       .catch(error => {
@@ -87,6 +91,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       traderAddress,
       tradeData: result.data,
       expectedAmountOut: new BigNumber(priceRouteResponse?.priceRoute?.destAmount),
+      readableName: 'Paraswap',
     };
   }
 }

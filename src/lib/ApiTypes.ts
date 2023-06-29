@@ -24,6 +24,11 @@ export interface ApiToken {
   decimals: number;
 }
 
+export interface MinimalApiToken {
+  marketId: MarketId;
+  symbol: string;
+}
+
 export interface ApiMarket {
   marketId: MarketId;
   symbol: string;
@@ -39,11 +44,13 @@ export interface ApiMarket {
 export interface ApiUnwrapperInfo {
   unwrapperAddress: Address;
   outputMarketId: number;
+  readableName: string;
 }
 
 export interface ApiWrapperInfo {
   wrapperAddress: Address;
   inputMarketId: number;
+  readableName: string;
 }
 
 export interface ApiMarketHelper {
@@ -96,21 +103,21 @@ export interface GenericTraderParam {
    */
   trader: Address;
   /**
-   * @description Hexadecimal bytes that can be passed to the trader contract.
+   * Hexadecimal bytes that can be passed to the trader contract.
    */
   tradeData: string;
-}
-
-export interface MarketIndex {
-  marketId: MarketId;
-  borrow: Integer;
-  supply: Integer;
+  /**
+   * A descriptor that can be used in the UI to describe what this trader is (IE "Paraswap", "GLP Isolation Mode
+   * Unwrapper", etc.)
+   */
+  readableName: string;
 }
 
 export interface AggregatorOutput {
   traderAddress: Address;
   tradeData: string;
   expectedAmountOut: Integer;
+  readableName: string;
 }
 
 export interface ZapConfig {
@@ -137,7 +144,7 @@ export interface ZapOutputParam {
   makerAccounts: AccountInfo[];
   /**
    * The minimum output amount that was inputted into the Zap function. Not the same as
-   * amountWeisPath[amountWeisPath.length - 1]
+   * amountWeisPath[amountWeisPath.length - 1] (since the last amount is the `expected` amount out)
    */
   amountOutMin: Integer;
 }
