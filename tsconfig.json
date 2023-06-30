@@ -30,6 +30,6 @@
   "compileOnSave": true,
   "include": [
     "src",
-    "environment.d.ts",
-  ],
+    "environment.d.ts"
+  ]
 }
