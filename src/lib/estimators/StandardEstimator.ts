@@ -61,7 +61,9 @@ export class StandardEstimator {
         amountIn.toFixed(),
         tradeData,
       );
-      return { amountOut: new BigNumber(outputAmount.toString()), tradeData };
+      const amountOutSansSlippage = new BigNumber(outputAmount.toString());
+      const amountOut = amountOutSansSlippage.times(1 - config.slippageTolerance).integerValue();
+      return { amountOut, tradeData };
     }
   }
 
@@ -97,18 +99,9 @@ export class StandardEstimator {
         amountIn.toFixed(),
         tradeData,
       );
-      return { amountOut: new BigNumber(outputAmount.toString()), tradeData };
+      const amountOutSansSlippage = new BigNumber(outputAmount.toString());
+      const amountOut = amountOutSansSlippage.times(1 - config.slippageTolerance).integerValue();
+      return { amountOut, tradeData };
     }
   }
-
-  // private async getUnderlyingToken(isolationModeToken: Address): Promise<string> {
-  //   let underlyingToken = this.underlyingTokenMap[isolationModeToken];
-  //   if (underlyingToken === undefined) {
-  //     const contract = new ethers.Contract(isolationModeToken, IIsolationModeFactory, this.web3Provider);
-  //     underlyingToken = await contract.UNDERLYING_TOKEN();
-  //     this.underlyingTokenMap[isolationModeToken] = underlyingToken;
-  //   }
-  //
-  //   return underlyingToken as string;
-  // }
 }

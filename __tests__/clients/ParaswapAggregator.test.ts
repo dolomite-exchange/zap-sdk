@@ -1,6 +1,6 @@
 import Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/deployments.json';
 import BigNumber from 'bignumber.js';
-import { ApiMarket, Network } from '../../src';
+import { ApiMarket, Network, ZapConfig } from '../../src';
 import ParaswapAggregator from '../../src/clients/ParaswapAggregator';
 import { USDC_MARKET, WETH_MARKET } from '../helpers/TestConstants';
 
@@ -8,6 +8,11 @@ const partnerAddress = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
 describe('ParaswapAggregator', () => {
   const networkIdOverride = Network.ARBITRUM_ONE;
+  const config: ZapConfig = {
+    slippageTolerance: 0.003,
+    filterOutZapsWithInsufficientOutput: false,
+    blockTag: 'latest',
+  }
 
   describe('#getSwapExactTokensForTokensData', () => {
     it('should work when there is no partner address', async () => {
@@ -23,6 +28,7 @@ describe('ParaswapAggregator', () => {
         outputMarket,
         minOutputAmount,
         solidAccount,
+        config,
       );
       expect(aggregatorOutput).toBeDefined();
 
@@ -46,6 +52,7 @@ describe('ParaswapAggregator', () => {
         outputMarket,
         minOutputAmount,
         solidAccount,
+        config,
       );
       expect(aggregatorOutput).toBeDefined();
 

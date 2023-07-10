@@ -123,6 +123,7 @@ export interface AggregatorOutput {
 export interface ZapConfig {
   slippageTolerance: number;
   blockTag: BlockTag;
+  filterOutZapsWithInsufficientOutput: boolean;
 }
 
 export interface ZapOutputParam {
@@ -131,7 +132,7 @@ export interface ZapOutputParam {
    */
   marketIdsPath: number[];
   /**
-   * The expected output amounts for each market in the path
+   * The expected output amounts for each market in the path, including slippage
    */
   amountWeisPath: Integer[];
   /**
@@ -143,8 +144,12 @@ export interface ZapOutputParam {
    */
   makerAccounts: AccountInfo[];
   /**
-   * The minimum output amount that was inputted into the Zap function. Not the same as
-   * amountWeisPath[amountWeisPath.length - 1] (since the last amount is the `expected` amount out)
+   * The expected amount out, not including slippage
    */
-  amountOutMin: Integer;
+  expectedAmountOut: Integer;
+  /**
+   * The minimum output amount that was inputted into the Zap function. This is not the same as
+   * amountWeisPath[amountWeisPath.length - 1] (since the last amount is the `expected` amount out including slippage)
+   */
+  originalAmountOutMin: Integer;
 }

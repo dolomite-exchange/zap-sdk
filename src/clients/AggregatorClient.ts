@@ -1,4 +1,4 @@
-import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network } from '../lib/ApiTypes';
+import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
 
 export default abstract class AggregatorClient {
   public readonly network: Network;
@@ -15,5 +15,6 @@ export default abstract class AggregatorClient {
     outputMarket: ApiMarket | ApiToken,
     minOutputAmountWei: Integer,
     txOrigin: Address,
+    config: ZapConfig,
   ): Promise<AggregatorOutput | undefined>
 }

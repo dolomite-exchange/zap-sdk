@@ -52,7 +52,10 @@ export class PendlePtEstimator {
       ],
     );
 
-    return { tradeData, outputAmount: new BigNumber(tokenOutput.minTokenOut.toString()) };
+    // We don't want to double-count slippage, so remove it
+    const outputAmountWithSlippage = new BigNumber(tokenOutput.minTokenOut.toString());
+    const outputAmount = outputAmountWithSlippage.dividedToIntegerBy(1 - config.slippageTolerance).minus(1);
+    return { tradeData, outputAmount };
   }
 
   public async getWrappedAmount(
@@ -96,6 +99,9 @@ export class PendlePtEstimator {
       ],
     );
 
-    return { tradeData, ptAmountOut: new BigNumber(approxParams.guessOffchain.toString()) };
+    // We don't want to double-count slippage, so remove it
+    const ptAmountOutWithSlippage = new BigNumber(approxParams.guessOffchain.toString());
+    const ptAmountOut = ptAmountOutWithSlippage.dividedToIntegerBy(1 - config.slippageTolerance).minus(1);
+    return { tradeData, ptAmountOut };
   }
 }

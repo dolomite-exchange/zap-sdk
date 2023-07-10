@@ -1,6 +1,6 @@
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
-import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network } from '../lib/ApiTypes';
+import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
 import { PARASWAP_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
@@ -24,6 +24,7 @@ export default class ParaswapAggregator extends AggregatorClient {
     outputMarket: ApiMarket | ApiToken,
     minOutputAmountWei: Integer,
     txOrigin: Address,
+    config: ZapConfig,
   ): Promise<AggregatorOutput | undefined> {
     const traderAddress = PARASWAP_TRADER_ADDRESS_MAP[this.network];
     if (!traderAddress) {
@@ -87,10 +88,12 @@ export default class ParaswapAggregator extends AggregatorClient {
       return undefined;
     }
 
+    const expectedAmountOutSansSlippage = new BigNumber(priceRouteResponse?.priceRoute?.destAmount);
+    const expectedAmountOut = expectedAmountOutSansSlippage.times(1 - config.slippageTolerance).integerValue();
     return {
       traderAddress,
       tradeData: result.data,
-      expectedAmountOut: new BigNumber(priceRouteResponse?.priceRoute?.destAmount),
+      expectedAmountOut,
       readableName: 'Paraswap',
     };
   }

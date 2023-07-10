@@ -30,6 +30,9 @@ describe('DolomiteZap', () => {
     it('should work normally', () => {
       zap.setDefaultSlippageTolerance(0.1);
       expect(zap.defaultSlippageTolerance).toEqual(0.1);
+
+      zap.setDefaultSlippageTolerance(0.003);
+      expect(zap.defaultSlippageTolerance).toEqual(0.003);
     });
   });
 
@@ -151,12 +154,13 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Isolation Mode token to be unwrapped and no aggregator', async () => {
-        const amountIn = new BigNumber('1000000000000000000'); // 100 GLP
+        const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
         const minAmountOut = new BigNumber('1000000'); // 1 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
           GLP_MARKET,
@@ -185,7 +189,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Isolation Mode token to be wrapped and no aggregator', async () => {
@@ -218,7 +224,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Isolation Mode token to be unwrapped and uses an aggregator', async () => {
@@ -259,7 +267,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Isolation Mode token to be wrapped and uses an aggregator', async () => {
@@ -300,7 +310,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[1].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Isolation Mode token to be unwrapped into a wrapper', async () => {
@@ -342,7 +354,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[1].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Isolation Mode token to be unwrapped into a Liquidity Token', async () => {
@@ -384,7 +398,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[1].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it(
@@ -438,7 +454,9 @@ describe('DolomiteZap', () => {
           expect(outputParam.traderParams[2].tradeData).toEqual(BYTES_EMPTY);
 
           expect(outputParam.makerAccounts.length).toEqual(0);
-          expect(outputParam.amountOutMin).toEqual(minAmountOut);
+          expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+            .toBeTruthy();
+          expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
         },
       );
 
@@ -493,7 +511,9 @@ describe('DolomiteZap', () => {
           expect(outputParam.traderParams[2].tradeData).toEqual(BYTES_EMPTY);
 
           expect(outputParam.makerAccounts.length).toEqual(0);
-          expect(outputParam.amountOutMin).toEqual(minAmountOut);
+          expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+            .toBeTruthy();
+          expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
         },
       );
     });
@@ -529,7 +549,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Liquidity Token to be wrapped and no aggregator', async () => {
@@ -562,7 +584,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Liquidity Token to be unwrapped and uses an aggregator', async () => {
@@ -603,7 +627,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when there is an Liquidity Token to be wrapped and uses an aggregator', async () => {
@@ -644,7 +670,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[1].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
     });
 
@@ -662,7 +690,38 @@ describe('DolomiteZap', () => {
             minAmountOut,
             txOrigin,
           ),
-        ).rejects.toThrow(`Invalid tokenIn: ${tokenIn.symbol} / ${tokenIn.marketId}`)
+        ).rejects.toThrow(`Invalid tokenIn: ${tokenIn.symbol} / ${tokenIn.marketId}`);
+      });
+
+      it('should fail when tokenOut is not a valid Dolomite token', async () => {
+        const tokenOut = JSON.parse(JSON.stringify(WETH_MARKET));
+        tokenOut.marketId = -1;
+        const amountIn = new BigNumber('10000000000'); // 10,000 USDC
+        const minAmountOut = new BigNumber('100000000000000000'); // 0.001 ETH
+        await expect(
+          zap.getSwapExactTokensForTokensParams(
+            USDC_MARKET,
+            amountIn,
+            tokenOut,
+            minAmountOut,
+            txOrigin,
+          ),
+        ).rejects.toThrow(`Invalid tokenOut: ${tokenOut.symbol} / ${tokenOut.marketId}`);
+      });
+
+      it('should fail when marketIn and marketOut are duplicates', async () => {
+        const tokenIn = JSON.parse(JSON.stringify(WETH_MARKET));
+        const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
+        const minAmountOut = new BigNumber('100000000'); // 100 USDC
+        await expect(
+          zap.getSwapExactTokensForTokensParams(
+            tokenIn,
+            amountIn,
+            tokenIn,
+            minAmountOut,
+            txOrigin,
+          ),
+        ).rejects.toThrow(`Duplicate input and output marketId: ${tokenIn.marketId}`);
       });
 
       it('should fail when amountIn is zero', async () => {
@@ -686,7 +745,27 @@ describe('DolomiteZap', () => {
           USDC_MARKET,
           INTEGERS.ZERO,
           txOrigin,
-        )).rejects.toThrow('Invalid amountOutMin. Must be greater than 0')
+        )).rejects.toThrow('Invalid amountOutMin. Must be greater than 0');
+      });
+
+      it('should fail when slippageTolerance is less than 0 or greater than 10%', async () => {
+        const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
+        await expect(zap.getSwapExactTokensForTokensParams(
+          WETH_MARKET,
+          amountIn,
+          USDC_MARKET,
+          INTEGERS.ONE,
+          txOrigin,
+          { slippageTolerance: -1 },
+        )).rejects.toThrow('Invalid slippageTolerance. Must be between 0 and 0.1 (10%)');
+        await expect(zap.getSwapExactTokensForTokensParams(
+          WETH_MARKET,
+          amountIn,
+          USDC_MARKET,
+          INTEGERS.ONE,
+          txOrigin,
+          { slippageTolerance: 0.11 },
+        )).rejects.toThrow('Invalid slippageTolerance. Must be between 0 and 0.1 (10%)');
       });
 
       it('should fail when txOrigin is invalid', async () => {
@@ -733,7 +812,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
       it('should work when wrapping a PT-token', async () => {
@@ -766,7 +847,9 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.amountOutMin).toEqual(minAmountOut);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
     });
   });
