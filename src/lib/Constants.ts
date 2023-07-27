@@ -4,6 +4,7 @@ import { Address, MarketId, Network } from './ApiTypes';
 
 export interface ApiMarketConverter {
   unwrapper: Address;
+  unwrapperForLiquidation?: Address;
   wrapper: Address;
   unwrapperMarketId: number;
   wrapperMarketId: number;
@@ -79,6 +80,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<Mar
     },
     [JONES_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!]: {
       unwrapper: Deployments.JonesUSDCIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperForLiquidation:
+        Deployments.JonesUSDCIsolationModeUnwrapperTraderV2ForLiquidation[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.JonesUSDCIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
@@ -123,7 +126,7 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<Ma
 export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTrader[Network.ARBITRUM_ONE].address,
   [Network.ARBITRUM_GOERLI]: undefined,
-}
+};
 
 const PENDLE_MARKET_MAP: Record<Network, Record<Address, Address | undefined>> = {
   [Network.ARBITRUM_ONE]: {

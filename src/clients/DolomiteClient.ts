@@ -74,10 +74,12 @@ export default class DolomiteClient {
         liquidityTokenUnwrapperHelper: undefined,
         isolationModeWrapperHelper: undefined,
         liquidityTokenWrapperHelper: undefined,
-      }
+      };
 
       const isolationModeUnwrapper = market.isolationModeUnwrapperInfo;
       if (isolationModeUnwrapper) {
+        const unwrapperForLiquidationAddress = isolationModeUnwrapper.unwrapperForLiquidationAddress
+          ?? isolationModeUnwrapper.unwrapperAddress;
         marketHelper.isolationModeUnwrapperHelper = {
           estimateOutputFunction: async (
             amountIn,
@@ -85,15 +87,17 @@ export default class DolomiteClient {
             config,
           ) => standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
-            isolationModeUnwrapper.unwrapperAddress,
+            config.isLiquidation ? unwrapperForLiquidationAddress : isolationModeUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
             config,
           ),
-        }
+        };
       }
       const liquidityTokenUnwrapper = market.liquidityTokenUnwrapperInfo;
       if (liquidityTokenUnwrapper) {
+        const unwrapperForLiquidationAddress = liquidityTokenUnwrapper.unwrapperForLiquidationAddress
+          ?? liquidityTokenUnwrapper.unwrapperAddress;
         marketHelper.liquidityTokenUnwrapperHelper = {
           estimateOutputFunction: async (
             amountIn,
@@ -101,12 +105,12 @@ export default class DolomiteClient {
             config,
           ) => standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
-            liquidityTokenUnwrapper.unwrapperAddress,
+            config.isLiquidation ? unwrapperForLiquidationAddress : liquidityTokenUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
             config,
           ),
-        }
+        };
       }
       const isolationModeWrapper = market.isolationModeWrapperInfo;
       if (isolationModeWrapper) {
@@ -122,7 +126,7 @@ export default class DolomiteClient {
             inputMarketId,
             config,
           ),
-        }
+        };
       }
       const liquidityTokenWrapper = market.liquidityTokenWrapperInfo;
       if (liquidityTokenWrapper) {
@@ -138,7 +142,7 @@ export default class DolomiteClient {
             inputMarketId,
             config,
           ),
-        }
+        };
       }
 
       acc[market.marketId] = marketHelper;
@@ -164,7 +168,7 @@ export default class DolomiteClient {
                     decimals
                   }
                 }
-              }`
+              }`;
     } else {
       query = `query getMarketRiskInfos($blockNumber: Int, $skip: Int) {
                 marketRiskInfos(block: { number: $blockNumber } first: ${GraphqlPageable.MAX_PAGE_SIZE} skip: $skip) {
@@ -180,16 +184,16 @@ export default class DolomiteClient {
               }`;
     }
     const result: GraphqlMarketResult = await axios.post(
-      this.subgraphUrl,
-      {
-        query,
-        variables: {
-          blockNumber: blockTag === 'latest' ? undefined : blockTag,
-          skip: pageIndex * GraphqlPageable.MAX_PAGE_SIZE,
+        this.subgraphUrl,
+        {
+          query,
+          variables: {
+            blockNumber: blockTag === 'latest' ? undefined : blockTag,
+            skip: pageIndex * GraphqlPageable.MAX_PAGE_SIZE,
+          },
         },
-      },
-      defaultAxiosConfig,
-    )
+        defaultAxiosConfig,
+      )
       .then(response => response.data)
       .then(json => json as GraphqlMarketResult);
 
@@ -204,6 +208,8 @@ export default class DolomiteClient {
       let isolationModeWrapperInfo: ApiWrapperInfo | undefined;
       if (isolationModeClient.isIsolationModeToken(market.token)) {
         const unwrapperAddress = isolationModeClient.getIsolationModeUnwrapperByMarketId(market.token);
+        const unwrapperForLiquidationAddress = isolationModeClient.getIsolationModeUnwrapperForLiquidationByMarketId(
+          market.token);
         const outputMarketId = isolationModeClient.getIsolationModeUnwrapperMarketIdByMarketId(market.token);
         const wrapperAddress = isolationModeClient.getIsolationModeWrapperByMarketId(market.token);
         const inputMarketId = isolationModeClient.getIsolationModeWrapperMarketIdByMarketId(market.token);
@@ -224,8 +230,17 @@ export default class DolomiteClient {
           return undefined;
         }
 
-        isolationModeUnwrapperInfo = { unwrapperAddress, outputMarketId, readableName: unwrapperReadableName };
-        isolationModeWrapperInfo = { wrapperAddress, inputMarketId, readableName: wrapperReadableName };
+        isolationModeUnwrapperInfo = {
+          unwrapperAddress,
+          unwrapperForLiquidationAddress,
+          outputMarketId,
+          readableName: unwrapperReadableName,
+        };
+        isolationModeWrapperInfo = {
+          wrapperAddress,
+          inputMarketId,
+          readableName: wrapperReadableName,
+        };
       }
 
       let liquidityTokenUnwrapperInfo: ApiUnwrapperInfo | undefined;

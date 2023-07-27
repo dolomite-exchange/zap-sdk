@@ -6,6 +6,7 @@ import { BYTES_EMPTY } from '../src/lib/Constants';
 import {
   ARB_MARKET,
   GLP_MARKET,
+  J_USDC_MARKET,
   MAGIC_GLP_MARKET,
   PLV_GLP_MARKET,
   PT_GLP_MARKET,
@@ -20,7 +21,7 @@ describe('DolomiteZap', () => {
   const network = Network.ARBITRUM_ONE;
   const subgraphUrl = process.env.SUBGRAPH_URL;
   if (!subgraphUrl) {
-    throw new Error('SUBGRAPH_URL env var not set')
+    throw new Error('SUBGRAPH_URL env var not set');
   }
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   const NO_CACHE = -1;
@@ -516,6 +517,68 @@ describe('DolomiteZap', () => {
           expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
         },
       );
+
+      it('should return different unwrapper for liquidation for assets like jUSDC', async () => {
+        const amountIn = new BigNumber('1000000000000000000'); // 100 jUSDC
+        const minAmountOut = new BigNumber('1000000'); // 1 USDC
+        const outputParamsForLiquidation = await zap.getSwapExactTokensForTokensParams(
+          J_USDC_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          { isLiquidation: true },
+        );
+
+        expect(outputParamsForLiquidation.length).toBe(1);
+
+        const outputParamForLiquidation = outputParamsForLiquidation[0];
+        expect(outputParamForLiquidation.marketIdsPath.length).toEqual(2);
+        expect(outputParamForLiquidation.marketIdsPath[0]).toEqual(J_USDC_MARKET.marketId);
+        expect(outputParamForLiquidation.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
+
+        expect(outputParamForLiquidation.traderParams.length).toEqual(1);
+        expect(outputParamForLiquidation.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+        expect(outputParamForLiquidation.traderParams[0].makerAccountIndex).toEqual(0);
+        expect(outputParamForLiquidation.traderParams[0].trader)
+          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV2ForLiquidation[network].address);
+        expect(outputParamForLiquidation.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
+
+        expect(outputParamForLiquidation.makerAccounts.length).toEqual(0);
+        expect(outputParamForLiquidation.expectedAmountOut
+          .gt(outputParamForLiquidation.amountWeisPath[outputParamForLiquidation.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParamForLiquidation.originalAmountOutMin).toEqual(minAmountOut);
+
+        const outputParamsForZap = await zap.getSwapExactTokensForTokensParams(
+          J_USDC_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          { isLiquidation: false },
+        );
+
+        expect(outputParamsForZap.length).toBe(1);
+
+        const outputParamForZap = outputParamsForZap[0];
+        expect(outputParamForZap.marketIdsPath.length).toEqual(2);
+        expect(outputParamForZap.marketIdsPath[0]).toEqual(J_USDC_MARKET.marketId);
+        expect(outputParamForZap.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
+
+        expect(outputParamForZap.traderParams.length).toEqual(1);
+        expect(outputParamForZap.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+        expect(outputParamForZap.traderParams[0].makerAccountIndex).toEqual(0);
+        expect(outputParamForZap.traderParams[0].trader)
+          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV2[network].address);
+        expect(outputParamForZap.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
+
+        expect(outputParamForZap.makerAccounts.length).toEqual(0);
+        expect(outputParamForZap.expectedAmountOut
+          .gt(outputParamForZap.amountWeisPath[outputParamForZap.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParamForZap.originalAmountOutMin).toEqual(minAmountOut);
+      });
     });
 
     describe('Liquidity Tokens', () => {
@@ -734,7 +797,7 @@ describe('DolomiteZap', () => {
             minAmountOut,
             txOrigin,
           ),
-        ).rejects.toThrow('Invalid amountIn. Must be greater than 0')
+        ).rejects.toThrow('Invalid amountIn. Must be greater than 0');
       });
 
       it('should fail when amountOutMin is zero', async () => {
@@ -777,7 +840,7 @@ describe('DolomiteZap', () => {
           USDC_MARKET,
           minAmountOut,
           '0x123',
-        )).rejects.toThrow('Invalid address for txOrigin')
+        )).rejects.toThrow('Invalid address for txOrigin');
       });
     });
 

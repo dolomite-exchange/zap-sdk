@@ -12,6 +12,7 @@ describe('ParaswapAggregator', () => {
     slippageTolerance: 0.003,
     filterOutZapsWithInsufficientOutput: false,
     blockTag: 'latest',
+    isLiquidation: false,
   }
 
   describe('#getSwapExactTokensForTokensData', () => {

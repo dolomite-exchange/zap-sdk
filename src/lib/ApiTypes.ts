@@ -43,6 +43,7 @@ export interface ApiMarket {
 
 export interface ApiUnwrapperInfo {
   unwrapperAddress: Address;
+  unwrapperForLiquidationAddress?: Address;
   outputMarketId: number;
   readableName: string;
 }
@@ -121,6 +122,7 @@ export interface AggregatorOutput {
 }
 
 export interface ZapConfig {
+  isLiquidation: boolean;
   slippageTolerance: number;
   blockTag: BlockTag;
   filterOutZapsWithInsufficientOutput: boolean;

@@ -115,6 +115,27 @@ export const PLV_GLP_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
+const J_USDC_MARKET_ID = 10;
+export const J_USDC_MARKET: ApiMarket = {
+  marketId: J_USDC_MARKET_ID,
+  symbol: 'djUSDC',
+  name: 'Dolomite Isolation: Jones USDC',
+  tokenAddress: '0x2aDba3f917bb0Af2530F8F295aD2a6fF1111Fc05',
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID]!.unwrapper,
+    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID]!.unwrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID]!.wrapper,
+    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID]!.wrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
+
 const PT_GLP_MARKET_ID = 11;
 export const PT_GLP_MARKET: ApiMarket = {
   marketId: PT_GLP_MARKET_ID,

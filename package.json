@@ -26,7 +26,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@dolomite-exchange/dolomite-margin-modules": "0.0.3",
+    "@dolomite-exchange/dolomite-margin-modules": "0.0.4",
     "@pendle/sdk-v2": "^2.3.4",
     "axios": "^1.1.3",
     "bignumber.js": "^9.1.1",

@@ -35,8 +35,9 @@ export class DolomiteZap {
   public readonly network: Network;
   public readonly subgraphUrl: string;
   public readonly web3Provider: ethers.providers.Provider;
-
-  private _defaultSlippageTollerance: number;
+  private readonly _defaultIsLiquidation: boolean;
+  private _defaultSlippageTolerance: number;
+  private _defaultBlockTag: BlockTag;
   private client: DolomiteClient;
   private paraswapAggregator: ParaswapAggregator;
   private marketsCache: LocalCache<Record<MarketId, ApiMarket>>;
@@ -48,6 +49,7 @@ export class DolomiteZap {
    * @param subgraphUrl               The URL of the subgraph to use for fetching market data.
    * @param web3Provider              The web3 provider to use for fetching on-chain data.
    * @param cacheSeconds              The number of seconds to cache market data for. Defaults to 1 hour (3600s).
+   * @param defaultIsLiquidation      True if these zaps are for processing liquidations or false for ordinary zaps.
    * @param defaultSlippageTolerance  The default slippage tolerance to use when estimating output. Defaults to 0.3%
    *                                  (0.003).
    * @param defaultBlockTag           The default block tag to use when fetching on-chain data. Defaults to 'latest'.
@@ -59,6 +61,7 @@ export class DolomiteZap {
     subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
     cacheSeconds: number = ONE_HOUR,
+    defaultIsLiquidation: boolean = false,
     defaultSlippageTolerance: number = THIRTY_BASIS_POINTS,
     defaultBlockTag: BlockTag = 'latest',
     partnerAddress: Address | undefined = undefined,
@@ -66,7 +69,8 @@ export class DolomiteZap {
     this.network = network;
     this.subgraphUrl = subgraphUrl;
     this.web3Provider = web3Provider;
-    this._defaultSlippageTollerance = defaultSlippageTolerance;
+    this._defaultIsLiquidation = defaultIsLiquidation;
+    this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
 
     this.client = new DolomiteClient(subgraphUrl, network, web3Provider);
@@ -76,14 +80,16 @@ export class DolomiteZap {
     this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
   }
 
-  private _defaultBlockTag: BlockTag;
-
-  public get defaultBlockTag(): BlockTag {
-    return this._defaultBlockTag;
+  public get defaultIsLiquidation(): boolean {
+    return this._defaultIsLiquidation;
   }
 
   public get defaultSlippageTolerance(): number {
-    return this._defaultSlippageTollerance;
+    return this._defaultSlippageTolerance;
+  }
+
+  public get defaultBlockTag(): BlockTag {
+    return this._defaultBlockTag;
   }
 
   private static removeSlippageFromAmount(
@@ -92,12 +98,12 @@ export class DolomiteZap {
     config: ZapConfig,
   ): Integer {
     return traderParams.reduce(memo => {
-      return memo.dividedToIntegerBy(1 - config.slippageTolerance)
+      return memo.dividedToIntegerBy(1 - config.slippageTolerance);
     }, amountWithSlippage);
   }
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {
-    this._defaultSlippageTollerance = slippageTolerance;
+    this._defaultSlippageTolerance = slippageTolerance;
   }
 
   public setDefaultBlockTag(blockTag: BlockTag): void {
@@ -136,6 +142,7 @@ export class DolomiteZap {
     config?: Partial<ZapConfig>,
   ): Promise<ZapOutputParam[]> {
     const actualConfig: ZapConfig = {
+      isLiquidation: config?.isLiquidation ?? this.defaultIsLiquidation,
       slippageTolerance: config?.slippageTolerance ?? this.defaultSlippageTolerance,
       blockTag: config?.blockTag ?? this._defaultBlockTag,
       filterOutZapsWithInsufficientOutput: config?.filterOutZapsWithInsufficientOutput ?? true,
@@ -189,7 +196,9 @@ export class DolomiteZap {
             ? GenericTraderType.IsolationModeUnwrapper
             : GenericTraderType.ExternalLiquidity,
           makerAccountIndex: 0,
-          trader: unwrapperInfo.unwrapperAddress,
+          trader: actualConfig.isLiquidation
+            ? (unwrapperInfo.unwrapperForLiquidationAddress ?? unwrapperInfo.unwrapperAddress)
+            : unwrapperInfo.unwrapperAddress,
           tradeData,
           readableName: unwrapperInfo.readableName,
         });
@@ -222,13 +231,13 @@ export class DolomiteZap {
             INTEGERS.ONE,
             txOrigin,
             actualConfig,
-          )
+          );
         }),
       );
 
       const aggregatorOutputs = aggregatorOutputOrUndefinedList.filter(trader => !!trader) as AggregatorOutput[];
       if (aggregatorOutputs.length !== this.validAggregators.length) {
-        throw new Error('Invalid aggregator outputs length')
+        throw new Error('Invalid aggregator outputs length');
       }
 
       amountsPaths.forEach((amountsPath, i) => amountsPath.push(aggregatorOutputs[i].expectedAmountOut));
@@ -265,7 +274,7 @@ export class DolomiteZap {
           return {
             amountOut: outputEstimate.amountOut,
             traderParam,
-          }
+          };
         }),
       );
 
@@ -300,7 +309,7 @@ export class DolomiteZap {
 
     const zaps = removeDuplicates(result, zapOutputParamToJson);
     if (actualConfig.filterOutZapsWithInsufficientOutput) {
-      return zaps.filter(zap => zap.expectedAmountOut.gte(amountOutMin))
+      return zaps.filter(zap => zap.expectedAmountOut.gte(amountOutMin));
     } else {
       return zaps;
     }

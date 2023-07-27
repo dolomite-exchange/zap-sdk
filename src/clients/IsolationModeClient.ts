@@ -27,6 +27,10 @@ export default class IsolationModeClient {
     return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapper;
   }
 
+  public getIsolationModeUnwrapperForLiquidationByMarketId(token: GraphqlToken): string | undefined {
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapperForLiquidation;
+  }
+
   public getIsolationModeWrapperByMarketId(token: GraphqlToken): string | undefined {
     return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapper;
   }
