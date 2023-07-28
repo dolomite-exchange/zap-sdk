@@ -124,7 +124,7 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<Ma
 };
 
 export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTrader[Network.ARBITRUM_ONE].address,
+  [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address,
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
