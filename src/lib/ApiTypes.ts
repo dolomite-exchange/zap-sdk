@@ -6,7 +6,7 @@ export type MarketId = number;
 
 export enum Network {
   ARBITRUM_ONE = 42161,
-  ARBITRUM_GOERLI = 421611,
+  ARBITRUM_GOERLI = 421613,
 }
 
 export type BlockTag = 'latest' | number;
