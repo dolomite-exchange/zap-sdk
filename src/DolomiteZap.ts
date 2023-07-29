@@ -33,9 +33,9 @@ const THIRTY_BASIS_POINTS = 0.003;
 
 export class DolomiteZap {
   public readonly network: Network;
-  public readonly subgraphUrl: string;
-  public readonly web3Provider: ethers.providers.Provider;
   private readonly _defaultIsLiquidation: boolean;
+  private _subgraphUrl: string;
+  private _web3Provider: ethers.providers.Provider;
   private _defaultSlippageTolerance: number;
   private _defaultBlockTag: BlockTag;
   private client: DolomiteClient;
@@ -67,8 +67,8 @@ export class DolomiteZap {
     partnerAddress: Address | undefined = undefined,
   ) {
     this.network = network;
-    this.subgraphUrl = subgraphUrl;
-    this.web3Provider = web3Provider;
+    this._subgraphUrl = subgraphUrl;
+    this._web3Provider = web3Provider;
     this._defaultIsLiquidation = defaultIsLiquidation;
     this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
@@ -78,6 +78,22 @@ export class DolomiteZap {
     this.marketsCache = new LocalCache<Record<MarketId, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<MarketId, ApiMarketHelper>>(cacheSeconds);
     this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
+  }
+
+  public get subgraphUrl(): string {
+    return this._subgraphUrl;
+  }
+
+  public set subgraphUrl(newSubgraphUrl: string) {
+    this._subgraphUrl = newSubgraphUrl;
+  }
+
+  public get web3Provider(): ethers.providers.Provider {
+    return this._web3Provider;
+  }
+
+  public set web3Provider(newWeb3Provider: ethers.providers.Provider) {
+    this._web3Provider = newWeb3Provider;
   }
 
   public get defaultIsLiquidation(): boolean {
