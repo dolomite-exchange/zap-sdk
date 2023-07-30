@@ -304,6 +304,13 @@ export class DolomiteZap {
       marketIdsPath.push(outputMarket.marketId);
     }
 
+    const tokensPath = marketIdsPath.map<ApiToken>(marketId => ({
+      marketId: marketsMap[marketId].marketId,
+      symbol: marketsMap[marketId].symbol,
+      name: marketsMap[marketId].name,
+      tokenAddress: marketsMap[marketId].tokenAddress,
+      decimals: marketsMap[marketId].decimals,
+    }));
     const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
       const expectedAmountOut = DolomiteZap.removeSlippageFromAmount(
         amountsPaths[i][amountsPaths[i].length - 1],
@@ -315,6 +322,7 @@ export class DolomiteZap {
         .integerValue();
       return {
         marketIdsPath,
+        tokensPath,
         expectedAmountOut,
         amountWeisPath: amountsPaths[i],
         traderParams: traderParamsArrays[i],
