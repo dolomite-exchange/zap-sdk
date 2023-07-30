@@ -136,7 +136,7 @@ export interface ZapOutputParam {
   /**
    * The sequence of tokens used to create the zap
    */
-  tokensPath: MinimalApiToken[];
+  tokensPath: ApiToken[];
   /**
    * The expected output amounts for each market in the path, including slippage
    */
