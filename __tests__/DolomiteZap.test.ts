@@ -47,7 +47,7 @@ describe('DolomiteZap', () => {
   describe('#setMarketsToAdd', () => {
     it('should work normally', () => {
       const NEW_MARKET: ApiMarket = {
-        marketId: 9999,
+        marketId: new BigNumber(9999),
         symbol: 'NEW',
         name: 'New Market',
         decimals: 18,
@@ -62,20 +62,20 @@ describe('DolomiteZap', () => {
 
     it('should work when there is isolation mode data', () => {
       const NEW_MARKET: ApiMarket = {
-        marketId: 9999,
+        marketId: new BigNumber(9999),
         symbol: 'NEW',
         name: 'New Market',
         decimals: 18,
         tokenAddress: '0x1234567812345678123456781234567812345678',
         isolationModeWrapperInfo: {
           wrapperAddress: '0x1234567812345678123456781234567812345678',
-          inputMarketId: 2,
+          inputMarketId: new BigNumber(2),
           readableName: 'NEW Isolation Mode Wrapper',
         },
         liquidityTokenWrapperInfo: undefined,
         isolationModeUnwrapperInfo: {
           unwrapperAddress: '0x1234567812345678123456781234567812345678',
-          outputMarketId: 2,
+          outputMarketId: new BigNumber(2),
           readableName: 'NEW Isolation Mode Unwrapper',
         },
         liquidityTokenUnwrapperInfo: undefined,
@@ -85,7 +85,7 @@ describe('DolomiteZap', () => {
 
     it('should fail when isolation mode data is missing', () => {
       const NEW_MARKET: ApiMarket = {
-        marketId: 9999,
+        marketId: new BigNumber(9999),
         symbol: 'NEW',
         name: 'Dolomite Isolation: New Market',
         decimals: 18,
@@ -101,26 +101,26 @@ describe('DolomiteZap', () => {
 
   describe('#getIsolationModeConverterByMarketId', () => {
     it('should return valid value for valid market ID', () => {
-      expect(zap.getIsolationModeConverterByMarketId(6)).toBeDefined();
-      expect(zap.getIsolationModeConverterByMarketId(9)).toBeDefined();
-      expect(zap.getIsolationModeConverterByMarketId(10)).toBeDefined();
-      expect(zap.getIsolationModeConverterByMarketId(11)).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(6))).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(9))).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(10))).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(11))).toBeDefined();
     });
 
     it('should return valid value for valid market ID', () => {
-      expect(zap.getIsolationModeConverterByMarketId(0)).toBeUndefined();
-      expect(zap.getIsolationModeConverterByMarketId(2)).toBeUndefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(0))).toBeUndefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(2))).toBeUndefined();
     });
   });
 
   describe('#getLiquidityTokenConverterByMarketId', () => {
     it('should return valid value for valid market ID', () => {
-      expect(zap.getLiquidityTokenConverterByMarketId(8)).toBeDefined();
+      expect(zap.getLiquidityTokenConverterByMarketId(new BigNumber(8))).toBeDefined();
     });
 
     it('should return valid value for valid market ID', () => {
-      expect(zap.getLiquidityTokenConverterByMarketId(0)).toBeUndefined();
-      expect(zap.getLiquidityTokenConverterByMarketId(2)).toBeUndefined();
+      expect(zap.getLiquidityTokenConverterByMarketId(new BigNumber(0))).toBeUndefined();
+      expect(zap.getLiquidityTokenConverterByMarketId(new BigNumber(2))).toBeUndefined();
     });
   });
 
