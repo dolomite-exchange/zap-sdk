@@ -168,7 +168,7 @@ export class DolomiteZap {
       return Promise.reject(new Error(`Invalid tokenIn: ${tokenIn.symbol} / ${tokenIn.marketId}`));
     } else if (!outputMarket) {
       return Promise.reject(new Error(`Invalid tokenOut: ${tokenOut.symbol} / ${tokenOut.marketId}`));
-    } else if (inputMarket.marketId === outputMarket.marketId) {
+    } else if (inputMarket.marketId.eq(outputMarket.marketId)) {
       return Promise.reject(new Error(`Duplicate input and output marketId: ${inputMarket.marketId}`));
     } else if (amountIn.lte(INTEGERS.ZERO)) {
       return Promise.reject(new Error('Invalid amountIn. Must be greater than 0'));
@@ -222,13 +222,13 @@ export class DolomiteZap {
     if (wrapperInfo) {
       // We can't get the amount yet until we know if we need to use an aggregator in the middle
       effectiveOutputMarketId = wrapperInfo.inputMarketId;
-      if (effectiveInputMarketId !== effectiveOutputMarketId) {
+      if (!effectiveInputMarketId.eq(effectiveOutputMarketId)) {
         marketIdsPath.push(wrapperInfo.inputMarketId);
       }
     }
 
-    if (effectiveInputMarketId !== effectiveOutputMarketId) {
-      if (!marketIdsPath.includes(effectiveOutputMarketId)) {
+    if (!effectiveInputMarketId.eq(effectiveOutputMarketId)) {
+      if (!marketIdsPath.find(marketId => marketId.eq(effectiveOutputMarketId))) {
         marketIdsPath.push(effectiveOutputMarketId);
       }
       const effectiveInputMarket = marketsMap[effectiveInputMarketId.toFixed()];
@@ -295,7 +295,7 @@ export class DolomiteZap {
       });
     }
 
-    if (!marketIdsPath.includes(outputMarket.marketId)) {
+    if (!marketIdsPath.find(marketId => marketId.eq(outputMarket.marketId))) {
       marketIdsPath.push(outputMarket.marketId);
     }
 

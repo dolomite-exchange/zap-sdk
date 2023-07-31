@@ -741,8 +741,8 @@ describe('DolomiteZap', () => {
 
     describe('Failure cases', () => {
       it('should fail when tokenIn is not a valid Dolomite token', async () => {
-        const tokenIn = JSON.parse(JSON.stringify(WETH_MARKET));
-        tokenIn.marketId = -1;
+        const tokenIn: ApiMarket = { ...WETH_MARKET };
+        tokenIn.marketId = new BigNumber(-1);
         const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
         const minAmountOut = new BigNumber('100000000'); // 100 USDC
         await expect(
@@ -757,8 +757,8 @@ describe('DolomiteZap', () => {
       });
 
       it('should fail when tokenOut is not a valid Dolomite token', async () => {
-        const tokenOut = JSON.parse(JSON.stringify(WETH_MARKET));
-        tokenOut.marketId = -1;
+        const tokenOut: ApiMarket = { ...WETH_MARKET };
+        tokenOut.marketId = new BigNumber(-1);
         const amountIn = new BigNumber('10000000000'); // 10,000 USDC
         const minAmountOut = new BigNumber('100000000000000000'); // 0.001 ETH
         await expect(
@@ -773,7 +773,7 @@ describe('DolomiteZap', () => {
       });
 
       it('should fail when marketIn and marketOut are duplicates', async () => {
-        const tokenIn = JSON.parse(JSON.stringify(WETH_MARKET));
+        const tokenIn: ApiMarket = { ...WETH_MARKET };
         const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
         const minAmountOut = new BigNumber('100000000'); // 100 USDC
         await expect(
@@ -784,7 +784,7 @@ describe('DolomiteZap', () => {
             minAmountOut,
             txOrigin,
           ),
-        ).rejects.toThrow(`Duplicate input and output marketId: ${tokenIn.marketId}`);
+        ).rejects.toThrow(`Duplicate input and output marketId: ${tokenIn.marketId.toFixed()}`);
       });
 
       it('should fail when amountIn is zero', async () => {
