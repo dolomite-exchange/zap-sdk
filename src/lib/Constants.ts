@@ -19,14 +19,14 @@ export const INTEGERS = {
 
 export const BYTES_EMPTY = '0x';
 
-const USDC_MARKET_ID_MAP: Record<number, MarketId> = {
+const USDC_MARKET_ID_MAP: Record<Network, MarketId> = {
   [Network.ARBITRUM_ONE]: new BigNumber(2),
   [Network.ARBITRUM_GOERLI]: new BigNumber(2),
 };
 
 const ATLAS_PTSI_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
-  [Network.ARBITRUM_ONE]: new BigNumber(5),
-  [Network.ARBITRUM_GOERLI]: undefined,
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.ARBITRUM_GOERLI]: new BigNumber(5),
 };
 
 const GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
