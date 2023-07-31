@@ -1,14 +1,7 @@
 import axios from 'axios';
+import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import {
-  ApiMarket,
-  ApiMarketHelper,
-  ApiUnwrapperInfo,
-  ApiWrapperInfo,
-  BlockTag,
-  MarketId,
-  Network,
-} from '../lib/ApiTypes';
+import { ApiMarket, ApiMarketHelper, ApiUnwrapperInfo, ApiWrapperInfo, BlockTag, Network } from '../lib/ApiTypes';
 import { StandardEstimator } from '../lib/estimators/StandardEstimator';
 import { GraphqlMarketResult } from '../lib/graphql-types';
 import GraphqlPageable from '../lib/GraphqlPageable';
@@ -52,22 +45,22 @@ export default class DolomiteClient {
 
   public async getDolomiteMarketsMap(
     blockTag: BlockTag = 'latest',
-  ): Promise<Record<MarketId, ApiMarket>> {
+  ): Promise<Record<string, ApiMarket>> {
     const marketsList = await GraphqlPageable.getPageableValues((pageIndex) => this.getDolomiteMarketsWithPaging(
       blockTag,
       pageIndex,
     ));
-    return (marketsList.concat(...this.marketsToAdd)).reduce<Record<MarketId, ApiMarket>>((acc, market) => {
-      acc[market.marketId] = market;
+    return (marketsList.concat(...this.marketsToAdd)).reduce<Record<string, ApiMarket>>((acc, market) => {
+      acc[market.marketId.toFixed()] = market;
       return acc;
     }, {});
   }
 
   public async getDolomiteMarketHelpers(
-    marketsMap: Record<MarketId, ApiMarket>,
-  ): Promise<Record<MarketId, ApiMarketHelper>> {
+    marketsMap: Record<string, ApiMarket>,
+  ): Promise<Record<string, ApiMarketHelper>> {
     const standardEstimator = new StandardEstimator(this.network, this.web3Provider, marketsMap);
-    return Object.values(marketsMap).reduce<Record<MarketId, ApiMarketHelper>>((acc, market) => {
+    return Object.values(marketsMap).reduce<Record<string, ApiMarketHelper>>((acc, market) => {
       const marketHelper: ApiMarketHelper = {
         marketId: market.marketId,
         isolationModeUnwrapperHelper: undefined,
@@ -145,7 +138,7 @@ export default class DolomiteClient {
         };
       }
 
-      acc[market.marketId] = marketHelper;
+      acc[market.marketId.toFixed()] = marketHelper;
       return acc;
     }, {});
   }
@@ -184,16 +177,16 @@ export default class DolomiteClient {
               }`;
     }
     const result: GraphqlMarketResult = await axios.post(
-        this.subgraphUrl,
-        {
-          query,
-          variables: {
-            blockNumber: blockTag === 'latest' ? undefined : blockTag,
-            skip: pageIndex * GraphqlPageable.MAX_PAGE_SIZE,
-          },
+      this.subgraphUrl,
+      {
+        query,
+        variables: {
+          blockNumber: blockTag === 'latest' ? undefined : blockTag,
+          skip: pageIndex * GraphqlPageable.MAX_PAGE_SIZE,
         },
-        defaultAxiosConfig,
-      )
+      },
+      defaultAxiosConfig,
+    )
       .then(response => response.data)
       .then(json => json as GraphqlMarketResult);
 
@@ -209,7 +202,8 @@ export default class DolomiteClient {
       if (isolationModeClient.isIsolationModeToken(market.token)) {
         const unwrapperAddress = isolationModeClient.getIsolationModeUnwrapperByMarketId(market.token);
         const unwrapperForLiquidationAddress = isolationModeClient.getIsolationModeUnwrapperForLiquidationByMarketId(
-          market.token);
+          market.token,
+        );
         const outputMarketId = isolationModeClient.getIsolationModeUnwrapperMarketIdByMarketId(market.token);
         const wrapperAddress = isolationModeClient.getIsolationModeWrapperByMarketId(market.token);
         const inputMarketId = isolationModeClient.getIsolationModeWrapperMarketIdByMarketId(market.token);
@@ -259,7 +253,7 @@ export default class DolomiteClient {
       }
 
       const apiMarket: ApiMarket = {
-        marketId: Number(market.token.marketId),
+        marketId: new BigNumber(market.token.marketId),
         symbol: market.token.symbol,
         name: market.token.name,
         tokenAddress: toChecksumOpt(market.token.id)!,

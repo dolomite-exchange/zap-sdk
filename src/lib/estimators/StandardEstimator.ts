@@ -14,13 +14,13 @@ import { PendlePtEstimator } from './PendlePtEstimator';
 export class StandardEstimator {
   private readonly network: Network;
   private readonly web3Provider: ethers.providers.Provider;
-  private readonly marketsMap: Record<MarketId, ApiMarket>;
+  private readonly marketsMap: Record<string, ApiMarket>;
   private readonly pendleEstimator: PendlePtEstimator;
 
   public constructor(
     network: Network,
     web3Provider: ethers.providers.Provider,
-    marketsMap: Record<MarketId, ApiMarket>,
+    marketsMap: Record<string, ApiMarket>,
   ) {
     this.network = network;
     this.web3Provider = web3Provider;
@@ -32,10 +32,10 @@ export class StandardEstimator {
     isolationModeTokenAddress: Address,
     unwrapperAddress: Address,
     amountIn: Integer,
-    outputMarketId: number,
+    outputMarketId: MarketId,
     config: ZapConfig,
   ): Promise<EstimateOutputResult> {
-    const outputMarket = this.marketsMap[outputMarketId];
+    const outputMarket = this.marketsMap[outputMarketId.toFixed()];
     const contract = new ethers.Contract(unwrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
 
     if (isPtGlpToken(this.network, isolationModeTokenAddress)) {
@@ -43,9 +43,10 @@ export class StandardEstimator {
         isolationModeTokenAddress,
         amountIn,
       );
+      const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
       const estimateOutputResult = await this.getUnwrappedAmount(
         getGlpIsolationModeAddress(this.network)!,
-        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][getGlpIsolationModeMarketId(this.network)!]!.unwrapper,
+        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
         result.outputAmount,
         outputMarketId,
         config,
@@ -69,15 +70,16 @@ export class StandardEstimator {
     isolationModeTokenAddress: Address,
     wrapperAddress: Address,
     amountIn: Integer,
-    inputMarketId: number,
+    inputMarketId: MarketId,
     config: ZapConfig,
   ): Promise<EstimateOutputResult> {
-    const inputMarket = this.marketsMap[inputMarketId];
+    const inputMarket = this.marketsMap[inputMarketId.toFixed()];
 
     if (isPtGlpToken(this.network, isolationModeTokenAddress)) {
+      const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
       const estimateOutputResult = await this.getWrappedAmount(
         getGlpIsolationModeAddress(this.network)!,
-        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][getGlpIsolationModeMarketId(this.network)!]!.wrapper,
+        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.wrapper,
         amountIn,
         inputMarketId,
         config,

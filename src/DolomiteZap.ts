@@ -36,8 +36,8 @@ export class DolomiteZap {
   private readonly _defaultIsLiquidation: boolean;
   private client: DolomiteClient;
   private paraswapAggregator: ParaswapAggregator;
-  private marketsCache: LocalCache<Record<MarketId, ApiMarket>>;
-  private marketHelpersCache: LocalCache<Record<MarketId, ApiMarketHelper>>;
+  private marketsCache: LocalCache<Record<string, ApiMarket>>;
+  private marketHelpersCache: LocalCache<Record<string, ApiMarketHelper>>;
   private validAggregators: AggregatorClient[];
 
   /**
@@ -71,8 +71,8 @@ export class DolomiteZap {
 
     this.client = new DolomiteClient(subgraphUrl, network, web3Provider);
     this.paraswapAggregator = new ParaswapAggregator(network, partnerAddress);
-    this.marketsCache = new LocalCache<Record<MarketId, ApiMarket>>(cacheSeconds);
-    this.marketHelpersCache = new LocalCache<Record<MarketId, ApiMarketHelper>>(cacheSeconds);
+    this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
+    this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
     this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
   }
 
@@ -125,11 +125,11 @@ export class DolomiteZap {
   }
 
   public getIsolationModeConverterByMarketId(marketId: MarketId): ApiMarketConverter | undefined {
-    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][marketId];
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][marketId.toFixed()];
   }
 
   public getLiquidityTokenConverterByMarketId(marketId: MarketId): ApiMarketConverter | undefined {
-    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][marketId];
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][marketId.toFixed()];
   }
 
   /**
@@ -157,12 +157,12 @@ export class DolomiteZap {
       blockTag: config?.blockTag ?? this._defaultBlockTag,
       filterOutZapsWithInsufficientOutput: config?.filterOutZapsWithInsufficientOutput ?? true,
     };
-    const marketsMap = await this.getMarketsMap();
+    const marketsMap = await this.getMarketIdToMarketMap();
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
-    const inputMarket = marketsMap[tokenIn.marketId];
-    const inputHelper = marketHelpersMap[tokenIn.marketId];
-    const outputMarket = marketsMap[tokenOut.marketId];
-    const outputHelper = marketHelpersMap[tokenOut.marketId];
+    const inputMarket = marketsMap[tokenIn.marketId.toFixed()];
+    const inputHelper = marketHelpersMap[tokenIn.marketId.toFixed()];
+    const outputMarket = marketsMap[tokenOut.marketId.toFixed()];
+    const outputHelper = marketHelpersMap[tokenOut.marketId.toFixed()];
 
     if (!inputMarket) {
       return Promise.reject(new Error(`Invalid tokenIn: ${tokenIn.symbol} / ${tokenIn.marketId}`));
@@ -181,7 +181,7 @@ export class DolomiteZap {
     }
 
     const amountInWithSlippage = amountIn.multipliedBy(1 - actualConfig.slippageTolerance);
-    const marketIdsPath: number[] = [inputMarket.marketId];
+    const marketIdsPath: MarketId[] = [inputMarket.marketId];
     const amountsPaths = new Array<Integer[]>(this.validAggregators.length).fill([amountInWithSlippage]);
     const traderParamsArrays = new Array<GenericTraderParam[]>(this.validAggregators.length).fill([]);
     let effectiveInputMarketId = inputMarket.marketId;
@@ -231,8 +231,8 @@ export class DolomiteZap {
       if (!marketIdsPath.includes(effectiveOutputMarketId)) {
         marketIdsPath.push(effectiveOutputMarketId);
       }
-      const effectiveInputMarket = marketsMap[effectiveInputMarketId];
-      const effectiveOutputMarket = marketsMap[effectiveOutputMarketId];
+      const effectiveInputMarket = marketsMap[effectiveInputMarketId.toFixed()];
+      const effectiveOutputMarket = marketsMap[effectiveOutputMarketId.toFixed()];
       const aggregatorOutputOrUndefinedList = await Promise.all(
         this.validAggregators.map((aggregator, i) => {
           return aggregator.getSwapExactTokensForTokensData(
@@ -300,11 +300,11 @@ export class DolomiteZap {
     }
 
     const tokensPath = marketIdsPath.map<ApiToken>(marketId => ({
-      marketId: marketsMap[marketId].marketId,
-      symbol: marketsMap[marketId].symbol,
-      name: marketsMap[marketId].name,
-      tokenAddress: marketsMap[marketId].tokenAddress,
-      decimals: marketsMap[marketId].decimals,
+      marketId,
+      symbol: marketsMap[marketId.toFixed()].symbol,
+      name: marketsMap[marketId.toFixed()].name,
+      tokenAddress: marketsMap[marketId.toFixed()].tokenAddress,
+      decimals: marketsMap[marketId.toFixed()].decimals,
     }));
     const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
       amountsPaths[i][0] = amountIn; // overwrite amountIn to be the real one now
@@ -329,7 +329,7 @@ export class DolomiteZap {
     }
   }
 
-  private async getMarketsMap(): Promise<Record<MarketId, ApiMarket>> {
+  private async getMarketIdToMarketMap(): Promise<Record<string, ApiMarket>> {
     const marketsKey = 'MARKETS';
     const cachedMarkets = this.marketsCache.get(marketsKey);
     if (cachedMarkets) {
@@ -342,8 +342,8 @@ export class DolomiteZap {
   }
 
   private async getMarketHelpersMap(
-    marketsMap: Record<MarketId, ApiMarket>,
-  ): Promise<Record<MarketId, ApiMarketHelper>> {
+    marketsMap: Record<string, ApiMarket>,
+  ): Promise<Record<string, ApiMarketHelper>> {
     const marketHelpersKey = 'MARKET_HELPERS';
     const cachedMarkets = this.marketHelpersCache.get(marketHelpersKey);
     if (cachedMarkets) {
