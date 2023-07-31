@@ -151,7 +151,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(1);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -264,7 +264,7 @@ describe('DolomiteZap', () => {
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -301,7 +301,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(2);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
@@ -445,7 +445,7 @@ describe('DolomiteZap', () => {
 
           expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
           expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
           expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
           expect(outputParam.traderParams[2].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -502,7 +502,7 @@ describe('DolomiteZap', () => {
 
           expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
           expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
           expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
           expect(outputParam.traderParams[2].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -686,7 +686,7 @@ describe('DolomiteZap', () => {
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -723,7 +723,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(2);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);

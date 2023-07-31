@@ -34,10 +34,6 @@ const THIRTY_BASIS_POINTS = 0.003;
 export class DolomiteZap {
   public readonly network: Network;
   private readonly _defaultIsLiquidation: boolean;
-  private _subgraphUrl: string;
-  private _web3Provider: ethers.providers.Provider;
-  private _defaultSlippageTolerance: number;
-  private _defaultBlockTag: BlockTag;
   private client: DolomiteClient;
   private paraswapAggregator: ParaswapAggregator;
   private marketsCache: LocalCache<Record<MarketId, ApiMarket>>;
@@ -80,6 +76,8 @@ export class DolomiteZap {
     this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
   }
 
+  private _subgraphUrl: string;
+
   public get subgraphUrl(): string {
     return this._subgraphUrl;
   }
@@ -87,6 +85,8 @@ export class DolomiteZap {
   public set subgraphUrl(newSubgraphUrl: string) {
     this._subgraphUrl = newSubgraphUrl;
   }
+
+  private _web3Provider: ethers.providers.Provider;
 
   public get web3Provider(): ethers.providers.Provider {
     return this._web3Provider;
@@ -96,26 +96,20 @@ export class DolomiteZap {
     this._web3Provider = newWeb3Provider;
   }
 
-  public get defaultIsLiquidation(): boolean {
-    return this._defaultIsLiquidation;
-  }
+  private _defaultSlippageTolerance: number;
 
   public get defaultSlippageTolerance(): number {
     return this._defaultSlippageTolerance;
   }
 
+  private _defaultBlockTag: BlockTag;
+
   public get defaultBlockTag(): BlockTag {
     return this._defaultBlockTag;
   }
 
-  private static removeSlippageFromAmount(
-    amountWithSlippage: Integer,
-    traderParams: GenericTraderParam[],
-    config: ZapConfig,
-  ): Integer {
-    return traderParams.reduce(memo => {
-      return memo.dividedToIntegerBy(1 - config.slippageTolerance);
-    }, amountWithSlippage);
+  public get defaultIsLiquidation(): boolean {
+    return this._defaultIsLiquidation;
   }
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {
@@ -140,9 +134,9 @@ export class DolomiteZap {
 
   /**
    *
-   * @param tokenIn
-   * @param amountIn
-   * @param tokenOut
+   * @param tokenIn The input token for the zap
+   * @param amountIn The input amount for the zap
+   * @param tokenOut The output token for the zap
    * @param amountOutMin The minimum amount out required for the swap to be considered valid
    * @param txOrigin The address that will execute the transaction
    * @param config The additional config for zapping
@@ -186,8 +180,9 @@ export class DolomiteZap {
       return Promise.reject(new Error('Invalid slippageTolerance. Must be between 0 and 0.1 (10%)'));
     }
 
+    const amountInWithSlippage = amountIn.multipliedBy(1 - actualConfig.slippageTolerance);
     const marketIdsPath: number[] = [inputMarket.marketId];
-    const amountsPaths = new Array<Integer[]>(this.validAggregators.length).fill([amountIn]);
+    const amountsPaths = new Array<Integer[]>(this.validAggregators.length).fill([amountInWithSlippage]);
     const traderParamsArrays = new Array<GenericTraderParam[]>(this.validAggregators.length).fill([]);
     let effectiveInputMarketId = inputMarket.marketId;
     let effectiveOutputMarketId = outputMarket.marketId;
@@ -200,7 +195,7 @@ export class DolomiteZap {
       marketIdsPath.push(effectiveInputMarketId);
 
       const { amountOut, tradeData } = await unwrapperHelper.estimateOutputFunction(
-        amountIn,
+        amountsPaths[0][0],
         unwrapperInfo.outputMarketId,
         actualConfig,
       );
@@ -312,14 +307,9 @@ export class DolomiteZap {
       decimals: marketsMap[marketId].decimals,
     }));
     const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
-      const expectedAmountOut = DolomiteZap.removeSlippageFromAmount(
-        amountsPaths[i][amountsPaths[i].length - 1],
-        traderParamsArrays[i],
-        actualConfig,
-      );
-      amountsPaths[i][amountsPaths[i].length - 1] = expectedAmountOut
-        .times(1 - actualConfig.slippageTolerance)
-        .integerValue();
+      amountsPaths[i][0] = amountIn; // overwrite amountIn to be the real one now
+      const expectedAmountOut = amountsPaths[i][amountsPaths[i].length - 1]
+        .dividedToIntegerBy(1 - actualConfig.slippageTolerance);
       return {
         marketIdsPath,
         tokensPath,

@@ -42,7 +42,6 @@ export class StandardEstimator {
       const result = await this.pendleEstimator.getUnwrappedAmount(
         isolationModeTokenAddress,
         amountIn,
-        config,
       );
       const estimateOutputResult = await this.getUnwrappedAmount(
         getGlpIsolationModeAddress(this.network)!,
@@ -61,8 +60,7 @@ export class StandardEstimator {
         amountIn.toFixed(),
         tradeData,
       );
-      const amountOutSansSlippage = new BigNumber(outputAmount.toString());
-      const amountOut = amountOutSansSlippage.times(1 - config.slippageTolerance).integerValue();
+      const amountOut = new BigNumber(outputAmount.toString());
       return { amountOut, tradeData };
     }
   }
@@ -87,7 +85,6 @@ export class StandardEstimator {
       const result = await this.pendleEstimator.getWrappedAmount(
         isolationModeTokenAddress,
         estimateOutputResult.amountOut,
-        config,
       );
       return { tradeData: result.tradeData, amountOut: result.ptAmountOut };
     } else {
@@ -99,8 +96,7 @@ export class StandardEstimator {
         amountIn.toFixed(),
         tradeData,
       );
-      const amountOutSansSlippage = new BigNumber(outputAmount.toString());
-      const amountOut = amountOutSansSlippage.times(1 - config.slippageTolerance).integerValue();
+      const amountOut = new BigNumber(outputAmount.toString());
       return { amountOut, tradeData };
     }
   }

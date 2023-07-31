@@ -25,7 +25,8 @@ export default class ParaswapAggregator extends AggregatorClient {
     outputMarket: ApiMarket | ApiToken,
     minOutputAmountWei: Integer,
     txOrigin: Address,
-    config: ZapConfig,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _unused: ZapConfig,
   ): Promise<AggregatorOutput | undefined> {
     const traderAddress = PARASWAP_TRADER_ADDRESS_MAP[this.network];
     if (!traderAddress) {
@@ -89,8 +90,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       return undefined;
     }
 
-    const expectedAmountOutSansSlippage = new BigNumber(priceRouteResponse?.priceRoute?.destAmount);
-    const expectedAmountOut = expectedAmountOutSansSlippage.times(1 - config.slippageTolerance).integerValue();
+    const expectedAmountOut = new BigNumber(priceRouteResponse?.priceRoute?.destAmount);
     const calldata = result.data.toString();
     const tradeData = ethers.utils.defaultAbiCoder.encode(
       ['bytes4', 'bytes'],
