@@ -14,20 +14,28 @@ const defaultAxiosConfig = {
 };
 
 export default class DolomiteClient {
-  private readonly subgraphUrl: string;
   private readonly network: Network;
-  private readonly web3Provider: ethers.providers.Provider;
+  private _subgraphUrl: string;
+  private _web3Provider: ethers.providers.Provider;
   private marketsToAdd: ApiMarket[];
 
   public constructor(
-    subgraphUrl: string,
     networkId: Network,
+    subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
   ) {
-    this.subgraphUrl = subgraphUrl;
     this.network = networkId;
-    this.web3Provider = web3Provider;
+    this._subgraphUrl = subgraphUrl;
+    this._web3Provider = web3Provider;
     this.marketsToAdd = [];
+  }
+
+  public set web3Provider(web3Provider: ethers.providers.Provider) {
+    this._web3Provider = web3Provider;
+  }
+
+  public set subgraphUrl(subgraphUrl: string) {
+    this._subgraphUrl = subgraphUrl;
   }
 
   public setMarketsToAdd(
@@ -59,7 +67,7 @@ export default class DolomiteClient {
   public async getDolomiteMarketHelpers(
     marketsMap: Record<string, ApiMarket>,
   ): Promise<Record<string, ApiMarketHelper>> {
-    const standardEstimator = new StandardEstimator(this.network, this.web3Provider, marketsMap);
+    const standardEstimator = new StandardEstimator(this.network, this._web3Provider, marketsMap);
     return Object.values(marketsMap).reduce<Record<string, ApiMarketHelper>>((acc, market) => {
       const marketHelper: ApiMarketHelper = {
         marketId: market.marketId,
@@ -177,7 +185,7 @@ export default class DolomiteClient {
               }`;
     }
     const result: GraphqlMarketResult = await axios.post(
-      this.subgraphUrl,
+      this._subgraphUrl,
       {
         query,
         variables: {

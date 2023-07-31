@@ -69,7 +69,7 @@ export class DolomiteZap {
     this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
 
-    this.client = new DolomiteClient(subgraphUrl, network, web3Provider);
+    this.client = new DolomiteClient(network, subgraphUrl, web3Provider);
     this.paraswapAggregator = new ParaswapAggregator(network, partnerAddress);
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
@@ -84,6 +84,7 @@ export class DolomiteZap {
 
   public set subgraphUrl(newSubgraphUrl: string) {
     this._subgraphUrl = newSubgraphUrl;
+    this.client.subgraphUrl = newSubgraphUrl;
   }
 
   private _web3Provider: ethers.providers.Provider;
@@ -94,6 +95,7 @@ export class DolomiteZap {
 
   public set web3Provider(newWeb3Provider: ethers.providers.Provider) {
     this._web3Provider = newWeb3Provider;
+    this.client.web3Provider = newWeb3Provider;
   }
 
   private _defaultSlippageTolerance: number;
