@@ -31,6 +31,9 @@ const ONE_HOUR = 60 * 60;
 
 const THIRTY_BASIS_POINTS = 0.003;
 
+const marketsKey = 'MARKETS';
+const marketHelpersKey = 'MARKET_HELPERS';
+
 export class DolomiteZap {
   public readonly network: Network;
   private readonly _defaultIsLiquidation: boolean;
@@ -332,7 +335,6 @@ export class DolomiteZap {
   }
 
   private async getMarketIdToMarketMap(): Promise<Record<string, ApiMarket>> {
-    const marketsKey = 'MARKETS';
     const cachedMarkets = this.marketsCache.get(marketsKey);
     if (cachedMarkets) {
       return cachedMarkets;
@@ -346,7 +348,6 @@ export class DolomiteZap {
   private async getMarketHelpersMap(
     marketsMap: Record<string, ApiMarket>,
   ): Promise<Record<string, ApiMarketHelper>> {
-    const marketHelpersKey = 'MARKET_HELPERS';
     const cachedMarkets = this.marketHelpersCache.get(marketHelpersKey);
     if (cachedMarkets) {
       return cachedMarkets;

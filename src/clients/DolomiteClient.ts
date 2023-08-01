@@ -18,6 +18,7 @@ export default class DolomiteClient {
   private _subgraphUrl: string;
   private _web3Provider: ethers.providers.Provider;
   private marketsToAdd: ApiMarket[];
+  private standardEstimator: StandardEstimator;
 
   public constructor(
     networkId: Network,
@@ -28,10 +29,12 @@ export default class DolomiteClient {
     this._subgraphUrl = subgraphUrl;
     this._web3Provider = web3Provider;
     this.marketsToAdd = [];
+    this.standardEstimator = new StandardEstimator(this.network, this._web3Provider);
   }
 
   public set web3Provider(web3Provider: ethers.providers.Provider) {
     this._web3Provider = web3Provider;
+    this.standardEstimator.web3Provider = web3Provider;
   }
 
   public set subgraphUrl(subgraphUrl: string) {
@@ -67,7 +70,6 @@ export default class DolomiteClient {
   public async getDolomiteMarketHelpers(
     marketsMap: Record<string, ApiMarket>,
   ): Promise<Record<string, ApiMarketHelper>> {
-    const standardEstimator = new StandardEstimator(this.network, this._web3Provider, marketsMap);
     return Object.values(marketsMap).reduce<Record<string, ApiMarketHelper>>((acc, market) => {
       const marketHelper: ApiMarketHelper = {
         marketId: market.marketId,
@@ -86,12 +88,13 @@ export default class DolomiteClient {
             amountIn,
             outputMarketId,
             config,
-          ) => standardEstimator.getUnwrappedAmount(
+          ) => this.standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
             config.isLiquidation ? unwrapperForLiquidationAddress : isolationModeUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
             config,
+            marketsMap,
           ),
         };
       }
@@ -104,12 +107,13 @@ export default class DolomiteClient {
             amountIn,
             outputMarketId,
             config,
-          ) => standardEstimator.getUnwrappedAmount(
+          ) => this.standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
             config.isLiquidation ? unwrapperForLiquidationAddress : liquidityTokenUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
             config,
+            marketsMap,
           ),
         };
       }
@@ -120,12 +124,13 @@ export default class DolomiteClient {
             amountIn,
             inputMarketId,
             config,
-          ) => standardEstimator.getWrappedAmount(
+          ) => this.standardEstimator.getWrappedAmount(
             market.tokenAddress,
             isolationModeWrapper.wrapperAddress,
             amountIn,
             inputMarketId,
             config,
+            marketsMap,
           ),
         };
       }
@@ -136,12 +141,13 @@ export default class DolomiteClient {
             amountIn,
             inputMarketId,
             config,
-          ) => standardEstimator.getWrappedAmount(
+          ) => this.standardEstimator.getWrappedAmount(
             market.tokenAddress,
             liquidityTokenWrapper.wrapperAddress,
             amountIn,
             inputMarketId,
             config,
+            marketsMap,
           ),
         };
       }

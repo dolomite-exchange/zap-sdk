@@ -6,7 +6,7 @@ import { getPendleMarketForIsolationModeToken, getSGlpAddress } from '../Constan
 
 export class PendlePtEstimator {
   private readonly network: Network;
-  private readonly pendleRouter: PendleRouter;
+  private pendleRouter: PendleRouter;
 
   public constructor(
     network: Network,
@@ -15,6 +15,14 @@ export class PendlePtEstimator {
     this.network = network;
     this.pendleRouter = PendleStaticRouter.getRouter({
       chainId: network as any,
+      provider: web3Provider,
+      signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
+    });
+  }
+
+  public set web3Provider(web3Provider: ethers.providers.Provider) {
+    this.pendleRouter = PendleStaticRouter.getRouter({
+      chainId: this.network as any,
       provider: web3Provider,
       signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
     });
@@ -61,7 +69,7 @@ export class PendlePtEstimator {
   ): Promise<{ tradeData: string; ptAmountOut: Integer }> {
     const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForPt(
       getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
-      getSGlpAddress(this.network) as any,
+      getSGlpAddress(this.network)?.toLowerCase() as any,
       inputAmount.toFixed(),
       0,
       { method: 'extractParams' },

@@ -13,19 +13,19 @@ import { PendlePtEstimator } from './PendlePtEstimator';
 
 export class StandardEstimator {
   private readonly network: Network;
-  private readonly web3Provider: ethers.providers.Provider;
-  private readonly marketsMap: Record<string, ApiMarket>;
-  private readonly pendleEstimator: PendlePtEstimator;
 
   public constructor(
     network: Network,
     web3Provider: ethers.providers.Provider,
-    marketsMap: Record<string, ApiMarket>,
   ) {
     this.network = network;
-    this.web3Provider = web3Provider;
-    this.marketsMap = marketsMap;
-    this.pendleEstimator = new PendlePtEstimator(network, web3Provider);
+    this._web3Provider = web3Provider;
+  }
+
+  private _web3Provider: ethers.providers.Provider;
+
+  public set web3Provider(web3Provider: ethers.providers.Provider) {
+    this._web3Provider = web3Provider;
   }
 
   public async getUnwrappedAmount(
@@ -34,12 +34,14 @@ export class StandardEstimator {
     amountIn: Integer,
     outputMarketId: MarketId,
     config: ZapConfig,
+    marketsMap: Record<string, ApiMarket>,
   ): Promise<EstimateOutputResult> {
-    const outputMarket = this.marketsMap[outputMarketId.toFixed()];
-    const contract = new ethers.Contract(unwrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
+    const outputMarket = marketsMap[outputMarketId.toFixed()];
+    const contract = new ethers.Contract(unwrapperAddress, IDolomiteMarginExchangeWrapper, this._web3Provider);
 
     if (isPtGlpToken(this.network, isolationModeTokenAddress)) {
-      const result = await this.pendleEstimator.getUnwrappedAmount(
+      const pendleEstimator = new PendlePtEstimator(this.network, this._web3Provider);
+      const result = await pendleEstimator.getUnwrappedAmount(
         isolationModeTokenAddress,
         amountIn,
       );
@@ -50,6 +52,7 @@ export class StandardEstimator {
         result.outputAmount,
         outputMarketId,
         config,
+        marketsMap,
       );
       return { tradeData: result.tradeData, amountOut: estimateOutputResult.amountOut };
     } else {
@@ -72,8 +75,9 @@ export class StandardEstimator {
     amountIn: Integer,
     inputMarketId: MarketId,
     config: ZapConfig,
+    marketsMap: Record<string, ApiMarket>,
   ): Promise<EstimateOutputResult> {
-    const inputMarket = this.marketsMap[inputMarketId.toFixed()];
+    const inputMarket = marketsMap[inputMarketId.toFixed()];
 
     if (isPtGlpToken(this.network, isolationModeTokenAddress)) {
       const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
@@ -83,14 +87,16 @@ export class StandardEstimator {
         amountIn,
         inputMarketId,
         config,
+        marketsMap,
       );
-      const result = await this.pendleEstimator.getWrappedAmount(
+      const pendleEstimator = new PendlePtEstimator(this.network, this._web3Provider);
+      const result = await pendleEstimator.getWrappedAmount(
         isolationModeTokenAddress,
         estimateOutputResult.amountOut,
       );
       return { tradeData: result.tradeData, amountOut: result.ptAmountOut };
     } else {
-      const contract = new ethers.Contract(wrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
+      const contract = new ethers.Contract(wrapperAddress, IDolomiteMarginExchangeWrapper, this._web3Provider);
       const tradeData = BYTES_EMPTY;
       const outputAmount = await contract.getExchangeCost(
         inputMarket.tokenAddress,

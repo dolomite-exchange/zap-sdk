@@ -19,7 +19,7 @@ export const WETH_MARKET: ApiMarket = {
 
 export const USDC_MARKET: ApiMarket = {
   marketId: new BigNumber(2),
-  symbol: 'USDC',
+  symbol: 'USDC.e',
   name: 'USD Coin',
   tokenAddress: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
   decimals: 6,
