@@ -97,9 +97,16 @@ export class DolomiteZap {
     return this._web3Provider;
   }
 
-  public set web3Provider(newWeb3Provider: ethers.providers.Provider) {
+  public async setWeb3Provider(newWeb3Provider: ethers.providers.Provider) {
+    const oldNetwork = await this._web3Provider.getNetwork();
+    const newNetwork = await newWeb3Provider.getNetwork();
+    if (oldNetwork.chainId !== newNetwork.chainId) {
+      return Promise.reject(new Error('Networks must match'));
+    }
+
     this._web3Provider = newWeb3Provider;
     this.client.web3Provider = newWeb3Provider;
+    return Promise.resolve();
   }
 
   private _defaultSlippageTolerance: number;
