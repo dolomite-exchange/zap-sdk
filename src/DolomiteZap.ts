@@ -313,6 +313,7 @@ export class DolomiteZap {
     }));
     const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
       const expectedAmountOut = amountsPaths[i][amountsPaths[i].length - 1]
+      amountsPaths[i][amountsPaths[i].length - 1] = expectedAmountOut
         .multipliedBy(1 - actualConfig.slippageTolerance)
         .integerValue(BigNumber.ROUND_DOWN);
       return {
