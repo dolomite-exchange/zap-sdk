@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import AggregatorClient from './clients/AggregatorClient';
 import DolomiteClient from './clients/DolomiteClient';
@@ -185,9 +186,8 @@ export class DolomiteZap {
       return Promise.reject(new Error('Invalid slippageTolerance. Must be between 0 and 0.1 (10%)'));
     }
 
-    const amountInWithSlippage = amountIn.multipliedBy(1 - actualConfig.slippageTolerance);
     const marketIdsPath: MarketId[] = [inputMarket.marketId];
-    const amountsPaths = new Array<Integer[]>(this.validAggregators.length).fill([amountInWithSlippage]);
+    const amountsPaths = new Array<Integer[]>(this.validAggregators.length).fill([amountIn]);
     const traderParamsArrays = new Array<GenericTraderParam[]>(this.validAggregators.length).fill([]);
     let effectiveInputMarketId = inputMarket.marketId;
     let effectiveOutputMarketId = outputMarket.marketId;
@@ -312,9 +312,9 @@ export class DolomiteZap {
       decimals: marketsMap[marketId.toFixed()].decimals,
     }));
     const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
-      amountsPaths[i][0] = amountIn; // overwrite amountIn to be the real one now
       const expectedAmountOut = amountsPaths[i][amountsPaths[i].length - 1]
-        .dividedToIntegerBy(1 - actualConfig.slippageTolerance);
+        .multipliedBy(1 - actualConfig.slippageTolerance)
+        .integerValue(BigNumber.ROUND_DOWN);
       return {
         marketIdsPath,
         tokensPath,
