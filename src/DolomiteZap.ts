@@ -151,8 +151,6 @@ export class DolomiteZap {
       return Promise.reject(new Error(`Invalid tokenIn: ${tokenIn.symbol} / ${tokenIn.marketId}`));
     } else if (!outputMarket) {
       return Promise.reject(new Error(`Invalid tokenOut: ${tokenOut.symbol} / ${tokenOut.marketId}`));
-    } else if (inputMarket.marketId === outputMarket.marketId) {
-      return Promise.reject(new Error(`Duplicate input and output marketId: ${inputMarket.marketId}`));
     } else if (amountIn.lte(INTEGERS.ZERO)) {
       return Promise.reject(new Error('Invalid amountIn. Must be greater than 0'));
     } else if (amountOutMin.lte(INTEGERS.ZERO)) {

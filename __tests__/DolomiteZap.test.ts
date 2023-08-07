@@ -709,21 +709,6 @@ describe('DolomiteZap', () => {
         ).rejects.toThrow(`Invalid tokenOut: ${tokenOut.symbol} / ${tokenOut.marketId}`);
       });
 
-      it('should fail when marketIn and marketOut are duplicates', async () => {
-        const tokenIn = JSON.parse(JSON.stringify(WETH_MARKET));
-        const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
-        const minAmountOut = new BigNumber('100000000'); // 100 USDC
-        await expect(
-          zap.getSwapExactTokensForTokensParams(
-            tokenIn,
-            amountIn,
-            tokenIn,
-            minAmountOut,
-            txOrigin,
-          ),
-        ).rejects.toThrow(`Duplicate input and output marketId: ${tokenIn.marketId}`);
-      });
-
       it('should fail when amountIn is zero', async () => {
         const minAmountOut = new BigNumber('1000000000000000000'); // 1 ETH
         await expect(
