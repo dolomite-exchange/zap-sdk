@@ -2,11 +2,11 @@ import BigNumber from 'bignumber.js';
 
 export type Integer = BigNumber;
 export type Address = string;
-export type MarketId = number;
+export type MarketId = BigNumber;
 
 export enum Network {
   ARBITRUM_ONE = 42161,
-  ARBITRUM_GOERLI = 421611,
+  ARBITRUM_GOERLI = 421613,
 }
 
 export type BlockTag = 'latest' | number;
@@ -43,13 +43,14 @@ export interface ApiMarket {
 
 export interface ApiUnwrapperInfo {
   unwrapperAddress: Address;
-  outputMarketId: number;
+  unwrapperForLiquidationAddress?: Address;
+  outputMarketId: MarketId;
   readableName: string;
 }
 
 export interface ApiWrapperInfo {
   wrapperAddress: Address;
-  inputMarketId: number;
+  inputMarketId: MarketId;
   readableName: string;
 }
 
@@ -69,7 +70,7 @@ export interface EstimateOutputResult {
 export interface ApiUnwrapperHelper {
   estimateOutputFunction: (
     amountIn: Integer,
-    outputMarketId: number,
+    outputMarketId: MarketId,
     config: ZapConfig,
   ) => Promise<EstimateOutputResult>;
 }
@@ -77,7 +78,7 @@ export interface ApiUnwrapperHelper {
 export interface ApiWrapperHelper {
   estimateOutputFunction: (
     amountIn: Integer,
-    inputMarketId: number,
+    inputMarketId: MarketId,
     config: ZapConfig,
   ) => Promise<EstimateOutputResult>;
 }
@@ -121,6 +122,7 @@ export interface AggregatorOutput {
 }
 
 export interface ZapConfig {
+  isLiquidation: boolean;
   slippageTolerance: number;
   blockTag: BlockTag;
   filterOutZapsWithInsufficientOutput: boolean;
@@ -130,7 +132,11 @@ export interface ZapOutputParam {
   /**
    * The sequence of market IDs used to create the zap
    */
-  marketIdsPath: number[];
+  marketIdsPath: MarketId[];
+  /**
+   * The sequence of tokens used to create the zap
+   */
+  tokensPath: ApiToken[];
   /**
    * The expected output amounts for each market in the path, including slippage
    */

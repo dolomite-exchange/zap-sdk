@@ -1,14 +1,7 @@
 import axios from 'axios';
+import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import {
-  ApiMarket,
-  ApiMarketHelper,
-  ApiUnwrapperInfo,
-  ApiWrapperInfo,
-  BlockTag,
-  MarketId,
-  Network,
-} from '../lib/ApiTypes';
+import { ApiMarket, ApiMarketHelper, ApiUnwrapperInfo, ApiWrapperInfo, BlockTag, Network } from '../lib/ApiTypes';
 import { StandardEstimator } from '../lib/estimators/StandardEstimator';
 import { GraphqlMarketResult } from '../lib/graphql-types';
 import GraphqlPageable from '../lib/GraphqlPageable';
@@ -21,20 +14,31 @@ const defaultAxiosConfig = {
 };
 
 export default class DolomiteClient {
-  private readonly subgraphUrl: string;
   private readonly network: Network;
-  private readonly web3Provider: ethers.providers.Provider;
+  private _subgraphUrl: string;
+  private _web3Provider: ethers.providers.Provider;
   private marketsToAdd: ApiMarket[];
+  private standardEstimator: StandardEstimator;
 
   public constructor(
-    subgraphUrl: string,
     networkId: Network,
+    subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
   ) {
-    this.subgraphUrl = subgraphUrl;
     this.network = networkId;
-    this.web3Provider = web3Provider;
+    this._subgraphUrl = subgraphUrl;
+    this._web3Provider = web3Provider;
     this.marketsToAdd = [];
+    this.standardEstimator = new StandardEstimator(this.network, this._web3Provider);
+  }
+
+  public set web3Provider(web3Provider: ethers.providers.Provider) {
+    this._web3Provider = web3Provider;
+    this.standardEstimator.web3Provider = web3Provider;
+  }
+
+  public set subgraphUrl(subgraphUrl: string) {
+    this._subgraphUrl = subgraphUrl;
   }
 
   public setMarketsToAdd(
@@ -52,61 +56,66 @@ export default class DolomiteClient {
 
   public async getDolomiteMarketsMap(
     blockTag: BlockTag = 'latest',
-  ): Promise<Record<MarketId, ApiMarket>> {
+  ): Promise<Record<string, ApiMarket>> {
     const marketsList = await GraphqlPageable.getPageableValues((pageIndex) => this.getDolomiteMarketsWithPaging(
       blockTag,
       pageIndex,
     ));
-    return (marketsList.concat(...this.marketsToAdd)).reduce<Record<MarketId, ApiMarket>>((acc, market) => {
-      acc[market.marketId] = market;
+    return (marketsList.concat(...this.marketsToAdd)).reduce<Record<string, ApiMarket>>((acc, market) => {
+      acc[market.marketId.toFixed()] = market;
       return acc;
     }, {});
   }
 
   public async getDolomiteMarketHelpers(
-    marketsMap: Record<MarketId, ApiMarket>,
-  ): Promise<Record<MarketId, ApiMarketHelper>> {
-    const standardEstimator = new StandardEstimator(this.network, this.web3Provider, marketsMap);
-    return Object.values(marketsMap).reduce<Record<MarketId, ApiMarketHelper>>((acc, market) => {
+    marketsMap: Record<string, ApiMarket>,
+  ): Promise<Record<string, ApiMarketHelper>> {
+    return Object.values(marketsMap).reduce<Record<string, ApiMarketHelper>>((acc, market) => {
       const marketHelper: ApiMarketHelper = {
         marketId: market.marketId,
         isolationModeUnwrapperHelper: undefined,
         liquidityTokenUnwrapperHelper: undefined,
         isolationModeWrapperHelper: undefined,
         liquidityTokenWrapperHelper: undefined,
-      }
+      };
 
       const isolationModeUnwrapper = market.isolationModeUnwrapperInfo;
       if (isolationModeUnwrapper) {
+        const unwrapperForLiquidationAddress = isolationModeUnwrapper.unwrapperForLiquidationAddress
+          ?? isolationModeUnwrapper.unwrapperAddress;
         marketHelper.isolationModeUnwrapperHelper = {
           estimateOutputFunction: async (
             amountIn,
             outputMarketId,
             config,
-          ) => standardEstimator.getUnwrappedAmount(
+          ) => this.standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
-            isolationModeUnwrapper.unwrapperAddress,
+            config.isLiquidation ? unwrapperForLiquidationAddress : isolationModeUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
             config,
+            marketsMap,
           ),
-        }
+        };
       }
       const liquidityTokenUnwrapper = market.liquidityTokenUnwrapperInfo;
       if (liquidityTokenUnwrapper) {
+        const unwrapperForLiquidationAddress = liquidityTokenUnwrapper.unwrapperForLiquidationAddress
+          ?? liquidityTokenUnwrapper.unwrapperAddress;
         marketHelper.liquidityTokenUnwrapperHelper = {
           estimateOutputFunction: async (
             amountIn,
             outputMarketId,
             config,
-          ) => standardEstimator.getUnwrappedAmount(
+          ) => this.standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
-            liquidityTokenUnwrapper.unwrapperAddress,
+            config.isLiquidation ? unwrapperForLiquidationAddress : liquidityTokenUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
             config,
+            marketsMap,
           ),
-        }
+        };
       }
       const isolationModeWrapper = market.isolationModeWrapperInfo;
       if (isolationModeWrapper) {
@@ -115,14 +124,15 @@ export default class DolomiteClient {
             amountIn,
             inputMarketId,
             config,
-          ) => standardEstimator.getWrappedAmount(
+          ) => this.standardEstimator.getWrappedAmount(
             market.tokenAddress,
             isolationModeWrapper.wrapperAddress,
             amountIn,
             inputMarketId,
             config,
+            marketsMap,
           ),
-        }
+        };
       }
       const liquidityTokenWrapper = market.liquidityTokenWrapperInfo;
       if (liquidityTokenWrapper) {
@@ -131,17 +141,18 @@ export default class DolomiteClient {
             amountIn,
             inputMarketId,
             config,
-          ) => standardEstimator.getWrappedAmount(
+          ) => this.standardEstimator.getWrappedAmount(
             market.tokenAddress,
             liquidityTokenWrapper.wrapperAddress,
             amountIn,
             inputMarketId,
             config,
+            marketsMap,
           ),
-        }
+        };
       }
 
-      acc[market.marketId] = marketHelper;
+      acc[market.marketId.toFixed()] = marketHelper;
       return acc;
     }, {});
   }
@@ -164,7 +175,7 @@ export default class DolomiteClient {
                     decimals
                   }
                 }
-              }`
+              }`;
     } else {
       query = `query getMarketRiskInfos($blockNumber: Int, $skip: Int) {
                 marketRiskInfos(block: { number: $blockNumber } first: ${GraphqlPageable.MAX_PAGE_SIZE} skip: $skip) {
@@ -180,7 +191,7 @@ export default class DolomiteClient {
               }`;
     }
     const result: GraphqlMarketResult = await axios.post(
-      this.subgraphUrl,
+      this._subgraphUrl,
       {
         query,
         variables: {
@@ -204,6 +215,9 @@ export default class DolomiteClient {
       let isolationModeWrapperInfo: ApiWrapperInfo | undefined;
       if (isolationModeClient.isIsolationModeToken(market.token)) {
         const unwrapperAddress = isolationModeClient.getIsolationModeUnwrapperByMarketId(market.token);
+        const unwrapperForLiquidationAddress = isolationModeClient.getIsolationModeUnwrapperForLiquidationByMarketId(
+          market.token,
+        );
         const outputMarketId = isolationModeClient.getIsolationModeUnwrapperMarketIdByMarketId(market.token);
         const wrapperAddress = isolationModeClient.getIsolationModeWrapperByMarketId(market.token);
         const inputMarketId = isolationModeClient.getIsolationModeWrapperMarketIdByMarketId(market.token);
@@ -224,8 +238,17 @@ export default class DolomiteClient {
           return undefined;
         }
 
-        isolationModeUnwrapperInfo = { unwrapperAddress, outputMarketId, readableName: unwrapperReadableName };
-        isolationModeWrapperInfo = { wrapperAddress, inputMarketId, readableName: wrapperReadableName };
+        isolationModeUnwrapperInfo = {
+          unwrapperAddress,
+          unwrapperForLiquidationAddress,
+          outputMarketId,
+          readableName: unwrapperReadableName,
+        };
+        isolationModeWrapperInfo = {
+          wrapperAddress,
+          inputMarketId,
+          readableName: wrapperReadableName,
+        };
       }
 
       let liquidityTokenUnwrapperInfo: ApiUnwrapperInfo | undefined;
@@ -244,7 +267,7 @@ export default class DolomiteClient {
       }
 
       const apiMarket: ApiMarket = {
-        marketId: Number(market.token.marketId),
+        marketId: new BigNumber(market.token.marketId),
         symbol: market.token.symbol,
         name: market.token.name,
         tokenAddress: toChecksumOpt(market.token.id)!,

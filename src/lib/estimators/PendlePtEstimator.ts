@@ -1,12 +1,12 @@
 import { BaseRouter as PendleRouter, Router as PendleStaticRouter } from '@pendle/sdk-v2';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Address, Integer, Network, ZapConfig } from '../ApiTypes';
+import { Address, Integer, Network } from '../ApiTypes';
 import { getPendleMarketForIsolationModeToken, getSGlpAddress } from '../Constants';
 
 export class PendlePtEstimator {
   private readonly network: Network;
-  private readonly pendleRouter: PendleRouter;
+  private pendleRouter: PendleRouter;
 
   public constructor(
     network: Network,
@@ -20,16 +20,23 @@ export class PendlePtEstimator {
     });
   }
 
+  public set web3Provider(web3Provider: ethers.providers.Provider) {
+    this.pendleRouter = PendleStaticRouter.getRouter({
+      chainId: this.network as any,
+      provider: web3Provider,
+      signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
+    });
+  }
+
   public async getUnwrappedAmount(
     isolationModeToken: Address,
     amountInPt: Integer,
-    config: ZapConfig,
   ): Promise<{ tradeData: string; outputAmount: Integer }> {
     const [, , , tokenOutput] = await this.pendleRouter.swapExactPtForToken(
       getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       amountInPt.toFixed(),
       getSGlpAddress(this.network) as any,
-      config.slippageTolerance,
+      0,
       { method: 'extractParams' },
     );
 
@@ -52,22 +59,19 @@ export class PendlePtEstimator {
       ],
     );
 
-    // We don't want to double-count slippage, so remove it
-    const outputAmountWithSlippage = new BigNumber(tokenOutput.minTokenOut.toString());
-    const outputAmount = outputAmountWithSlippage.dividedToIntegerBy(1 - config.slippageTolerance).minus(1);
+    const outputAmount = new BigNumber(tokenOutput.minTokenOut.toString());
     return { tradeData, outputAmount };
   }
 
   public async getWrappedAmount(
     isolationModeToken: Address,
     inputAmount: Integer,
-    config: ZapConfig,
   ): Promise<{ tradeData: string; ptAmountOut: Integer }> {
     const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForPt(
       getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
-      getSGlpAddress(this.network) as any,
+      getSGlpAddress(this.network)?.toLowerCase() as any,
       inputAmount.toFixed(),
-      config.slippageTolerance,
+      0,
       { method: 'extractParams' },
     );
 
@@ -99,9 +103,7 @@ export class PendlePtEstimator {
       ],
     );
 
-    // We don't want to double-count slippage, so remove it
-    const ptAmountOutWithSlippage = new BigNumber(approxParams.guessOffchain.toString());
-    const ptAmountOut = ptAmountOutWithSlippage.dividedToIntegerBy(1 - config.slippageTolerance).minus(1);
+    const ptAmountOut = new BigNumber(approxParams.guessOffchain.toString());
     return { tradeData, ptAmountOut };
   }
 }

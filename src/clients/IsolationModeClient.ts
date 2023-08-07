@@ -1,4 +1,4 @@
-import { ApiToken, Network } from '../lib/ApiTypes';
+import { ApiToken, MarketId, Network } from '../lib/ApiTypes';
 import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP, LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP } from '../lib/Constants';
 import { GraphqlToken } from '../lib/graphql-types';
 
@@ -15,16 +15,20 @@ export default class IsolationModeClient {
     return token.name.includes('Dolomite Isolation:') || token.symbol === 'dfsGLP';
   }
 
-  public getIsolationModeUnwrapperMarketIdByMarketId(token: GraphqlToken): number | undefined {
+  public getIsolationModeUnwrapperMarketIdByMarketId(token: GraphqlToken): MarketId | undefined {
     return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapperMarketId;
   }
 
-  public getIsolationModeWrapperMarketIdByMarketId(token: GraphqlToken): number | undefined {
+  public getIsolationModeWrapperMarketIdByMarketId(token: GraphqlToken): MarketId | undefined {
     return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapperMarketId;
   }
 
   public getIsolationModeUnwrapperByMarketId(token: GraphqlToken): string | undefined {
     return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapper;
+  }
+
+  public getIsolationModeUnwrapperForLiquidationByMarketId(token: GraphqlToken): string | undefined {
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapperForLiquidation;
   }
 
   public getIsolationModeWrapperByMarketId(token: GraphqlToken): string | undefined {
@@ -45,11 +49,11 @@ export default class IsolationModeClient {
     return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId] !== undefined;
   }
 
-  public getLiquidityTokenUnwrapperMarketIdByToken(token: GraphqlToken): number {
+  public getLiquidityTokenUnwrapperMarketIdByToken(token: GraphqlToken): MarketId {
     return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].unwrapperMarketId;
   }
 
-  public getLiquidityTokenWrapperMarketIdByToken(token: GraphqlToken): number {
+  public getLiquidityTokenWrapperMarketIdByToken(token: GraphqlToken): MarketId {
     return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].wrapperMarketId;
   }
 

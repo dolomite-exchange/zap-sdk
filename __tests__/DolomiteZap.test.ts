@@ -6,9 +6,9 @@ import { BYTES_EMPTY } from '../src/lib/Constants';
 import {
   ARB_MARKET,
   GLP_MARKET,
+  J_USDC_MARKET,
   MAGIC_GLP_MARKET,
   PLV_GLP_MARKET,
-  PT_GLP_MARKET,
   setUnwrapperMarketIdByMarketId,
   USDC_MARKET,
   WETH_MARKET,
@@ -20,7 +20,7 @@ describe('DolomiteZap', () => {
   const network = Network.ARBITRUM_ONE;
   const subgraphUrl = process.env.SUBGRAPH_URL;
   if (!subgraphUrl) {
-    throw new Error('SUBGRAPH_URL env var not set')
+    throw new Error('SUBGRAPH_URL env var not set');
   }
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   const NO_CACHE = -1;
@@ -46,7 +46,7 @@ describe('DolomiteZap', () => {
   describe('#setMarketsToAdd', () => {
     it('should work normally', () => {
       const NEW_MARKET: ApiMarket = {
-        marketId: 9999,
+        marketId: new BigNumber(9999),
         symbol: 'NEW',
         name: 'New Market',
         decimals: 18,
@@ -61,20 +61,20 @@ describe('DolomiteZap', () => {
 
     it('should work when there is isolation mode data', () => {
       const NEW_MARKET: ApiMarket = {
-        marketId: 9999,
+        marketId: new BigNumber(9999),
         symbol: 'NEW',
         name: 'New Market',
         decimals: 18,
         tokenAddress: '0x1234567812345678123456781234567812345678',
         isolationModeWrapperInfo: {
           wrapperAddress: '0x1234567812345678123456781234567812345678',
-          inputMarketId: 2,
+          inputMarketId: new BigNumber(2),
           readableName: 'NEW Isolation Mode Wrapper',
         },
         liquidityTokenWrapperInfo: undefined,
         isolationModeUnwrapperInfo: {
           unwrapperAddress: '0x1234567812345678123456781234567812345678',
-          outputMarketId: 2,
+          outputMarketId: new BigNumber(2),
           readableName: 'NEW Isolation Mode Unwrapper',
         },
         liquidityTokenUnwrapperInfo: undefined,
@@ -84,7 +84,7 @@ describe('DolomiteZap', () => {
 
     it('should fail when isolation mode data is missing', () => {
       const NEW_MARKET: ApiMarket = {
-        marketId: 9999,
+        marketId: new BigNumber(9999),
         symbol: 'NEW',
         name: 'Dolomite Isolation: New Market',
         decimals: 18,
@@ -100,26 +100,26 @@ describe('DolomiteZap', () => {
 
   describe('#getIsolationModeConverterByMarketId', () => {
     it('should return valid value for valid market ID', () => {
-      expect(zap.getIsolationModeConverterByMarketId(6)).toBeDefined();
-      expect(zap.getIsolationModeConverterByMarketId(9)).toBeDefined();
-      expect(zap.getIsolationModeConverterByMarketId(10)).toBeDefined();
-      expect(zap.getIsolationModeConverterByMarketId(11)).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(6))).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(9))).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(10))).toBeDefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(11))).toBeDefined();
     });
 
     it('should return valid value for valid market ID', () => {
-      expect(zap.getIsolationModeConverterByMarketId(0)).toBeUndefined();
-      expect(zap.getIsolationModeConverterByMarketId(2)).toBeUndefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(0))).toBeUndefined();
+      expect(zap.getIsolationModeConverterByMarketId(new BigNumber(2))).toBeUndefined();
     });
   });
 
   describe('#getLiquidityTokenConverterByMarketId', () => {
     it('should return valid value for valid market ID', () => {
-      expect(zap.getLiquidityTokenConverterByMarketId(8)).toBeDefined();
+      expect(zap.getLiquidityTokenConverterByMarketId(new BigNumber(8))).toBeDefined();
     });
 
     it('should return valid value for valid market ID', () => {
-      expect(zap.getLiquidityTokenConverterByMarketId(0)).toBeUndefined();
-      expect(zap.getLiquidityTokenConverterByMarketId(2)).toBeUndefined();
+      expect(zap.getLiquidityTokenConverterByMarketId(new BigNumber(0))).toBeUndefined();
+      expect(zap.getLiquidityTokenConverterByMarketId(new BigNumber(2))).toBeUndefined();
     });
   });
 
@@ -150,7 +150,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(1);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -263,7 +263,7 @@ describe('DolomiteZap', () => {
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -300,7 +300,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(2);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
@@ -444,7 +444,7 @@ describe('DolomiteZap', () => {
 
           expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
           expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
           expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
           expect(outputParam.traderParams[2].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -501,7 +501,7 @@ describe('DolomiteZap', () => {
 
           expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
           expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
           expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
           expect(outputParam.traderParams[2].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -516,6 +516,68 @@ describe('DolomiteZap', () => {
           expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
         },
       );
+
+      it('should return different unwrapper for liquidation for assets like jUSDC', async () => {
+        const amountIn = new BigNumber('1000000000000000000'); // 100 jUSDC
+        const minAmountOut = new BigNumber('1000000'); // 1 USDC
+        const outputParamsForLiquidation = await zap.getSwapExactTokensForTokensParams(
+          J_USDC_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          { isLiquidation: true },
+        );
+
+        expect(outputParamsForLiquidation.length).toBe(1);
+
+        const outputParamForLiquidation = outputParamsForLiquidation[0];
+        expect(outputParamForLiquidation.marketIdsPath.length).toEqual(2);
+        expect(outputParamForLiquidation.marketIdsPath[0]).toEqual(J_USDC_MARKET.marketId);
+        expect(outputParamForLiquidation.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
+
+        expect(outputParamForLiquidation.traderParams.length).toEqual(1);
+        expect(outputParamForLiquidation.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+        expect(outputParamForLiquidation.traderParams[0].makerAccountIndex).toEqual(0);
+        expect(outputParamForLiquidation.traderParams[0].trader)
+          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV2ForLiquidation[network].address);
+        expect(outputParamForLiquidation.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
+
+        expect(outputParamForLiquidation.makerAccounts.length).toEqual(0);
+        expect(outputParamForLiquidation.expectedAmountOut
+          .gt(outputParamForLiquidation.amountWeisPath[outputParamForLiquidation.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParamForLiquidation.originalAmountOutMin).toEqual(minAmountOut);
+
+        const outputParamsForZap = await zap.getSwapExactTokensForTokensParams(
+          J_USDC_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          { isLiquidation: false },
+        );
+
+        expect(outputParamsForZap.length).toBe(1);
+
+        const outputParamForZap = outputParamsForZap[0];
+        expect(outputParamForZap.marketIdsPath.length).toEqual(2);
+        expect(outputParamForZap.marketIdsPath[0]).toEqual(J_USDC_MARKET.marketId);
+        expect(outputParamForZap.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
+
+        expect(outputParamForZap.traderParams.length).toEqual(1);
+        expect(outputParamForZap.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+        expect(outputParamForZap.traderParams[0].makerAccountIndex).toEqual(0);
+        expect(outputParamForZap.traderParams[0].trader)
+          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV2[network].address);
+        expect(outputParamForZap.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
+
+        expect(outputParamForZap.makerAccounts.length).toEqual(0);
+        expect(outputParamForZap.expectedAmountOut
+          .gt(outputParamForZap.amountWeisPath[outputParamForZap.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParamForZap.originalAmountOutMin).toEqual(minAmountOut);
+      });
     });
 
     describe('Liquidity Tokens', () => {
@@ -623,7 +685,7 @@ describe('DolomiteZap', () => {
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -660,7 +722,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(2);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTrader[network].address);
+        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -678,8 +740,8 @@ describe('DolomiteZap', () => {
 
     describe('Failure cases', () => {
       it('should fail when tokenIn is not a valid Dolomite token', async () => {
-        const tokenIn = JSON.parse(JSON.stringify(WETH_MARKET));
-        tokenIn.marketId = -1;
+        const tokenIn: ApiMarket = { ...WETH_MARKET };
+        tokenIn.marketId = new BigNumber(-1);
         const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
         const minAmountOut = new BigNumber('100000000'); // 100 USDC
         await expect(
@@ -694,8 +756,8 @@ describe('DolomiteZap', () => {
       });
 
       it('should fail when tokenOut is not a valid Dolomite token', async () => {
-        const tokenOut = JSON.parse(JSON.stringify(WETH_MARKET));
-        tokenOut.marketId = -1;
+        const tokenOut: ApiMarket = { ...WETH_MARKET };
+        tokenOut.marketId = new BigNumber(-1);
         const amountIn = new BigNumber('10000000000'); // 10,000 USDC
         const minAmountOut = new BigNumber('100000000000000000'); // 0.001 ETH
         await expect(
@@ -719,7 +781,7 @@ describe('DolomiteZap', () => {
             minAmountOut,
             txOrigin,
           ),
-        ).rejects.toThrow('Invalid amountIn. Must be greater than 0')
+        ).rejects.toThrow('Invalid amountIn. Must be greater than 0');
       });
 
       it('should fail when amountOutMin is zero', async () => {
@@ -762,79 +824,7 @@ describe('DolomiteZap', () => {
           USDC_MARKET,
           minAmountOut,
           '0x123',
-        )).rejects.toThrow('Invalid address for txOrigin')
-      });
-    });
-
-    describe('Pendle tokens', () => {
-      it('should work when unwrapping a PT-token', async () => {
-        const amountIn = new BigNumber('100000000000000000000'); // 100 PT
-        const minAmountOut = new BigNumber('50000000'); // 50 USDC
-        const outputParams = await zap.getSwapExactTokensForTokensParams(
-          PT_GLP_MARKET,
-          amountIn,
-          USDC_MARKET,
-          minAmountOut,
-          txOrigin,
-        );
-
-        expect(outputParams.length).toBe(1);
-
-        const outputParam = outputParams[0];
-        expect(outputParam.marketIdsPath.length).toEqual(2);
-        expect(outputParam.marketIdsPath[0]).toEqual(PT_GLP_MARKET.marketId);
-        expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
-
-        expect(outputParam.amountWeisPath.length).toEqual(2);
-        expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
-        expect(outputParam.amountWeisPath[1].isGreaterThan(minAmountOut)).toBeTruthy();
-
-        expect(outputParam.traderParams.length).toEqual(1);
-        expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
-        expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV2[network].address);
-        expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
-
-        expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
-          .toBeTruthy();
-        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
-      });
-
-      it('should work when wrapping a PT-token', async () => {
-        const amountIn = new BigNumber('100000000'); // 100 USDC
-        const minAmountOut = new BigNumber('50000000000000000000'); // 50 PT
-        const outputParams = await zap.getSwapExactTokensForTokensParams(
-          USDC_MARKET,
-          amountIn,
-          PT_GLP_MARKET,
-          minAmountOut,
-          txOrigin,
-        );
-
-        expect(outputParams.length).toBe(1);
-
-        const outputParam = outputParams[0];
-        expect(outputParam.marketIdsPath.length).toEqual(2);
-        expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
-        expect(outputParam.marketIdsPath[1]).toEqual(PT_GLP_MARKET.marketId);
-
-        expect(outputParam.amountWeisPath.length).toEqual(2);
-        expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
-        expect(outputParam.amountWeisPath[1].isGreaterThan(minAmountOut)).toBeTruthy();
-
-        expect(outputParam.traderParams.length).toEqual(1);
-        expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
-        expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtGLP2024IsolationModeWrapperTraderV2[network].address);
-        expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
-
-        expect(outputParam.makerAccounts.length).toEqual(0);
-        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
-          .toBeTruthy();
-        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
+        )).rejects.toThrow('Invalid address for txOrigin');
       });
     });
   });

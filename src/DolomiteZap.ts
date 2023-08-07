@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import AggregatorClient from './clients/AggregatorClient';
 import DolomiteClient from './clients/DolomiteClient';
@@ -31,16 +32,16 @@ const ONE_HOUR = 60 * 60;
 
 const THIRTY_BASIS_POINTS = 0.003;
 
+const marketsKey = 'MARKETS';
+const marketHelpersKey = 'MARKET_HELPERS';
+
 export class DolomiteZap {
   public readonly network: Network;
-  public readonly subgraphUrl: string;
-  public readonly web3Provider: ethers.providers.Provider;
-
-  private _defaultSlippageTollerance: number;
+  private readonly _defaultIsLiquidation: boolean;
   private client: DolomiteClient;
   private paraswapAggregator: ParaswapAggregator;
-  private marketsCache: LocalCache<Record<MarketId, ApiMarket>>;
-  private marketHelpersCache: LocalCache<Record<MarketId, ApiMarketHelper>>;
+  private marketsCache: LocalCache<Record<string, ApiMarket>>;
+  private marketHelpersCache: LocalCache<Record<string, ApiMarketHelper>>;
   private validAggregators: AggregatorClient[];
 
   /**
@@ -48,6 +49,7 @@ export class DolomiteZap {
    * @param subgraphUrl               The URL of the subgraph to use for fetching market data.
    * @param web3Provider              The web3 provider to use for fetching on-chain data.
    * @param cacheSeconds              The number of seconds to cache market data for. Defaults to 1 hour (3600s).
+   * @param defaultIsLiquidation      True if these zaps are for processing liquidations or false for ordinary zaps.
    * @param defaultSlippageTolerance  The default slippage tolerance to use when estimating output. Defaults to 0.3%
    *                                  (0.003).
    * @param defaultBlockTag           The default block tag to use when fetching on-chain data. Defaults to 'latest'.
@@ -59,21 +61,58 @@ export class DolomiteZap {
     subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
     cacheSeconds: number = ONE_HOUR,
+    defaultIsLiquidation: boolean = false,
     defaultSlippageTolerance: number = THIRTY_BASIS_POINTS,
     defaultBlockTag: BlockTag = 'latest',
     partnerAddress: Address | undefined = undefined,
   ) {
     this.network = network;
-    this.subgraphUrl = subgraphUrl;
-    this.web3Provider = web3Provider;
-    this._defaultSlippageTollerance = defaultSlippageTolerance;
+    this._subgraphUrl = subgraphUrl;
+    this._web3Provider = web3Provider;
+    this._defaultIsLiquidation = defaultIsLiquidation;
+    this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
 
-    this.client = new DolomiteClient(subgraphUrl, network, web3Provider);
+    this.client = new DolomiteClient(network, subgraphUrl, web3Provider);
     this.paraswapAggregator = new ParaswapAggregator(network, partnerAddress);
-    this.marketsCache = new LocalCache<Record<MarketId, ApiMarket>>(cacheSeconds);
-    this.marketHelpersCache = new LocalCache<Record<MarketId, ApiMarketHelper>>(cacheSeconds);
+    this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
+    this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
     this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
+  }
+
+  private _subgraphUrl: string;
+
+  public get subgraphUrl(): string {
+    return this._subgraphUrl;
+  }
+
+  public set subgraphUrl(newSubgraphUrl: string) {
+    this._subgraphUrl = newSubgraphUrl;
+    this.client.subgraphUrl = newSubgraphUrl;
+  }
+
+  private _web3Provider: ethers.providers.Provider;
+
+  public get web3Provider(): ethers.providers.Provider {
+    return this._web3Provider;
+  }
+
+  public async setWeb3Provider(newWeb3Provider: ethers.providers.Provider) {
+    const oldNetwork = await this._web3Provider.getNetwork();
+    const newNetwork = await newWeb3Provider.getNetwork();
+    if (oldNetwork.chainId !== newNetwork.chainId) {
+      return Promise.reject(new Error('Networks must match'));
+    }
+
+    this._web3Provider = newWeb3Provider;
+    this.client.web3Provider = newWeb3Provider;
+    return Promise.resolve();
+  }
+
+  private _defaultSlippageTolerance: number;
+
+  public get defaultSlippageTolerance(): number {
+    return this._defaultSlippageTolerance;
   }
 
   private _defaultBlockTag: BlockTag;
@@ -82,22 +121,12 @@ export class DolomiteZap {
     return this._defaultBlockTag;
   }
 
-  public get defaultSlippageTolerance(): number {
-    return this._defaultSlippageTollerance;
-  }
-
-  private static removeSlippageFromAmount(
-    amountWithSlippage: Integer,
-    traderParams: GenericTraderParam[],
-    config: ZapConfig,
-  ): Integer {
-    return traderParams.reduce(memo => {
-      return memo.dividedToIntegerBy(1 - config.slippageTolerance)
-    }, amountWithSlippage);
+  public get defaultIsLiquidation(): boolean {
+    return this._defaultIsLiquidation;
   }
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {
-    this._defaultSlippageTollerance = slippageTolerance;
+    this._defaultSlippageTolerance = slippageTolerance;
   }
 
   public setDefaultBlockTag(blockTag: BlockTag): void {
@@ -109,18 +138,18 @@ export class DolomiteZap {
   }
 
   public getIsolationModeConverterByMarketId(marketId: MarketId): ApiMarketConverter | undefined {
-    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][marketId];
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][marketId.toFixed()];
   }
 
   public getLiquidityTokenConverterByMarketId(marketId: MarketId): ApiMarketConverter | undefined {
-    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][marketId];
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][marketId.toFixed()];
   }
 
   /**
    *
-   * @param tokenIn
-   * @param amountIn
-   * @param tokenOut
+   * @param tokenIn The input token for the zap
+   * @param amountIn The input amount for the zap
+   * @param tokenOut The output token for the zap
    * @param amountOutMin The minimum amount out required for the swap to be considered valid
    * @param txOrigin The address that will execute the transaction
    * @param config The additional config for zapping
@@ -136,16 +165,17 @@ export class DolomiteZap {
     config?: Partial<ZapConfig>,
   ): Promise<ZapOutputParam[]> {
     const actualConfig: ZapConfig = {
+      isLiquidation: config?.isLiquidation ?? this.defaultIsLiquidation,
       slippageTolerance: config?.slippageTolerance ?? this.defaultSlippageTolerance,
       blockTag: config?.blockTag ?? this._defaultBlockTag,
       filterOutZapsWithInsufficientOutput: config?.filterOutZapsWithInsufficientOutput ?? true,
     };
-    const marketsMap = await this.getMarketsMap();
+    const marketsMap = await this.getMarketIdToMarketMap();
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
-    const inputMarket = marketsMap[tokenIn.marketId];
-    const inputHelper = marketHelpersMap[tokenIn.marketId];
-    const outputMarket = marketsMap[tokenOut.marketId];
-    const outputHelper = marketHelpersMap[tokenOut.marketId];
+    const inputMarket = marketsMap[tokenIn.marketId.toFixed()];
+    const inputHelper = marketHelpersMap[tokenIn.marketId.toFixed()];
+    const outputMarket = marketsMap[tokenOut.marketId.toFixed()];
+    const outputHelper = marketHelpersMap[tokenOut.marketId.toFixed()];
 
     if (!inputMarket) {
       return Promise.reject(new Error(`Invalid tokenIn: ${tokenIn.symbol} / ${tokenIn.marketId}`));
@@ -161,7 +191,7 @@ export class DolomiteZap {
       return Promise.reject(new Error('Invalid slippageTolerance. Must be between 0 and 0.1 (10%)'));
     }
 
-    const marketIdsPath: number[] = [inputMarket.marketId];
+    const marketIdsPath: MarketId[] = [inputMarket.marketId];
     const amountsPaths = new Array<Integer[]>(this.validAggregators.length).fill([amountIn]);
     const traderParamsArrays = new Array<GenericTraderParam[]>(this.validAggregators.length).fill([]);
     let effectiveInputMarketId = inputMarket.marketId;
@@ -175,7 +205,7 @@ export class DolomiteZap {
       marketIdsPath.push(effectiveInputMarketId);
 
       const { amountOut, tradeData } = await unwrapperHelper.estimateOutputFunction(
-        amountIn,
+        amountsPaths[0][0],
         unwrapperInfo.outputMarketId,
         actualConfig,
       );
@@ -187,7 +217,9 @@ export class DolomiteZap {
             ? GenericTraderType.IsolationModeUnwrapper
             : GenericTraderType.ExternalLiquidity,
           makerAccountIndex: 0,
-          trader: unwrapperInfo.unwrapperAddress,
+          trader: actualConfig.isLiquidation
+            ? (unwrapperInfo.unwrapperForLiquidationAddress ?? unwrapperInfo.unwrapperAddress)
+            : unwrapperInfo.unwrapperAddress,
           tradeData,
           readableName: unwrapperInfo.readableName,
         });
@@ -200,17 +232,17 @@ export class DolomiteZap {
     if (wrapperInfo) {
       // We can't get the amount yet until we know if we need to use an aggregator in the middle
       effectiveOutputMarketId = wrapperInfo.inputMarketId;
-      if (effectiveInputMarketId !== effectiveOutputMarketId) {
+      if (!effectiveInputMarketId.eq(effectiveOutputMarketId)) {
         marketIdsPath.push(wrapperInfo.inputMarketId);
       }
     }
 
-    if (effectiveInputMarketId !== effectiveOutputMarketId) {
-      if (!marketIdsPath.includes(effectiveOutputMarketId)) {
+    if (!effectiveInputMarketId.eq(effectiveOutputMarketId)) {
+      if (!marketIdsPath.find(marketId => marketId.eq(effectiveOutputMarketId))) {
         marketIdsPath.push(effectiveOutputMarketId);
       }
-      const effectiveInputMarket = marketsMap[effectiveInputMarketId];
-      const effectiveOutputMarket = marketsMap[effectiveOutputMarketId];
+      const effectiveInputMarket = marketsMap[effectiveInputMarketId.toFixed()];
+      const effectiveOutputMarket = marketsMap[effectiveOutputMarketId.toFixed()];
       const aggregatorOutputOrUndefinedList = await Promise.all(
         this.validAggregators.map((aggregator, i) => {
           return aggregator.getSwapExactTokensForTokensData(
@@ -220,13 +252,13 @@ export class DolomiteZap {
             INTEGERS.ONE,
             txOrigin,
             actualConfig,
-          )
+          );
         }),
       );
 
       const aggregatorOutputs = aggregatorOutputOrUndefinedList.filter(trader => !!trader) as AggregatorOutput[];
       if (aggregatorOutputs.length !== this.validAggregators.length) {
-        throw new Error('Invalid aggregator outputs length')
+        throw new Error('Invalid aggregator outputs length');
       }
 
       amountsPaths.forEach((amountsPath, i) => amountsPath.push(aggregatorOutputs[i].expectedAmountOut));
@@ -263,7 +295,7 @@ export class DolomiteZap {
           return {
             amountOut: outputEstimate.amountOut,
             traderParam,
-          }
+          };
         }),
       );
 
@@ -273,21 +305,25 @@ export class DolomiteZap {
       });
     }
 
-    if (!marketIdsPath.includes(outputMarket.marketId)) {
+    if (!marketIdsPath.find(marketId => marketId.eq(outputMarket.marketId))) {
       marketIdsPath.push(outputMarket.marketId);
     }
 
+    const tokensPath = marketIdsPath.map<ApiToken>(marketId => ({
+      marketId,
+      symbol: marketsMap[marketId.toFixed()].symbol,
+      name: marketsMap[marketId.toFixed()].name,
+      tokenAddress: marketsMap[marketId.toFixed()].tokenAddress,
+      decimals: marketsMap[marketId.toFixed()].decimals,
+    }));
     const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
-      const expectedAmountOut = DolomiteZap.removeSlippageFromAmount(
-        amountsPaths[i][amountsPaths[i].length - 1],
-        traderParamsArrays[i],
-        actualConfig,
-      );
+      const expectedAmountOut = amountsPaths[i][amountsPaths[i].length - 1]
       amountsPaths[i][amountsPaths[i].length - 1] = expectedAmountOut
-        .times(1 - actualConfig.slippageTolerance)
-        .integerValue();
+        .multipliedBy(1 - actualConfig.slippageTolerance)
+        .integerValue(BigNumber.ROUND_DOWN);
       return {
         marketIdsPath,
+        tokensPath,
         expectedAmountOut,
         amountWeisPath: amountsPaths[i],
         traderParams: traderParamsArrays[i],
@@ -298,14 +334,13 @@ export class DolomiteZap {
 
     const zaps = removeDuplicates(result, zapOutputParamToJson);
     if (actualConfig.filterOutZapsWithInsufficientOutput) {
-      return zaps.filter(zap => zap.expectedAmountOut.gte(amountOutMin))
+      return zaps.filter(zap => zap.expectedAmountOut.gte(amountOutMin));
     } else {
       return zaps;
     }
   }
 
-  private async getMarketsMap(): Promise<Record<MarketId, ApiMarket>> {
-    const marketsKey = 'MARKETS';
+  private async getMarketIdToMarketMap(): Promise<Record<string, ApiMarket>> {
     const cachedMarkets = this.marketsCache.get(marketsKey);
     if (cachedMarkets) {
       return cachedMarkets;
@@ -317,9 +352,8 @@ export class DolomiteZap {
   }
 
   private async getMarketHelpersMap(
-    marketsMap: Record<MarketId, ApiMarket>,
-  ): Promise<Record<MarketId, ApiMarketHelper>> {
-    const marketHelpersKey = 'MARKET_HELPERS';
+    marketsMap: Record<string, ApiMarket>,
+  ): Promise<Record<string, ApiMarketHelper>> {
     const cachedMarkets = this.marketHelpersCache.get(marketHelpersKey);
     if (cachedMarkets) {
       return cachedMarkets;

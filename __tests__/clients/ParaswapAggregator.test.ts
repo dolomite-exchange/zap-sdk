@@ -12,6 +12,7 @@ describe('ParaswapAggregator', () => {
     slippageTolerance: 0.003,
     filterOutZapsWithInsufficientOutput: false,
     blockTag: 'latest',
+    isLiquidation: false,
   }
 
   describe('#getSwapExactTokensForTokensData', () => {
@@ -35,7 +36,7 @@ describe('ParaswapAggregator', () => {
       const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
       expect(tradeData).toBeDefined();
       expect(tradeData.length).toBeGreaterThanOrEqual(100);
-      expect(traderAddress).toEqual(Deployments.ParaswapAggregatorTrader[Network.ARBITRUM_ONE].address);
+      expect(traderAddress).toEqual(Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
 
@@ -59,7 +60,7 @@ describe('ParaswapAggregator', () => {
       const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
       expect(tradeData).toBeDefined();
       expect(tradeData.length).toBeGreaterThanOrEqual(100);
-      expect(traderAddress).toEqual(Deployments.ParaswapAggregatorTrader[Network.ARBITRUM_ONE].address);
+      expect(traderAddress).toEqual(Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
   });

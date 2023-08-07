@@ -1,5 +1,6 @@
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
+import { ethers } from 'ethers';
 import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
 import { PARASWAP_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
@@ -24,7 +25,8 @@ export default class ParaswapAggregator extends AggregatorClient {
     outputMarket: ApiMarket | ApiToken,
     minOutputAmountWei: Integer,
     txOrigin: Address,
-    config: ZapConfig,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _unused: ZapConfig,
   ): Promise<AggregatorOutput | undefined> {
     const traderAddress = PARASWAP_TRADER_ADDRESS_MAP[this.network];
     if (!traderAddress) {
@@ -38,7 +40,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       destToken: outputMarket.tokenAddress,
       destDecimals: outputMarket.decimals.toString(),
       amount: inputAmountWei.toFixed(),
-      includeContractMethods: 'simpleSwap,multiSwap,megaSwap',
+      includeContractMethods: 'megaSwap,multiSwap,simpleSwap',
     }).toString();
     const priceRouteResponse = await axios.get(`${API_URL}/prices?${pricesQueryParams}`)
       .then(response => response.data)
@@ -88,11 +90,15 @@ export default class ParaswapAggregator extends AggregatorClient {
       return undefined;
     }
 
-    const expectedAmountOutSansSlippage = new BigNumber(priceRouteResponse?.priceRoute?.destAmount);
-    const expectedAmountOut = expectedAmountOutSansSlippage.times(1 - config.slippageTolerance).integerValue();
+    const expectedAmountOut = new BigNumber(priceRouteResponse?.priceRoute?.destAmount);
+    const calldata = result.data.toString();
+    const tradeData = ethers.utils.defaultAbiCoder.encode(
+      ['bytes4', 'bytes'],
+      [`0x${calldata.slice(2, 10)}`, `0x${calldata.slice(10)}`],
+    );
     return {
       traderAddress,
-      tradeData: result.data,
+      tradeData,
       expectedAmountOut,
       readableName: 'Paraswap',
     };
