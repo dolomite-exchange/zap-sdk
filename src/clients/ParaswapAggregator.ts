@@ -73,6 +73,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       userAddress: traderAddress,
       receiver: traderAddress,
       partnerAddress: this.partnerAddress,
+      partner: this.partnerAddress ? 'dolomite' : undefined,
       positiveSlippageToUser: !this.partnerAddress, // if there's no partner address, positive slippage goes to the user
     })
       .then(response => response.data)
