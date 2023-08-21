@@ -54,6 +54,11 @@ const PENDLE_PT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
+const PENDLE_YT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(16),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
 const GLP_ISOLATION_MODE_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: Deployments.GLPIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
   [Network.ARBITRUM_GOERLI]: undefined,
@@ -81,7 +86,7 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
     [JONES_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.JonesUSDCIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperForLiquidation:
-        Deployments.JonesUSDCIsolationModeUnwrapperTraderV2ForLiquidation[Network.ARBITRUM_ONE].address,
+      Deployments.JonesUSDCIsolationModeUnwrapperTraderV2ForLiquidation[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.JonesUSDCIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
@@ -95,6 +100,14 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       unwrapperReadableName: 'PT-GLP Isolation Mode Unwrapper',
       wrapperReadableName: 'PT-GLP Isolation Mode Wrapper',
+    },
+    [PENDLE_YT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.PendleYtGLP2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendleYtGLP2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperReadableName: 'YT-GLP Isolation Mode Unwrapper',
+      wrapperReadableName: 'YT-GLP Isolation Mode Wrapper',
     },
   },
   [Network.ARBITRUM_GOERLI]: {
@@ -128,10 +141,11 @@ export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> =
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
+const PT_GLP_MARKET_ARBITRUM = '0x7D49E5Adc0EAAD9C027857767638613253eF125f';
 const PENDLE_MARKET_MAP: Record<Network, Record<Address, Address | undefined>> = {
   [Network.ARBITRUM_ONE]: {
-    [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
-      '0x7D49E5Adc0EAAD9C027857767638613253eF125f',
+    [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: PT_GLP_MARKET_ARBITRUM,
+    [Deployments.PendleYtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: PT_GLP_MARKET_ARBITRUM,
   },
   [Network.ARBITRUM_GOERLI]: {},
 };
@@ -142,7 +156,13 @@ const S_GLP_MAP: Record<Network, Address | undefined> = {
 };
 
 export function isPtGlpToken(network: Network, tokenAddress: Address): boolean {
-  return !!PENDLE_MARKET_MAP[network][tokenAddress];
+  const ptGlpTokenAddress = Deployments.PendlePtGLP2024IsolationModeVaultFactory[network]?.address;
+  return ptGlpTokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
+}
+
+export function isYtGlpToken(network: Network, tokenAddress: Address): boolean {
+  const ytGlpTokenAddress = Deployments.PendleYtGLP2024IsolationModeVaultFactory[network]?.address;
+  return ytGlpTokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
 }
 
 export function getGlpIsolationModeAddress(network: Network): Address | undefined {

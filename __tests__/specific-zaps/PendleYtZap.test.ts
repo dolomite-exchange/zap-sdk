@@ -2,7 +2,7 @@ import Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/depl
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../src';
-import { PT_GLP_MARKET, USDC_MARKET } from '../helpers/TestConstants';
+import { YT_GLP_MARKET, USDC_MARKET } from '../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
@@ -15,14 +15,15 @@ describe('DolomiteZap', () => {
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   const NO_CACHE = -1;
   const zap = new DolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
+  zap.setMarketsToAdd([YT_GLP_MARKET]);
 
   describe('#getSwapExactTokensForTokensData', () => {
-    describe('Pendle tokens', () => {
-      it('should work when unwrapping a PT-token', async () => {
-        const amountIn = new BigNumber('100000000000000000000'); // 100 PT
-        const minAmountOut = new BigNumber('50000000'); // 50 USDC
+    describe('Pendle YT-GLP', () => {
+      it('should work when unwrapping YT-GLP', async () => {
+        const amountIn = new BigNumber('100000000000000000000'); // 100 YT
+        const minAmountOut = new BigNumber('5000000'); // 5 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
-          PT_GLP_MARKET,
+          YT_GLP_MARKET,
           amountIn,
           USDC_MARKET,
           minAmountOut,
@@ -33,7 +34,7 @@ describe('DolomiteZap', () => {
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(2);
-        expect(outputParam.marketIdsPath[0]).toEqual(PT_GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[0]).toEqual(YT_GLP_MARKET.marketId);
         expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(2);
@@ -44,7 +45,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.PendleYtGLP2024IsolationModeUnwrapperTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -53,13 +54,13 @@ describe('DolomiteZap', () => {
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
-      it('should work when wrapping a PT-token', async () => {
+      it('should work when wrapping YT-GLP', async () => {
         const amountIn = new BigNumber('100000000'); // 100 USDC
-        const minAmountOut = new BigNumber('50000000000000000000'); // 50 PT
+        const minAmountOut = new BigNumber('1000000000000000000000'); // 1,000 YT
         const outputParams = await zap.getSwapExactTokensForTokensParams(
           USDC_MARKET,
           amountIn,
-          PT_GLP_MARKET,
+          YT_GLP_MARKET,
           minAmountOut,
           txOrigin,
         );
@@ -69,7 +70,7 @@ describe('DolomiteZap', () => {
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(2);
         expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
-        expect(outputParam.marketIdsPath[1]).toEqual(PT_GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[1]).toEqual(YT_GLP_MARKET.marketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(2);
         expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
@@ -79,7 +80,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtGLP2024IsolationModeWrapperTraderV2[network].address);
+          .toEqual(Deployments.PendleYtGLP2024IsolationModeWrapperTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);

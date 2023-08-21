@@ -17,8 +17,8 @@ describe('DolomiteZap', () => {
   const zap = new DolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
 
   describe('#getSwapExactTokensForTokensData', () => {
-    describe('Pendle tokens', () => {
-      it('should work when unwrapping a PT-token', async () => {
+    describe('Pendle PT-GLP', () => {
+      it('should work when unwrapping PT-GLP', async () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 PT
         const minAmountOut = new BigNumber('50000000'); // 50 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
@@ -53,7 +53,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
-      it('should work when wrapping a PT-token', async () => {
+      it('should work when wrapping PT-GLP', async () => {
         const amountIn = new BigNumber('100000000'); // 100 USDC
         const minAmountOut = new BigNumber('50000000000000000000'); // 50 PT
         const outputParams = await zap.getSwapExactTokensForTokensParams(

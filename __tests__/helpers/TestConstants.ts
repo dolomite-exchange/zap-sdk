@@ -158,6 +158,27 @@ export const PT_GLP_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
+const YT_GLP_MARKET_ID = new BigNumber(16);
+export const YT_GLP_MARKET: ApiMarket = {
+  marketId: YT_GLP_MARKET_ID,
+  symbol: 'dYT-GLP-28MAR2024',
+  name: 'Dolomite Isolation: YT GLP 28MAR2024',
+  tokenAddress: '0x851729Df6C39BDB6E92721f2ADf750023D967eE8',
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
+
 export function setUnwrapperMarketIdByMarketId(
   marketId: MarketId,
   outputMarketId: MarketId,

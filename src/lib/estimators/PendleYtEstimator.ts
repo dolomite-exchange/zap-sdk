@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { Address, Integer, Network } from '../ApiTypes';
 import { getPendleMarketForIsolationModeToken, getSGlpAddress } from '../Constants';
 
-export class PendlePtEstimator {
+export class PendleYtEstimator {
   private readonly network: Network;
   private pendleRouter: PendleRouter;
 
@@ -30,11 +30,11 @@ export class PendlePtEstimator {
 
   public async getUnwrappedAmount(
     isolationModeToken: Address,
-    amountInPt: Integer,
+    amountInYt: Integer,
   ): Promise<{ tradeData: string; outputAmount: Integer }> {
-    const [, , , tokenOutput] = await this.pendleRouter.swapExactPtForToken(
+    const [, , , tokenOutput] = await this.pendleRouter.swapExactYtForToken(
       getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
-      amountInPt.toFixed(),
+      amountInYt.toFixed(),
       getSGlpAddress(this.network) as any,
       0,
       { method: 'extractParams' },
@@ -66,8 +66,8 @@ export class PendlePtEstimator {
   public async getWrappedAmount(
     isolationModeToken: Address,
     inputAmount: Integer,
-  ): Promise<{ tradeData: string; ptAmountOut: Integer }> {
-    const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForPt(
+  ): Promise<{ tradeData: string; ytAmountOut: Integer }> {
+    const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForYt(
       getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       getSGlpAddress(this.network)?.toLowerCase() as any,
       inputAmount.toFixed(),
@@ -103,7 +103,7 @@ export class PendlePtEstimator {
       ],
     );
 
-    const ptAmountOut = new BigNumber(approxParams.guessOffchain.toString());
-    return { tradeData, ptAmountOut };
+    const ytAmountOut = new BigNumber(approxParams.guessOffchain.toString());
+    return { tradeData, ytAmountOut };
   }
 }
