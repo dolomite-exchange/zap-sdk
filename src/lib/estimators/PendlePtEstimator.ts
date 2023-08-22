@@ -45,7 +45,7 @@ export class PendlePtEstimator {
       [
         [
           tokenOutput.tokenOut,
-          tokenOutput.minTokenOut,
+          /* tokenOutput.minTokenOut = */ '1',
           tokenOutput.tokenRedeemSy,
           tokenOutput.bulk,
           tokenOutput.pendleSwap,
