@@ -57,8 +57,8 @@ export class StandardEstimator {
       );
       return { tradeData: result.tradeData, amountOut: estimateOutputResult.amountOut };
     } else if (isYtGlpToken(this.network, isolationModeTokenAddress)) {
-      const pendlePtEstimator = new PendleYtEstimator(this.network, this._web3Provider);
-      const result = await pendlePtEstimator.getUnwrappedAmount(
+      const pendleYtEstimator = new PendleYtEstimator(this.network, this._web3Provider);
+      const result = await pendleYtEstimator.getUnwrappedAmount(
         isolationModeTokenAddress,
         amountIn,
       );
