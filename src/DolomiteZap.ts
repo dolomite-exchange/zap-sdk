@@ -326,11 +326,15 @@ export class DolomiteZap {
       tokenAddress: marketsMap[marketId.toFixed()].tokenAddress,
       decimals: marketsMap[marketId.toFixed()].decimals,
     }));
+
+    // Unify the min amount out to be the same for UX's sake
+    const expectedAmountOut = amountsPaths[0][amountsPaths[0].length - 1];
+    const minAmountOut = expectedAmountOut
+      .multipliedBy(1 - actualConfig.slippageTolerance)
+      .integerValue(BigNumber.ROUND_DOWN)
+
     const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
-      const expectedAmountOut = amountsPaths[i][amountsPaths[i].length - 1];
-      amountsPaths[i][amountsPaths[i].length - 1] = expectedAmountOut
-        .multipliedBy(1 - actualConfig.slippageTolerance)
-        .integerValue(BigNumber.ROUND_DOWN);
+      amountsPaths[i][amountsPaths[i].length - 1] = minAmountOut;
       return {
         marketIdsPath,
         tokensPath,
