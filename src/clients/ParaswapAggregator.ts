@@ -19,6 +19,9 @@ export default class ParaswapAggregator extends AggregatorClient {
     return !!PARASWAP_TRADER_ADDRESS_MAP[this.network];
   }
 
+  public get name(): string {
+    return 'Paraswap';
+  }
   public async getSwapExactTokensForTokensData(
     inputMarket: ApiMarket | ApiToken,
     inputAmountWei: Integer,

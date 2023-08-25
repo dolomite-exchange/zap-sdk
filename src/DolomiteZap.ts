@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import AggregatorClient from './clients/AggregatorClient';
 import DolomiteClient from './clients/DolomiteClient';
+import OdosAggregator from './clients/OdosAggregator';
 import ParaswapAggregator from './clients/ParaswapAggregator';
 import {
   Address,
@@ -16,6 +17,7 @@ import {
   MarketId,
   MinimalApiToken,
   Network,
+  ReferralOutput,
   ZapConfig,
   ZapOutputParam,
 } from './lib/ApiTypes';
@@ -39,10 +41,9 @@ export class DolomiteZap {
   public readonly network: Network;
   private readonly _defaultIsLiquidation: boolean;
   private client: DolomiteClient;
-  private paraswapAggregator: ParaswapAggregator;
   private marketsCache: LocalCache<Record<string, ApiMarket>>;
   private marketHelpersCache: LocalCache<Record<string, ApiMarketHelper>>;
-  private validAggregators: AggregatorClient[];
+  public readonly validAggregators: AggregatorClient[];
 
   /**
    * @param network                   The network on which this instance of the Dolomite Zap is running.
@@ -53,7 +54,7 @@ export class DolomiteZap {
    * @param defaultSlippageTolerance  The default slippage tolerance to use when estimating output. Defaults to 0.3%
    *                                  (0.003).
    * @param defaultBlockTag           The default block tag to use when fetching on-chain data. Defaults to 'latest'.
-   * @param partnerAddress            The address of the partner to use for aggregators that allow referral addresses.
+   * @param referralInfo              The referral information to use for the various aggregators.
    *                                  Defaults to undefined.
    */
   public constructor(
@@ -64,7 +65,10 @@ export class DolomiteZap {
     defaultIsLiquidation: boolean = false,
     defaultSlippageTolerance: number = THIRTY_BASIS_POINTS,
     defaultBlockTag: BlockTag = 'latest',
-    partnerAddress: Address | undefined = undefined,
+    referralInfo: ReferralOutput = {
+      odosReferralCode: undefined,
+      referralAddress: undefined,
+    },
   ) {
     this.network = network;
     this._subgraphUrl = subgraphUrl;
@@ -74,10 +78,12 @@ export class DolomiteZap {
     this._defaultBlockTag = defaultBlockTag;
 
     this.client = new DolomiteClient(network, subgraphUrl, web3Provider);
-    this.paraswapAggregator = new ParaswapAggregator(network, partnerAddress);
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
-    this.validAggregators = [this.paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
+
+    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode);
+    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress);
+    this.validAggregators = [odosAggregator, paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
   }
 
   private _subgraphUrl: string;
@@ -97,18 +103,6 @@ export class DolomiteZap {
     return this._web3Provider;
   }
 
-  public async setWeb3Provider(newWeb3Provider: ethers.providers.Provider) {
-    const oldNetwork = await this._web3Provider.getNetwork();
-    const newNetwork = await newWeb3Provider.getNetwork();
-    if (oldNetwork.chainId !== newNetwork.chainId) {
-      return Promise.reject(new Error('Networks must match'));
-    }
-
-    this._web3Provider = newWeb3Provider;
-    this.client.web3Provider = newWeb3Provider;
-    return Promise.resolve();
-  }
-
   private _defaultSlippageTolerance: number;
 
   public get defaultSlippageTolerance(): number {
@@ -123,6 +117,18 @@ export class DolomiteZap {
 
   public get defaultIsLiquidation(): boolean {
     return this._defaultIsLiquidation;
+  }
+
+  public async setWeb3Provider(newWeb3Provider: ethers.providers.Provider) {
+    const oldNetwork = await this._web3Provider.getNetwork();
+    const newNetwork = await newWeb3Provider.getNetwork();
+    if (oldNetwork.chainId !== newNetwork.chainId) {
+      return Promise.reject(new Error('Networks must match'));
+    }
+
+    this._web3Provider = newWeb3Provider;
+    this.client.web3Provider = newWeb3Provider;
+    return Promise.resolve();
   }
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {
@@ -210,9 +216,11 @@ export class DolomiteZap {
         actualConfig,
       );
 
-      amountsPaths.forEach(amountsPath => amountsPath.push(amountOut));
-      traderParamsArrays.forEach(traderParams => {
-        traderParams.push({
+      amountsPaths.forEach((_, i) => {
+        amountsPaths[i] = amountsPaths[i].concat(amountOut)
+      });
+      traderParamsArrays.forEach((_, i) => {
+        traderParamsArrays[i] = traderParamsArrays[i].concat({
           traderType: isIsolationModeUnwrapper
             ? GenericTraderType.IsolationModeUnwrapper
             : GenericTraderType.ExternalLiquidity,
@@ -261,9 +269,11 @@ export class DolomiteZap {
         throw new Error('Invalid aggregator outputs length');
       }
 
-      amountsPaths.forEach((amountsPath, i) => amountsPath.push(aggregatorOutputs[i].expectedAmountOut));
-      traderParamsArrays.forEach((traderParams, i) => {
-        traderParams.push({
+      amountsPaths.forEach((_, i) => {
+        amountsPaths[i] = amountsPaths[i].concat(aggregatorOutputs[i].expectedAmountOut);
+      });
+      traderParamsArrays.forEach((_, i) => {
+        traderParamsArrays[i] = traderParamsArrays[i].concat({
           traderType: GenericTraderType.ExternalLiquidity,
           makerAccountIndex: 0,
           trader: aggregatorOutputs[i].traderAddress,
@@ -299,9 +309,9 @@ export class DolomiteZap {
         }),
       );
 
-      amountsPaths.forEach((amountsPath, i) => {
-        amountsPath.push(amountsAndTraderParams[i].amountOut);
-        traderParamsArrays[i].push(amountsAndTraderParams[i].traderParam);
+      amountsPaths.forEach((_, i) => {
+        amountsPaths[i] = amountsPaths[i].concat(amountsAndTraderParams[i].amountOut);
+        traderParamsArrays[i] = traderParamsArrays[i].concat(amountsAndTraderParams[i].traderParam);
       });
     }
 
@@ -317,7 +327,7 @@ export class DolomiteZap {
       decimals: marketsMap[marketId.toFixed()].decimals,
     }));
     const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
-      const expectedAmountOut = amountsPaths[i][amountsPaths[i].length - 1]
+      const expectedAmountOut = amountsPaths[i][amountsPaths[i].length - 1];
       amountsPaths[i][amountsPaths[i].length - 1] = expectedAmountOut
         .multipliedBy(1 - actualConfig.slippageTolerance)
         .integerValue(BigNumber.ROUND_DOWN);

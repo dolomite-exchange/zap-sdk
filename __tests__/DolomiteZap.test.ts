@@ -25,6 +25,16 @@ describe('DolomiteZap', () => {
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   const NO_CACHE = -1;
   const zap = new DolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
+  const validAggregatorsLength = zap.validAggregators.length;
+
+  const allTraders = [
+    Deployments.ParaswapAggregatorTraderV2[network].address,
+    Deployments.OdosAggregatorTrader[network].address,
+  ];
+
+  beforeAll(async() => {
+    expect(validAggregatorsLength).toBe(2);
+  });
 
   describe('#setDefaultSlippageTolerance', () => {
     it('should work normally', () => {
@@ -136,7 +146,7 @@ describe('DolomiteZap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(1);
+        expect(outputParams.length).toBe(validAggregatorsLength);
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(2);
@@ -150,7 +160,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(1);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
+        expect(allTraders.includes(outputParam.traderParams[0].trader)).toBeTruthy();
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -240,7 +250,7 @@ describe('DolomiteZap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(1);
+        expect(outputParams.length).toBe(validAggregatorsLength);
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
@@ -263,7 +273,7 @@ describe('DolomiteZap', () => {
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
+        expect(allTraders.includes(outputParam.traderParams[1].trader)).toBeTruthy();
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -283,7 +293,7 @@ describe('DolomiteZap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(1);
+        expect(outputParams.length).toBe(validAggregatorsLength);
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
@@ -300,7 +310,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(2);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
+        expect(allTraders.includes(outputParam.traderParams[0].trader)).toBeTruthy();
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
@@ -418,7 +428,7 @@ describe('DolomiteZap', () => {
             txOrigin,
           );
 
-          expect(outputParams.length).toBe(1);
+          expect(outputParams.length).toBe(validAggregatorsLength);
 
           const outputParam = outputParams[0];
           expect(outputParam.marketIdsPath.length).toEqual(4);
@@ -444,7 +454,7 @@ describe('DolomiteZap', () => {
 
           expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
           expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
+          expect(allTraders.includes(outputParam.traderParams[1].trader)).toBeTruthy();
           expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
           expect(outputParam.traderParams[2].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -475,7 +485,7 @@ describe('DolomiteZap', () => {
             txOrigin,
           );
 
-          expect(outputParams.length).toBe(1);
+          expect(outputParams.length).toBe(validAggregatorsLength);
 
           const outputParam = outputParams[0];
           expect(outputParam.marketIdsPath.length).toEqual(4);
@@ -501,7 +511,7 @@ describe('DolomiteZap', () => {
 
           expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
           expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-          expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
+          expect(allTraders.includes(outputParam.traderParams[1].trader)).toBeTruthy();
           expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
           expect(outputParam.traderParams[2].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -662,7 +672,7 @@ describe('DolomiteZap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(1);
+        expect(outputParams.length).toBe(validAggregatorsLength);
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
@@ -685,7 +695,7 @@ describe('DolomiteZap', () => {
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[1].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
+        expect(allTraders.includes(outputParam.traderParams[1].trader)).toBeTruthy();
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -705,7 +715,7 @@ describe('DolomiteZap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(1);
+        expect(outputParams.length).toBe(validAggregatorsLength);
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
@@ -722,7 +732,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams.length).toEqual(2);
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-        expect(outputParam.traderParams[0].trader).toEqual(Deployments.ParaswapAggregatorTraderV2[network].address);
+        expect(allTraders.includes(outputParam.traderParams[0].trader)).toBeTruthy();
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);

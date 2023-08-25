@@ -121,6 +121,11 @@ export interface AggregatorOutput {
   readableName: string;
 }
 
+export interface ReferralOutput {
+  referralAddress: Address | undefined;
+  odosReferralCode: Integer | undefined;
+}
+
 export interface ZapConfig {
   isLiquidation: boolean;
   slippageTolerance: number;

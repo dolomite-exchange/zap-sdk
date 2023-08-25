@@ -9,6 +9,8 @@ export default abstract class AggregatorClient {
 
   public abstract isValidForNetwork(): boolean;
 
+  public abstract get name(): string;
+
   public abstract getSwapExactTokensForTokensData(
     inputMarket: ApiMarket | ApiToken,
     inputAmountWei: Integer,

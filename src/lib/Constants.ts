@@ -136,6 +136,11 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<st
   [Network.ARBITRUM_GOERLI]: {},
 };
 
+export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address,
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
 export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address,
   [Network.ARBITRUM_GOERLI]: undefined,
