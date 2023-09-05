@@ -6,22 +6,27 @@ import { PARASWAP_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 
+const PROXY_API_URL = 'https://proxy.dolomite.io/aggregator/paraswap';
 const API_URL = 'https://apiv5.paraswap.io';
 
 export default class ParaswapAggregator extends AggregatorClient {
   private readonly partnerAddress: Address | undefined;
-  public constructor(network: Network, partnerAddress: Address | undefined) {
+  private readonly useProxy: boolean;
+
+  public constructor(network: Network, partnerAddress: Address | undefined, useProxy: boolean) {
     super(network);
     this.partnerAddress = partnerAddress;
+    this.useProxy = useProxy;
+  }
+
+  public get name(): string {
+    return 'Paraswap';
   }
 
   public isValidForNetwork(): boolean {
     return !!PARASWAP_TRADER_ADDRESS_MAP[this.network];
   }
 
-  public get name(): string {
-    return 'Paraswap';
-  }
   public async getSwapExactTokensForTokensData(
     inputMarket: ApiMarket | ApiToken,
     inputAmountWei: Integer,
@@ -45,7 +50,9 @@ export default class ParaswapAggregator extends AggregatorClient {
       amount: inputAmountWei.toFixed(),
       includeContractMethods: 'megaSwap,multiSwap,simpleSwap',
     }).toString();
-    const priceRouteResponse = await axios.get(`${API_URL}/prices?${pricesQueryParams}`)
+    const priceRouteResponse = await (this.useProxy
+      ? axios.post(`${PROXY_API_URL}/quote?${pricesQueryParams}`)
+      : axios.get(`${API_URL}/prices?${pricesQueryParams}`))
       .then(response => response.data)
       .catch((error) => {
         Logger.error({
@@ -64,7 +71,9 @@ export default class ParaswapAggregator extends AggregatorClient {
       ignoreGasEstimate: 'true',
       onlyParams: 'false',
     }).toString();
-    const result = await axios.post(`${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
+    const result = await axios.post(this.useProxy
+      ? `${PROXY_API_URL}/assemble?${transactionsQueryParams}`
+      : `${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
       txOrigin,
       priceRoute: priceRouteResponse?.priceRoute,
       srcToken: inputMarket.tokenAddress,

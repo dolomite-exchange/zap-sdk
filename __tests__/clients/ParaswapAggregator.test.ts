@@ -16,8 +16,8 @@ describe('ParaswapAggregator', () => {
   }
 
   describe('#getSwapExactTokensForTokensData', () => {
-    it('should work when there is no partner address', async () => {
-      const paraswap = new ParaswapAggregator(networkIdOverride, undefined);
+    it('should work when there is no partner address and uses the proxy server', async () => {
+      const paraswap = new ParaswapAggregator(networkIdOverride, undefined, true);
       const inputMarket: ApiMarket = WETH_MARKET;
       const outputMarket: ApiMarket = USDC_MARKET;
       const inputAmount = new BigNumber('1000000000000000000'); // 1 ETH
@@ -40,8 +40,56 @@ describe('ParaswapAggregator', () => {
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
 
-    it('should work when there is a partner address', async () => {
-      const paraswap = new ParaswapAggregator(networkIdOverride, partnerAddress);
+    it('should work when there is a partner address and uses the proxy server', async () => {
+      const paraswap = new ParaswapAggregator(networkIdOverride, partnerAddress, true);
+      const inputMarket: ApiMarket = WETH_MARKET;
+      const outputMarket: ApiMarket = USDC_MARKET;
+      const inputAmount = new BigNumber('1000000000000000000'); // 1 ETH
+      const minOutputAmount = new BigNumber('100000000'); // 100 USDC
+      const solidAccount = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+      const aggregatorOutput = await paraswap.getSwapExactTokensForTokensData(
+        inputMarket,
+        inputAmount,
+        outputMarket,
+        minOutputAmount,
+        solidAccount,
+        config,
+      );
+      expect(aggregatorOutput).toBeDefined();
+
+      const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
+      expect(tradeData).toBeDefined();
+      expect(tradeData.length).toBeGreaterThanOrEqual(100);
+      expect(traderAddress).toEqual(Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address);
+      expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
+    });
+
+    it('should work when there is no partner address and does not use the proxy server', async () => {
+      const paraswap = new ParaswapAggregator(networkIdOverride, undefined, false);
+      const inputMarket: ApiMarket = WETH_MARKET;
+      const outputMarket: ApiMarket = USDC_MARKET;
+      const inputAmount = new BigNumber('1000000000000000000'); // 1 ETH
+      const minOutputAmount = new BigNumber('100000000'); // 100 USDC
+      const solidAccount = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+      const aggregatorOutput = await paraswap.getSwapExactTokensForTokensData(
+        inputMarket,
+        inputAmount,
+        outputMarket,
+        minOutputAmount,
+        solidAccount,
+        config,
+      );
+      expect(aggregatorOutput).toBeDefined();
+
+      const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
+      expect(tradeData).toBeDefined();
+      expect(tradeData.length).toBeGreaterThanOrEqual(100);
+      expect(traderAddress).toEqual(Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address);
+      expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
+    });
+
+    it('should work when there is a partner address and does not use the proxy server', async () => {
+      const paraswap = new ParaswapAggregator(networkIdOverride, partnerAddress, false);
       const inputMarket: ApiMarket = WETH_MARKET;
       const outputMarket: ApiMarket = USDC_MARKET;
       const inputAmount = new BigNumber('1000000000000000000'); // 1 ETH

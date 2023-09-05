@@ -5,14 +5,17 @@ import { ODOS_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 
+const PROXY_API_URL = 'https://proxy.dolomite.io/aggregator/odos';
 const API_URL = 'https://api.odos.xyz';
 
 export default class OdosAggregator extends AggregatorClient {
   private readonly referralCode: Integer | undefined;
+  private readonly useProxy: boolean;
 
-  public constructor(network: Network, referralCode: Integer | undefined) {
+  public constructor(network: Network, referralCode: Integer | undefined, useProxy: boolean) {
     super(network);
     this.referralCode = referralCode;
+    this.useProxy = useProxy;
   }
 
   public isValidForNetwork(): boolean {
@@ -36,7 +39,7 @@ export default class OdosAggregator extends AggregatorClient {
       return undefined;
     }
 
-    const quoteResponse = await axios.post(`${API_URL}/sor/quote/v2`, {
+    const quoteResponse = await axios.post(this.useProxy ? `${PROXY_API_URL}/quote` : `${API_URL}/sor/quote/v2`, {
       chainId: this.network, // Replace with desired chainId
       inputTokens: [
         {
@@ -53,8 +56,8 @@ export default class OdosAggregator extends AggregatorClient {
       userAddr: traderAddress,
       // zapConfig.slippageTolerance is described as 0.003 == 30 bips
       slippageLimitPercent: zapConfig.slippageTolerance * 100,
-      referralCode: this.referralCode?.toFixed() ?? '0',
-      sourceBlacklist: ['Hashflow'],
+      referralCode: this.referralCode?.toFixed() ?? undefined,
+      disableRFQs: true,
       compact: false,
     }).then(response => response.data)
       .catch((error) => {
@@ -69,7 +72,7 @@ export default class OdosAggregator extends AggregatorClient {
       return undefined;
     }
 
-    const result = await axios.post(`${API_URL}/sor/assemble`, {
+    const result = await axios.post(this.useProxy ? `${PROXY_API_URL}/assemble` : `${API_URL}/sor/assemble`, {
       userAddr: traderAddress,
       pathId: quoteResponse.pathId,
       simulate: false,

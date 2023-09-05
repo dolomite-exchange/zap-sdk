@@ -39,11 +39,11 @@ const marketHelpersKey = 'MARKET_HELPERS';
 
 export class DolomiteZap {
   public readonly network: Network;
+  public readonly validAggregators: AggregatorClient[];
   private readonly _defaultIsLiquidation: boolean;
   private client: DolomiteClient;
   private marketsCache: LocalCache<Record<string, ApiMarket>>;
   private marketHelpersCache: LocalCache<Record<string, ApiMarketHelper>>;
-  public readonly validAggregators: AggregatorClient[];
 
   /**
    * @param network                   The network on which this instance of the Dolomite Zap is running.
@@ -56,6 +56,9 @@ export class DolomiteZap {
    * @param defaultBlockTag           The default block tag to use when fetching on-chain data. Defaults to 'latest'.
    * @param referralInfo              The referral information to use for the various aggregators.
    *                                  Defaults to undefined.
+   * @param useProxyServer            True if the Dolomite proxy server should be used for aggregators that support it.
+   *                                  The proxy server is used to make the API requests consistent and prevent browser
+   *                                  plugins from blocking requests. Defaults to true.
    */
   public constructor(
     network: Network,
@@ -69,6 +72,7 @@ export class DolomiteZap {
       odosReferralCode: undefined,
       referralAddress: undefined,
     },
+    useProxyServer: boolean = true,
   ) {
     this.network = network;
     this._subgraphUrl = subgraphUrl;
@@ -81,8 +85,8 @@ export class DolomiteZap {
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
 
-    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode);
-    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress);
+    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer);
+    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer);
     this.validAggregators = [odosAggregator, paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
   }
 
