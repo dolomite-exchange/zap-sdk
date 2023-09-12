@@ -101,6 +101,12 @@ export default class ParaswapAggregator extends AggregatorClient {
     if (!result) {
       // GUARD: If we don't have the result, we can't execute the trade
       return undefined;
+    } else if (!result.data) {
+      Logger.error({
+        message: 'Paraswap result.data is undefined',
+        result,
+      });
+      return undefined;
     }
 
     const expectedAmountOut = new BigNumber(priceRouteResponse?.priceRoute?.destAmount);
