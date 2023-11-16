@@ -56,4 +56,4 @@ const Logger = winston.createLogger({
   exitOnError: false,
 });
 
-export default window ? console : Logger;
+export default typeof window === 'undefined' ? console : Logger;
