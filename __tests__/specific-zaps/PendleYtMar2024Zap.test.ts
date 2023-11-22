@@ -2,11 +2,11 @@ import Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/depl
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../src';
-import { YT_GLP_MARKET, USDC_MARKET } from '../helpers/TestConstants';
+import { USDC_MARKET, YT_GLP_MARKET } from '../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
-describe('DolomiteZap', () => {
+describe('PendleYtGlpMar2024Zap', () => {
   const network = Network.ARBITRUM_ONE;
   const subgraphUrl = process.env.SUBGRAPH_URL;
   if (!subgraphUrl) {
@@ -21,13 +21,14 @@ describe('DolomiteZap', () => {
     describe('Pendle YT-GLP', () => {
       it('should work when unwrapping YT-GLP', async () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 YT
-        const minAmountOut = new BigNumber('5000000'); // 5 USDC
+        const minAmountOut = new BigNumber('1000000'); // 1 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
           YT_GLP_MARKET,
           amountIn,
           USDC_MARKET,
           minAmountOut,
           txOrigin,
+          { filterOutZapsWithInsufficientOutput: false },
         );
 
         expect(outputParams.length).toBe(1);
@@ -63,6 +64,7 @@ describe('DolomiteZap', () => {
           YT_GLP_MARKET,
           minAmountOut,
           txOrigin,
+          { filterOutZapsWithInsufficientOutput: false },
         );
 
         expect(outputParams.length).toBe(1);

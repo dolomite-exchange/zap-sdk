@@ -1,8 +1,8 @@
 import { BaseRouter as PendleRouter, Router as PendleStaticRouter } from '@pendle/sdk-v2';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Address, Integer, Network } from '../ApiTypes';
-import { getPendleMarketForIsolationModeToken, getSGlpAddress } from '../Constants';
+import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
+import { getPendleMarketForIsolationModeToken } from '../Constants';
 
 export class PendlePtEstimator {
   private readonly network: Network;
@@ -31,11 +31,12 @@ export class PendlePtEstimator {
   public async getUnwrappedAmount(
     isolationModeToken: Address,
     amountInPt: Integer,
-  ): Promise<{ tradeData: string; outputAmount: Integer }> {
+    tokenOut: Address,
+  ): Promise<EstimateOutputResult> {
     const [, , , tokenOutput] = await this.pendleRouter.swapExactPtForToken(
       getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       amountInPt.toFixed(),
-      getSGlpAddress(this.network) as any,
+      tokenOut as any,
       0,
       { method: 'extractParams' },
     );
@@ -59,17 +60,18 @@ export class PendlePtEstimator {
       ],
     );
 
-    const outputAmount = new BigNumber(tokenOutput.minTokenOut.toString());
-    return { tradeData, outputAmount };
+    const amountOut = new BigNumber(tokenOutput.minTokenOut.toString());
+    return { tradeData, amountOut };
   }
 
   public async getWrappedAmount(
     isolationModeToken: Address,
     inputAmount: Integer,
-  ): Promise<{ tradeData: string; ptAmountOut: Integer }> {
+    inputToken: Address,
+  ): Promise<EstimateOutputResult> {
     const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForPt(
       getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
-      getSGlpAddress(this.network)?.toLowerCase() as any,
+      inputToken as any,
       inputAmount.toFixed(),
       0,
       { method: 'extractParams' },
@@ -103,7 +105,7 @@ export class PendlePtEstimator {
       ],
     );
 
-    const ptAmountOut = new BigNumber(approxParams.guessOffchain.toString());
-    return { tradeData, ptAmountOut };
+    const amountOut = new BigNumber(approxParams.guessOffchain.toString());
+    return { tradeData, amountOut };
   }
 }

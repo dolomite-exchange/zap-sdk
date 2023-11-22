@@ -54,8 +54,33 @@ const PENDLE_PT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
+const WST_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(14),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
+const R_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(15),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
 const PENDLE_YT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(16),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
+const PENDLE_PT_RETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(22),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
+const PENDLE_PT_WST_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(23),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
+const PENDLE_PT_WST_ETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(24),
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
@@ -109,6 +134,30 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       unwrapperReadableName: 'YT-GLP Isolation Mode Unwrapper',
       wrapperReadableName: 'YT-GLP Isolation Mode Wrapper',
     },
+    [PENDLE_PT_RETH_JUN_2025_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.PendlePtREthJun2025IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtREthJun2025IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: R_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: R_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'PT-rETH Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-rETH Isolation Mode Wrapper',
+    },
+    [PENDLE_PT_WST_ETH_JUN_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.PendlePtWstEthJun2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtWstEthJun2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'PT-wstETH Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-wstETH Isolation Mode Wrapper',
+    },
+    [PENDLE_PT_WST_ETH_JUN_2025_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.PendlePtWstEthJun2025IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtWstEthJun2025IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'PT-wstETH Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-wstETH Isolation Mode Wrapper',
+    },
   },
   [Network.ARBITRUM_GOERLI]: {
     [ATLAS_PTSI_MARKET_ID_MAP[Network.ARBITRUM_GOERLI]!.toFixed()]: {
@@ -146,13 +195,29 @@ export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> =
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
-const PT_GLP_MARKET_ARBITRUM = '0x7D49E5Adc0EAAD9C027857767638613253eF125f';
+const PT_GLP_MAR_2024_MARKET_ARBITRUM = '0x7D49E5Adc0EAAD9C027857767638613253eF125f';
+const PT_R_ETH_2025_MARKET_ARBITRUM = '0x14FbC760eFaF36781cB0eb3Cb255aD976117B9Bd';
+const PT_WST_ETH_2024_MARKET_ARBITRUM = '0xFd8AeE8FCC10aac1897F8D5271d112810C79e022';
+const PT_WST_ETH_2025_MARKET_ARBITRUM = '0x08a152834de126d2ef83D612ff36e4523FD0017F';
 const PENDLE_MARKET_MAP: Record<Network, Record<Address, Address | undefined>> = {
   [Network.ARBITRUM_ONE]: {
-    [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: PT_GLP_MARKET_ARBITRUM,
-    [Deployments.PendleYtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: PT_GLP_MARKET_ARBITRUM,
+    [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
+    PT_GLP_MAR_2024_MARKET_ARBITRUM,
+    [Deployments.PendlePtREthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
+    PT_R_ETH_2025_MARKET_ARBITRUM,
+    [Deployments.PendlePtWstEthJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
+    PT_WST_ETH_2024_MARKET_ARBITRUM,
+    [Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
+    PT_WST_ETH_2025_MARKET_ARBITRUM,
+    [Deployments.PendleYtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
+    PT_GLP_MAR_2024_MARKET_ARBITRUM,
   },
   [Network.ARBITRUM_GOERLI]: {},
+};
+
+const R_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
+  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const S_GLP_MAP: Record<Network, Address | undefined> = {
@@ -160,9 +225,29 @@ const S_GLP_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
+const WST_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: '0x5979D7b546E38E414F7E9822514be443A4800529',
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
 export function isPtGlpToken(network: Network, tokenAddress: Address): boolean {
   const ptGlpTokenAddress = Deployments.PendlePtGLP2024IsolationModeVaultFactory[network]?.address;
   return ptGlpTokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
+}
+
+export function isPtREthToken(network: Network, tokenAddress: Address): boolean {
+  const ptREthTokenAddress = Deployments.PendlePtREthJun2025IsolationModeVaultFactory[network]?.address;
+  return ptREthTokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
+}
+
+export function isPtWstEthJun2024Token(network: Network, tokenAddress: Address): boolean {
+  const ptWstEthJun2024TokenAddress = Deployments.PendlePtWstEthJun2024IsolationModeVaultFactory[network]?.address;
+  return ptWstEthJun2024TokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
+}
+
+export function isPtWstEthJun2025Token(network: Network, tokenAddress: Address): boolean {
+  const ptWstEthJun2024TokenAddress = Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[network]?.address;
+  return ptWstEthJun2024TokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
 }
 
 export function isYtGlpToken(network: Network, tokenAddress: Address): boolean {
@@ -180,6 +265,14 @@ export function getGlpIsolationModeMarketId(network: Network): BigNumber | undef
 
 export function getSGlpAddress(network: Network): Address | undefined {
   return S_GLP_MAP[network];
+}
+
+export function getREthAddress(network: Network): Address | undefined {
+  return R_ETH_MAP[network];
+}
+
+export function getWstEthAddress(network: Network): Address | undefined {
+  return WST_ETH_MAP[network];
 }
 
 export function getPendleMarketForIsolationModeToken(

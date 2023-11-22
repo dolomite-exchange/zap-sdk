@@ -1,9 +1,11 @@
+import * as Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ApiMarket, MarketId, Network } from '../../src';
 import {
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
 } from '../../src/lib/Constants';
+
 
 export const WETH_MARKET: ApiMarket = {
   marketId: new BigNumber(0),
@@ -175,6 +177,69 @@ export const YT_GLP_MARKET: ApiMarket = {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapper,
     inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapperMarketId,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
+
+const PT_R_ETH_JUN_2025_MARKET_ID = new BigNumber(22);
+export const PT_R_ETH_JUN_2025_MARKET: ApiMarket = {
+  marketId: PT_R_ETH_JUN_2025_MARKET_ID,
+  symbol: 'dPT-rETH-JUN2025',
+  name: 'Dolomite Isolation: PT rETH JUN2025',
+  tokenAddress: Deployments.PendlePtREthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
+
+const PT_WST_ETH_JUN_2024_MARKET_ID = new BigNumber(23);
+export const PT_WST_ETH_JUN_2024_MARKET: ApiMarket = {
+  marketId: PT_WST_ETH_JUN_2024_MARKET_ID,
+  symbol: 'dPT-wstETH-JUN2024',
+  name: 'Dolomite Isolation: PT wstETH JUN2024',
+  tokenAddress: Deployments.PendlePtWstEthJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
+
+const PT_WST_ETH_JUN_2025_MARKET_ID = new BigNumber(24);
+export const PT_WST_ETH_JUN_2025_MARKET: ApiMarket = {
+  marketId: PT_WST_ETH_JUN_2025_MARKET_ID,
+  symbol: 'dPT-wstETH-JUN2025',
+  name: 'Dolomite Isolation: PT wstETH JUN2025',
+  tokenAddress: Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
 };

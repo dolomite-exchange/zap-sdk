@@ -6,7 +6,7 @@ import { PT_GLP_MARKET, USDC_MARKET } from '../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
-describe('DolomiteZap', () => {
+describe('PendlePtGlpMar2024Zap', () => {
   const network = Network.ARBITRUM_ONE;
   const subgraphUrl = process.env.SUBGRAPH_URL;
   if (!subgraphUrl) {

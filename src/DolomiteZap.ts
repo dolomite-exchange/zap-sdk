@@ -28,6 +28,7 @@ import {
   LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
 } from './lib/Constants';
 import { LocalCache } from './lib/LocalCache';
+import Logger from './lib/Logger';
 import { removeDuplicates, toChecksumOpt, zapOutputParamToJson } from './lib/Utils';
 
 const ONE_HOUR = 60 * 60;
@@ -218,7 +219,13 @@ export class DolomiteZap {
         amountsPaths[0][0],
         unwrapperInfo.outputMarketId,
         actualConfig,
-      );
+      ).catch(e => {
+        Logger.error({
+          message: `Caught error while estimating wrapping: ${e.message}`,
+          error: e,
+        });
+        return Promise.reject(e);
+      });
 
       amountsPaths.forEach((_, i) => {
         amountsPaths[i] = amountsPaths[i].concat(amountOut)
@@ -289,14 +296,21 @@ export class DolomiteZap {
 
     if (wrapperInfo && wrapperHelper) {
       // Append the amounts and trader params for the wrapper
-      const amountsAndTraderParams = await Promise.all(
-        amountsPaths.map(async (amountsPath) => {
-          const amountInForEstimation = amountsPath[amountsPath.length - 1];
-          const outputEstimate = await wrapperHelper.estimateOutputFunction(
-            amountInForEstimation,
-            wrapperInfo.inputMarketId,
-            actualConfig,
-          );
+      let amountsAndTraderParams;
+      const lastAmount = amountsPaths[0][amountsPaths[0].length - 1];
+      if (amountsPaths.every(amountsPath => amountsPath[amountsPath.length - 1].eq(lastAmount))) {
+        const outputEstimate = await wrapperHelper.estimateOutputFunction(
+          lastAmount,
+          wrapperInfo.inputMarketId,
+          actualConfig,
+        ).catch(e => {
+          Logger.error({
+            message: `Caught error while estimating wrapping: ${e.message}`,
+            error: e,
+          });
+          return Promise.reject(e);
+        });
+        amountsAndTraderParams = amountsPaths.map(() => {
           const traderParam: GenericTraderParam = {
             traderType: isIsolationModeWrapper
               ? GenericTraderType.IsolationModeWrapper
@@ -310,8 +324,38 @@ export class DolomiteZap {
             amountOut: outputEstimate.amountOut,
             traderParam,
           };
-        }),
-      );
+        });
+      } else {
+        amountsAndTraderParams = await Promise.all(
+          amountsPaths.map(async (amountsPath) => {
+            const amountInForEstimation = amountsPath[amountsPath.length - 1];
+            const outputEstimate = await wrapperHelper.estimateOutputFunction(
+              amountInForEstimation,
+              wrapperInfo.inputMarketId,
+              actualConfig,
+            ).catch(e => {
+              Logger.error({
+                message: `Caught error while estimating wrapping: ${e.message}`,
+                error: e,
+              });
+              return Promise.reject(e);
+            });
+            const traderParam: GenericTraderParam = {
+              traderType: isIsolationModeWrapper
+                ? GenericTraderType.IsolationModeWrapper
+                : GenericTraderType.ExternalLiquidity,
+              makerAccountIndex: 0,
+              trader: wrapperInfo.wrapperAddress,
+              tradeData: outputEstimate.tradeData,
+              readableName: wrapperInfo.readableName,
+            };
+            return {
+              amountOut: outputEstimate.amountOut,
+              traderParam,
+            };
+          }),
+        )
+      }
 
       amountsPaths.forEach((_, i) => {
         amountsPaths[i] = amountsPaths[i].concat(amountsAndTraderParams[i].amountOut);
@@ -358,7 +402,7 @@ export class DolomiteZap {
     }
   }
 
-  private async getMarketIdToMarketMap(): Promise<Record<string, ApiMarket>> {
+  protected async getMarketIdToMarketMap(): Promise<Record<string, ApiMarket>> {
     const cachedMarkets = this.marketsCache.get(marketsKey);
     if (cachedMarkets) {
       return cachedMarkets;

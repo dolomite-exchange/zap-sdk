@@ -20,20 +20,20 @@ export function toChecksumOpt(address: Address | undefined): Address | undefined
 }
 
 export function removeDuplicates<T>(values: T[], hashFn: (value: T) => string): T[] {
-  const seen = new Set<string>();
+  const seen = {};
   return values.filter(value => {
     const hash = hashFn(value);
-    if (seen.has(hash)) {
+    if (seen[hash]) {
       return false;
     }
-    seen.add(hash);
+    seen[hash] = true;
     return true;
   });
 }
 
 export function zapOutputParamToJson(param: ZapOutputParam): string {
   return JSON.stringify({
-    marketIdsPath: param.marketIdsPath,
+    marketIdsPath: param.marketIdsPath.map(marketId => marketId.toFixed()),
     amountWeisPath: param.amountWeisPath.map(wei => wei.toFixed()),
     traderParams: param.traderParams,
     makerAccounts: param.makerAccounts,

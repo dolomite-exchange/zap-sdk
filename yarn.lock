@@ -302,6 +302,16 @@
     "@openzeppelin/contracts-upgradeable" "^4.7.3"
     "@openzeppelin/contracts-v0.7" "npm:@openzeppelin/contracts@v3.4.2"
 
+"@chainlink/contracts@^0.8.0":
+  "integrity" "sha512-nUv1Uxw5Mn92wgLs2bgPYmo8hpdQ3s9jB/lcbdU0LmNOVu0hbfmouVnqwRLa28Ll50q6GczUA+eO0ikNIKLZsA=="
+  "resolved" "https://registry.npmjs.org/@chainlink/contracts/-/contracts-0.8.0.tgz"
+  "version" "0.8.0"
+  dependencies:
+    "@eth-optimism/contracts" "^0.5.21"
+    "@openzeppelin/contracts" "~4.3.3"
+    "@openzeppelin/contracts-upgradeable-4.7.3" "npm:@openzeppelin/contracts-upgradeable@v4.7.3"
+    "@openzeppelin/contracts-v0.7" "npm:@openzeppelin/contracts@v3.4.2"
+
 "@cnakazawa/watch@^1.0.3":
   "integrity" "sha512-v9kIhKwjeZThiWrLmj0y17CWoyddASLj9O2yvbZkbvw/N3rWOYy9zkV66ursAoVr0mV15bL8g0c4QZUE6cdDoQ=="
   "resolved" "https://registry.npmjs.org/@cnakazawa/watch/-/watch-1.0.4.tgz"
@@ -331,10 +341,10 @@
     "enabled" "2.0.x"
     "kuler" "^2.0.0"
 
-"@dolomite-exchange/dolomite-margin-modules@0.0.8":
-  "integrity" "sha512-3gNQ0SMYItlg6+woHDnGkyapcACGh7TlTBnzA7wX3gHm1SpjDqw2CUB7mb9M5p+ZWbNcrYDGVPSkEssBvs6B3Q=="
-  "resolved" "https://registry.npmjs.org/@dolomite-exchange/dolomite-margin-modules/-/dolomite-margin-modules-0.0.8.tgz"
-  "version" "0.0.8"
+"@dolomite-exchange/dolomite-margin-modules@0.0.9":
+  "integrity" "sha512-odOToQ5LRGyXnT4emeebSUHqH0m08Rin71kzt0kZgs/nzwyRuAYrHO6DN0ff9XAMxHMoB91XFJ8QgxqqqM/YhA=="
+  "resolved" "https://registry.npmjs.org/@dolomite-exchange/dolomite-margin-modules/-/dolomite-margin-modules-0.0.9.tgz"
+  "version" "0.0.9"
 
 "@eth-optimism/contracts@^0.5.21":
   "integrity" "sha512-MrzV0nvsymfO/fursTB7m/KunkPsCndltVgfdHaT1Aj5Vi6R/doKIGGkOofHX+8B6VMZpuZosKCMQ5lQuqjt8w=="
@@ -950,10 +960,20 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@openzeppelin/contracts-upgradeable-4.7.3@npm:@openzeppelin/contracts-upgradeable@v4.7.3":
+  "integrity" "sha512-+wuegAMaLcZnLCJIvrVUDzA9z/Wp93f0Dla/4jJvIhijRrPabjQbZe6fWiECLaJyfn5ci9fqf9vTw3xpQOad2A=="
+  "resolved" "https://registry.npmjs.org/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.7.3.tgz"
+  "version" "4.7.3"
+
 "@openzeppelin/contracts-upgradeable@^4.7.3", "@openzeppelin/contracts-upgradeable@4.7.3":
   "integrity" "sha512-+wuegAMaLcZnLCJIvrVUDzA9z/Wp93f0Dla/4jJvIhijRrPabjQbZe6fWiECLaJyfn5ci9fqf9vTw3xpQOad2A=="
   "resolved" "https://registry.npmjs.org/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.7.3.tgz"
   "version" "4.7.3"
+
+"@openzeppelin/contracts-upgradeable@4.9.3":
+  "integrity" "sha512-jjaHAVRMrE4UuZNfDwjlLGDxTHWIOwTJS2ldnc278a0gevfXfPr8hxKEVBGFBE96kl2G3VHDZhUimw/+G3TG2A=="
+  "resolved" "https://registry.npmjs.org/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.9.3.tgz"
+  "version" "4.9.3"
 
 "@openzeppelin/contracts-v0.7@npm:@openzeppelin/contracts@v3.4.2":
   "integrity" "sha512-z0zMCjyhhp4y7XKAcDAi3Vgms4T2PstwBdahiO0+9NaGICQKjynK3wduSRplTgk4LXmoO1yfDGO5RbjKYxtuxA=="
@@ -970,6 +990,11 @@
   "resolved" "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-4.7.3.tgz"
   "version" "4.7.3"
 
+"@openzeppelin/contracts@4.9.3":
+  "integrity" "sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg=="
+  "resolved" "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-4.9.3.tgz"
+  "version" "4.9.3"
+
 "@pendle/core-v2-for-legacy-fee-distributor@npm:@pendle/core-v2@2.9.0-mainnet":
   "integrity" "sha512-aAO63YBCimv+TcM2FhHh2iG4QtfHbZkdQVi2gLoFgvPadyoWDW8bv5zKQM8bjmZNVjT7/09QzGuXtlSSjbF5FA=="
   "resolved" "https://registry.npmjs.org/@pendle/core-v2/-/core-v2-2.9.0-mainnet.tgz"
@@ -979,28 +1004,30 @@
     "@openzeppelin/contracts" "4.7.3"
     "@openzeppelin/contracts-upgradeable" "4.7.3"
 
-"@pendle/core-v2@2.26.1":
-  "integrity" "sha512-3y4qTxlKuUSHJbsidf0MrT7Q0I9ve+32UJgkmcmjfODnatMpdm6FxBGu7X+ddz1qzM3AUbnhYMpPbOPhxb14yA=="
-  "resolved" "https://registry.npmjs.org/@pendle/core-v2/-/core-v2-2.26.1.tgz"
-  "version" "2.26.1"
+"@pendle/core-v2@2.30.1":
+  "integrity" "sha512-9VEKfSLhw7+CbQZ8AtboKJ2RYiuQ4yoOaqgfsAlpX9/eGnutcvU6jkWfxsf3g27iHtvSU8kOYTAPs3KG2CsvTw=="
+  "resolved" "https://registry.npmjs.org/@pendle/core-v2/-/core-v2-2.30.1.tgz"
+  "version" "2.30.1"
   dependencies:
-    "@chainlink/contracts" "^0.6.1"
-    "@openzeppelin/contracts" "4.7.3"
-    "@openzeppelin/contracts-upgradeable" "4.7.3"
+    "@chainlink/contracts" "^0.8.0"
+    "@openzeppelin/contracts" "4.9.3"
+    "@openzeppelin/contracts-upgradeable" "4.9.3"
 
-"@pendle/sdk-v2@^2.6.0":
-  "integrity" "sha512-rw335h0ijXCU0Fs4xae6Q7DyHHwFCVMU83yT+QB10bx5Xqq5eG+puH2ZuQj8/vKHWoy9k4ffeUqoVBVeo+c4CQ=="
-  "resolved" "https://registry.npmjs.org/@pendle/sdk-v2/-/sdk-v2-2.6.0.tgz"
-  "version" "2.6.0"
+"@pendle/sdk-v2@^2.8.2":
+  "integrity" "sha512-pbn6zNv5myI//V4mhdykF+ohenOoDCwH1NlITf7rDtqnvNrFVsiIi8FWBL4XDrRT07Ir1bPZN+L4U7TJcJGORQ=="
+  "resolved" "https://registry.npmjs.org/@pendle/sdk-v2/-/sdk-v2-2.8.2.tgz"
+  "version" "2.8.2"
   dependencies:
-    "@pendle/core-v2" "2.26.1"
+    "@pendle/core-v2" "2.30.1"
     "@pendle/core-v2-for-legacy-fee-distributor" "npm:@pendle/core-v2@2.9.0-mainnet"
     "axios" "^0.27.2"
+    "axios-rate-limit" "^1.3.0"
     "bignumber.js" "^9.1.0"
     "ethers" "^5.7.1"
     "merkletreejs" "^0.3.10"
     "ts-essentials" "^9.3.1"
     "tslib" "^2.5.0"
+    "type-fest" "^4.3.1"
     "ulid" "^2.3.0"
 
 "@sinonjs/commons@^1.7.0":
@@ -1569,15 +1596,12 @@
   "resolved" "https://registry.npmjs.org/axe-core/-/axe-core-4.7.2.tgz"
   "version" "4.7.2"
 
-"axios@^0.27.2":
-  "integrity" "sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ=="
-  "resolved" "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
-  "version" "0.27.2"
-  dependencies:
-    "follow-redirects" "^1.14.9"
-    "form-data" "^4.0.0"
+"axios-rate-limit@^1.3.0":
+  "integrity" "sha512-cKR5wTbU/CeeyF1xVl5hl6FlYsmzDVqxlN4rGtfO5x7J83UxKDckudsW0yW21/ZJRcO0Qrfm3fUFbhEbWTLayw=="
+  "resolved" "https://registry.npmjs.org/axios-rate-limit/-/axios-rate-limit-1.3.0.tgz"
+  "version" "1.3.0"
 
-"axios@^1.1.3":
+"axios@*", "axios@^1.1.3":
   "integrity" "sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA=="
   "resolved" "https://registry.npmjs.org/axios/-/axios-1.4.0.tgz"
   "version" "1.4.0"
@@ -1585,6 +1609,14 @@
     "follow-redirects" "^1.15.0"
     "form-data" "^4.0.0"
     "proxy-from-env" "^1.1.0"
+
+"axios@^0.27.2":
+  "integrity" "sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
+  "version" "0.27.2"
+  dependencies:
+    "follow-redirects" "^1.14.9"
+    "form-data" "^4.0.0"
 
 "axobject-query@^3.1.1":
   "integrity" "sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg=="
@@ -6250,6 +6282,11 @@
   "integrity" "sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA=="
   "resolved" "https://registry.npmjs.org/type-fest/-/type-fest-0.8.1.tgz"
   "version" "0.8.1"
+
+"type-fest@^4.3.1":
+  "integrity" "sha512-mcvrCjixA5166hSrUoJgGb9gBQN4loMYyj9zxuMs/66ibHNEFd5JXMw37YVDx58L4/QID9jIzdTBB4mDwDJ6KQ=="
+  "resolved" "https://registry.npmjs.org/type-fest/-/type-fest-4.8.2.tgz"
+  "version" "4.8.2"
 
 "typed-array-length@^1.0.4":
   "integrity" "sha512-KjZypGq+I/H7HI5HlOoGHkWUUGq+Q0TPhQurLbyrVrvnKTBgzLhIJ7j6J/XTQOi0d1RjyZ0wdas8bKs2p0x3Ng=="
