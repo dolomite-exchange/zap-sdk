@@ -5,16 +5,21 @@ import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, Z
 import {
   BYTES_EMPTY,
   getGlpIsolationModeAddress,
-  getGlpIsolationModeMarketId, getREthAddress, getSGlpAddress, getWstEthAddress,
+  getGlpIsolationModeMarketId,
+  getREthAddress,
+  getSGlpAddress,
+  getWstEthAddress,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   isPtGlpToken,
   isPtREthToken,
   isPtWstEthJun2024Token,
   isPtWstEthJun2025Token,
+  isSimpleIsolationModeAsset,
   isYtGlpToken,
 } from '../Constants';
 import { PendlePtEstimator } from './PendlePtEstimator';
 import { PendleYtEstimator } from './PendleYtEstimator';
+import { SimpleEstimator } from './SimpleEstimator';
 
 export class StandardEstimator {
   private readonly network: Network;
@@ -95,6 +100,9 @@ export class StandardEstimator {
         marketsMap,
       );
       return { tradeData: result.tradeData, amountOut: estimateOutputResult.amountOut };
+    } else if (isSimpleIsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      const estimator = new SimpleEstimator();
+      return estimator.getUnwrappedAmount(amountIn);
     } else {
       // fallback is to call getExchangeCost
       const tradeData = BYTES_EMPTY;
@@ -170,6 +178,9 @@ export class StandardEstimator {
         getSGlpAddress(this.network) as Address,
       );
       return { tradeData: result.tradeData, amountOut: result.ytAmountOut };
+    } else if (isSimpleIsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      const estimator = new SimpleEstimator();
+      return estimator.getWrappedAmount(amountIn);
     } else {
       const contract = new ethers.Contract(wrapperAddress, IDolomiteMarginExchangeWrapper, this._web3Provider);
       const tradeData = BYTES_EMPTY;

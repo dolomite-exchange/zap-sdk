@@ -8,14 +8,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - dependency-cache-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - dependency-cache-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - dependency-cache-v1-{{ .Branch }}-
             - dependency-cache-v1-
       - run:
           name: Install Dependencies
           command: npm ci
       - save_cache:
-          key: dependency-cache-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: dependency-cache-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - "$HOME/.npm"
       - save_cache:

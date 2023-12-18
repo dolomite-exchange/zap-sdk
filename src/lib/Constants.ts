@@ -34,6 +34,11 @@ const GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
+const ARB_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(7),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
 const MAGIC_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(8),
   [Network.ARBITRUM_GOERLI]: undefined,
@@ -81,6 +86,21 @@ const PENDLE_PT_WST_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undef
 
 const PENDLE_PT_WST_ETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(24),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
+const ARB_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(28),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
+const GMX_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(29),
+  [Network.ARBITRUM_GOERLI]: undefined,
+};
+
+const GMX_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(30),
   [Network.ARBITRUM_GOERLI]: undefined,
 };
 
@@ -157,6 +177,22 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       unwrapperReadableName: 'PT-wstETH Isolation Mode Unwrapper',
       wrapperReadableName: 'PT-wstETH Isolation Mode Wrapper',
+    },
+    [ARB_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.ARBIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.ARBIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'ARB Isolation Mode Unwrapper',
+      wrapperReadableName: 'ARB Isolation Mode Wrapper',
+    },
+    [GMX_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.GMXIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GMXIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'GMX Isolation Mode Unwrapper',
+      wrapperReadableName: 'GMX Isolation Mode Wrapper',
     },
   },
   [Network.ARBITRUM_GOERLI]: {
@@ -253,6 +289,13 @@ export function isPtWstEthJun2025Token(network: Network, tokenAddress: Address):
 export function isYtGlpToken(network: Network, tokenAddress: Address): boolean {
   const ytGlpTokenAddress = Deployments.PendleYtGLP2024IsolationModeVaultFactory[network]?.address;
   return ytGlpTokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
+}
+
+export function isSimpleIsolationModeAsset(network: Network, tokenAddress: Address): boolean {
+  const arbAddress = Deployments.ARBIsolationModeVaultFactory[network]?.address;
+  const gmxAddress = Deployments.GMXIsolationModeVaultFactory[network]?.address;
+  return arbAddress?.toLowerCase() === tokenAddress.toLowerCase()
+    || gmxAddress?.toLowerCase() === tokenAddress.toLowerCase();
 }
 
 export function getGlpIsolationModeAddress(network: Network): Address | undefined {
