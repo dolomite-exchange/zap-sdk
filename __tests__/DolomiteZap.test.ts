@@ -13,6 +13,7 @@ import {
   USDC_MARKET,
   WETH_MARKET,
 } from './helpers/TestConstants';
+import { TestDolomiteZap } from './helpers/TestDolomiteZap';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
@@ -134,7 +135,7 @@ describe('DolomiteZap', () => {
   });
 
   describe('#getSwapExactTokensForTokensData', () => {
-    describe('Isolation Mode tokens', () => {
+    describe('Normal tokens', () => {
       it('should work when there is no Isolation Mode tokens nor Liquidity tokens involved', async () => {
         const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
         const minAmountOut = new BigNumber('100000000'); // 100 USDC
@@ -167,8 +168,47 @@ describe('DolomiteZap', () => {
         expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
           .toBeTruthy();
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
-      });
+      })
 
+      it('should work when there is one of the aggregators returns bad data', async () => {
+        const zap = new TestDolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
+
+        const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
+        const minAmountOut = new BigNumber('100000000'); // 100 USDC
+        const outputParams = await zap.getSwapExactTokensForTokensParams(
+          WETH_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+        );
+
+        expect(zap.validAggregators.length).toBe(2);
+        expect(outputParams.length).toBe(1);
+
+        const outputParam = outputParams[0];
+        expect(outputParam.marketIdsPath.length).toEqual(2);
+        expect(outputParam.marketIdsPath[0]).toEqual(WETH_MARKET.marketId);
+        expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
+
+        expect(outputParam.amountWeisPath.length).toEqual(2);
+        expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
+        expect(outputParam.amountWeisPath[1].isGreaterThan(minAmountOut)).toBeTruthy();
+
+        expect(outputParam.traderParams.length).toEqual(1);
+        expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
+        expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
+        expect(allTraders.includes(outputParam.traderParams[0].trader)).toBeTruthy();
+        expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(100);
+
+        expect(outputParam.makerAccounts.length).toEqual(0);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
+      })
+    });
+
+    describe('Isolation Mode tokens', () => {
       it('should work when there is an Isolation Mode token to be unwrapped and no aggregator', async () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
         const minAmountOut = new BigNumber('1000000'); // 1 USDC

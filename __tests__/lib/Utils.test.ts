@@ -1,4 +1,4 @@
-import { removeDuplicates, toChecksumOpt } from '../../src/lib/Utils';
+import { removeDuplicatesAndInvalids, toChecksumOpt } from '../../src/lib/Utils';
 
 describe('Utils', () => {
   describe('#toChecksumOpt', () => {
@@ -20,11 +20,14 @@ describe('Utils', () => {
   });
 
   describe('#removeDuplicates', () => {
+    const hash = (v: number) => v.toString();
+    const invalid = (v: number) => v === 4;
+
     it('should work normally', () => {
-      expect(removeDuplicates([1, 2, 3], v => v.toString())).toEqual([1, 2, 3]);
-      expect(removeDuplicates([1, 1, 1], v => v.toString())).toEqual([1]);
-      expect(removeDuplicates([1, 2, 1], v => v.toString())).toEqual([1, 2]);
-      expect(removeDuplicates([], v => `${v}`)).toEqual([]);
+      expect(removeDuplicatesAndInvalids([1, 2, 3], hash, invalid)).toEqual([1, 2, 3]);
+      expect(removeDuplicatesAndInvalids([1, 1, 1], hash, invalid)).toEqual([1]);
+      expect(removeDuplicatesAndInvalids([1, 2, 1, 4], hash, invalid)).toEqual([1, 2]);
+      expect(removeDuplicatesAndInvalids([] as number[], hash, invalid)).toEqual([]);
     });
   });
 });

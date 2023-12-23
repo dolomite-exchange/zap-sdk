@@ -6,7 +6,6 @@ import OdosAggregator from './clients/OdosAggregator';
 import ParaswapAggregator from './clients/ParaswapAggregator';
 import {
   Address,
-  AggregatorOutput,
   ApiMarket,
   ApiMarketHelper,
   ApiToken,
@@ -22,14 +21,17 @@ import {
   ZapOutputParam,
 } from './lib/ApiTypes';
 import {
+  ADDRESS_ZERO,
   ApiMarketConverter,
+  BYTES_EMPTY,
   INTEGERS,
+  INVALID_NAME,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
 } from './lib/Constants';
 import { LocalCache } from './lib/LocalCache';
 import Logger from './lib/Logger';
-import { removeDuplicates, toChecksumOpt, zapOutputParamToJson } from './lib/Utils';
+import { removeDuplicatesAndInvalids, toChecksumOpt, zapOutputParamIsInvalid, zapOutputParamToJson } from './lib/Utils';
 
 const ONE_HOUR = 60 * 60;
 
@@ -86,9 +88,8 @@ export class DolomiteZap {
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
 
-    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer);
-    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer);
-    this.validAggregators = [odosAggregator, paraswapAggregator].filter(aggregator => aggregator.isValidForNetwork());
+    this.validAggregators = this.getAllAggregators(network, referralInfo, useProxyServer)
+      .filter(aggregator => aggregator.isValidForNetwork());
   }
 
   private _subgraphUrl: string;
@@ -271,25 +272,22 @@ export class DolomiteZap {
             INTEGERS.ONE,
             txOrigin,
             actualConfig,
-          );
+          ).catch(() => undefined);
         }),
       );
 
-      const aggregatorOutputs = aggregatorOutputOrUndefinedList.filter(trader => !!trader) as AggregatorOutput[];
-      if (aggregatorOutputs.length !== this.validAggregators.length) {
-        throw new Error('Invalid aggregator outputs length');
-      }
-
       amountsPaths.forEach((_, i) => {
-        amountsPaths[i] = amountsPaths[i].concat(aggregatorOutputs[i].expectedAmountOut);
+        const aggregatorOutput = aggregatorOutputOrUndefinedList[i];
+        amountsPaths[i] = amountsPaths[i].concat(aggregatorOutput?.expectedAmountOut ?? INTEGERS.NEGATIVE_ONE);
       });
       traderParamsArrays.forEach((_, i) => {
+        const aggregatorOutput = aggregatorOutputOrUndefinedList[i];
         traderParamsArrays[i] = traderParamsArrays[i].concat({
           traderType: GenericTraderType.ExternalLiquidity,
           makerAccountIndex: 0,
-          trader: aggregatorOutputs[i].traderAddress,
-          tradeData: aggregatorOutputs[i].tradeData,
-          readableName: aggregatorOutputs[i].readableName,
+          trader: aggregatorOutput?.traderAddress ?? ADDRESS_ZERO,
+          tradeData: aggregatorOutput?.tradeData ?? BYTES_EMPTY,
+          readableName: aggregatorOutput?.readableName ?? INVALID_NAME,
         });
       });
     }
@@ -394,12 +392,26 @@ export class DolomiteZap {
       };
     });
 
-    const zaps = removeDuplicates(result, zapOutputParamToJson);
+    const zaps = removeDuplicatesAndInvalids(
+      result,
+      zapOutputParamToJson,
+      zapOutputParamIsInvalid,
+    );
     if (actualConfig.filterOutZapsWithInsufficientOutput) {
       return zaps.filter(zap => zap.expectedAmountOut.gte(amountOutMin));
     } else {
       return zaps;
     }
+  }
+
+  protected getAllAggregators(
+    network: Network,
+    referralInfo: ReferralOutput,
+    useProxyServer: boolean,
+  ): AggregatorClient[] {
+    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer);
+    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer);
+    return [odosAggregator, paraswapAggregator];
   }
 
   protected async getMarketIdToMarketMap(): Promise<Record<string, ApiMarket>> {

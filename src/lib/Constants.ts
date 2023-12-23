@@ -13,9 +13,14 @@ export interface ApiMarketConverter {
 }
 
 export const INTEGERS = {
+  NEGATIVE_ONE: new BigNumber(-1),
   ZERO: new BigNumber(0),
   ONE: new BigNumber(1),
 };
+
+export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
+
+export const INVALID_NAME = 'INVALID';
 
 export const BYTES_EMPTY = '0x';
 
