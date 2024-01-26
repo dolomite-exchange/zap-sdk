@@ -1,6 +1,6 @@
 {
   "name": "@dolomite-exchange/zap-sdk",
-  "version": "0.1.42",
+  "version": "0.1.43",
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
@@ -27,7 +27,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@dolomite-exchange/dolomite-margin-modules": "0.0.12",
+    "@dolomite-exchange/dolomite-margin-modules": "0.0.13",
     "@pendle/sdk-v2": "^2.8.2",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.1",
