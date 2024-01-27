@@ -10,6 +10,7 @@ import {
   ApiMarketHelper,
   ApiToken,
   BlockTag,
+  EstimateOutputResult,
   GenericTraderParam,
   GenericTraderType,
   Integer,
@@ -296,7 +297,10 @@ export class DolomiteZap {
       // Append the amounts and trader params for the wrapper
       let amountsAndTraderParams;
       const lastAmount = amountsPaths[0][amountsPaths[0].length - 1];
-      if (amountsPaths.every(amountsPath => amountsPath[amountsPath.length - 1].eq(lastAmount))) {
+      if (
+        amountsPaths.every(amountsPath => amountsPath[amountsPath.length - 1].eq(lastAmount))
+        && !lastAmount.eq(INTEGERS.NEGATIVE_ONE)
+      ) {
         const outputEstimate = await wrapperHelper.estimateOutputFunction(
           lastAmount,
           wrapperInfo.inputMarketId,
@@ -327,17 +331,29 @@ export class DolomiteZap {
         amountsAndTraderParams = await Promise.all(
           amountsPaths.map(async (amountsPath) => {
             const amountInForEstimation = amountsPath[amountsPath.length - 1];
-            const outputEstimate = await wrapperHelper.estimateOutputFunction(
-              amountInForEstimation,
-              wrapperInfo.inputMarketId,
-              actualConfig,
-            ).catch(e => {
-              Logger.error({
-                message: `Caught error while estimating wrapping: ${e.message}`,
-                error: e,
+            let outputEstimate: EstimateOutputResult;
+            if (amountInForEstimation.eq(INTEGERS.NEGATIVE_ONE)) {
+              outputEstimate = {
+                amountOut: INTEGERS.NEGATIVE_ONE,
+                tradeData: BYTES_EMPTY,
+              };
+            } else {
+              outputEstimate = await wrapperHelper.estimateOutputFunction(
+                amountInForEstimation,
+                wrapperInfo.inputMarketId,
+                actualConfig,
+              ).catch(e => {
+                Logger.error({
+                  message: `Caught error while estimating wrapping: ${e.message}`,
+                  error: e,
+                });
+                return {
+                  amountOut: INTEGERS.NEGATIVE_ONE,
+                  tradeData: BYTES_EMPTY,
+                };
               });
-              return Promise.reject(e);
-            });
+            }
+
             const traderParam: GenericTraderParam = {
               traderType: isIsolationModeWrapper
                 ? GenericTraderType.IsolationModeWrapper
@@ -345,7 +361,9 @@ export class DolomiteZap {
               makerAccountIndex: 0,
               trader: wrapperInfo.wrapperAddress,
               tradeData: outputEstimate.tradeData,
-              readableName: wrapperInfo.readableName,
+              readableName: outputEstimate.amountOut.eq(INTEGERS.NEGATIVE_ONE)
+                ? INVALID_NAME
+                : wrapperInfo.readableName,
             };
             return {
               amountOut: outputEstimate.amountOut,
