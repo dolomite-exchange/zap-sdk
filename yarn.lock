@@ -341,10 +341,10 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@dolomite-exchange/dolomite-margin-modules@0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@dolomite-exchange/dolomite-margin-modules/-/dolomite-margin-modules-0.0.13.tgz#83fa027a250208d2ca4276f9a52c826baffa8d53"
-  integrity sha512-kZg7vvQRdJ8Z1B2LmTyFMYp6gqRYyqzcGNzCecdHyXo+fNIygO0K5jta/r8o1Hn4c+DTwDtvRSsuMKAQgRZh9Q==
+"@dolomite-exchange/modules-deployments@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@dolomite-exchange/modules-deployments/-/modules-deployments-0.0.1.tgz#27ad937fd1624c81bb16966c62f725902341c48c"
+  integrity sha512-T7cbpMvshQcISTmj89exRuI93JUvzozpklBEav/BBizYAJF+2BCcYEEF4/yUGr86v2tIxIBMmqjUm1sNvhtLRw==
 
 "@eth-optimism/contracts@^0.5.21":
   version "0.5.40"

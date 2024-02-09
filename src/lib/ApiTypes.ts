@@ -5,8 +5,9 @@ export type Address = string;
 export type MarketId = BigNumber;
 
 export enum Network {
+  POLYGON_ZKEVM = 1101,
+  BASE = 8453,
   ARBITRUM_ONE = 42161,
-  ARBITRUM_GOERLI = 421613,
 }
 
 export type BlockTag = 'latest' | number;

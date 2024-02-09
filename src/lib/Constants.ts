@@ -1,4 +1,4 @@
-import * as Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/deployments.json';
+import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { Address, MarketId, Network } from './ApiTypes';
 
@@ -25,97 +25,111 @@ export const INVALID_NAME = 'INVALID';
 export const BYTES_EMPTY = '0x';
 
 const USDC_MARKET_ID_MAP: Record<Network, MarketId> = {
+  [Network.POLYGON_ZKEVM]: new BigNumber(2),
+  [Network.BASE]: new BigNumber(2),
   [Network.ARBITRUM_ONE]: new BigNumber(2),
-  [Network.ARBITRUM_GOERLI]: new BigNumber(2),
-};
-
-const ATLAS_PTSI_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
-  [Network.ARBITRUM_ONE]: undefined,
-  [Network.ARBITRUM_GOERLI]: new BigNumber(5),
 };
 
 const GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(6),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const ARB_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(7),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const MAGIC_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(8),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const PLV_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(9),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const JONES_USDC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(10),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const PENDLE_PT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(11),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const WST_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(14),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const R_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(15),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const PENDLE_YT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(16),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const PENDLE_PT_RETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(22),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const PENDLE_PT_WST_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(23),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const PENDLE_PT_WST_ETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(24),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const ARB_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(28),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const GMX_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(29),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const GMX_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(30),
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const GLP_ISOLATION_MODE_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: Deployments.GLPIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 // eslint-disable-next-line max-len
 export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<string, ApiMarketConverter | undefined>> = {
+  [Network.POLYGON_ZKEVM]: {},
+  [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.GLPIsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
@@ -200,19 +214,11 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperReadableName: 'GMX Isolation Mode Wrapper',
     },
   },
-  [Network.ARBITRUM_GOERLI]: {
-    [ATLAS_PTSI_MARKET_ID_MAP[Network.ARBITRUM_GOERLI]!.toFixed()]: {
-      unwrapper: '0x000000000000000000000000000000000000dead',
-      wrapper: '0x000000000000000000000000000000000000dead',
-      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_GOERLI],
-      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_GOERLI],
-      unwrapperReadableName: 'PTSI Isolation Mode Unwrapper',
-      wrapperReadableName: 'PTSI Isolation Mode Wrapper',
-    },
-  },
 };
 
 export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<string, ApiMarketConverter>> = {
+  [Network.POLYGON_ZKEVM]: {},
+  [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [MAGIC_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.MagicGLPUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
@@ -223,17 +229,18 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<st
       wrapperReadableName: 'magicGLP Wrapper',
     },
   },
-  [Network.ARBITRUM_GOERLI]: {},
 };
 
 export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address,
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: Deployments.ParaswapAggregatorTraderV2[Network.POLYGON_ZKEVM].address,
+  [Network.BASE]: Deployments.ParaswapAggregatorTraderV2[Network.BASE].address,
   [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address,
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const PT_GLP_MAR_2024_MARKET_ARBITRUM = '0x7D49E5Adc0EAAD9C027857767638613253eF125f';
@@ -241,6 +248,8 @@ const PT_R_ETH_2025_MARKET_ARBITRUM = '0x14FbC760eFaF36781cB0eb3Cb255aD976117B9B
 const PT_WST_ETH_2024_MARKET_ARBITRUM = '0xFd8AeE8FCC10aac1897F8D5271d112810C79e022';
 const PT_WST_ETH_2025_MARKET_ARBITRUM = '0x08a152834de126d2ef83D612ff36e4523FD0017F';
 const PENDLE_MARKET_MAP: Record<Network, Record<Address, Address | undefined>> = {
+  [Network.POLYGON_ZKEVM]: {},
+  [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
     PT_GLP_MAR_2024_MARKET_ARBITRUM,
@@ -253,22 +262,24 @@ const PENDLE_MARKET_MAP: Record<Network, Record<Address, Address | undefined>> =
     [Deployments.PendleYtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
     PT_GLP_MAR_2024_MARKET_ARBITRUM,
   },
-  [Network.ARBITRUM_GOERLI]: {},
 };
 
 const R_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const S_GLP_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf',
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 const WST_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x5979D7b546E38E414F7E9822514be443A4800529',
-  [Network.ARBITRUM_GOERLI]: undefined,
 };
 
 export function isPtGlpToken(network: Network, tokenAddress: Address): boolean {
