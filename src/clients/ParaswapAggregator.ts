@@ -50,6 +50,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       destDecimals: outputMarket.decimals.toString(),
       amount: inputAmountWei.toFixed(),
       includeContractMethods: 'megaSwap,multiSwap,simpleSwap',
+      partner: 'dolomite',
     }).toString();
     // const priceRouteResponse = await (this.useProxy
     //   ? axios.post(`${PROXY_API_URL}/quote?${pricesQueryParams}`)
@@ -93,7 +94,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       userAddress: traderAddress,
       receiver: traderAddress,
       partnerAddress: this.partnerAddress,
-      partner: this.partnerAddress ? 'dolomite' : undefined,
+      partner: 'dolomite',
       positiveSlippageToUser: !this.partnerAddress, // if there's no partner address, positive slippage goes to the user
     })
       .then(response => response.data)
