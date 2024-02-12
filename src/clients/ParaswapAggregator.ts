@@ -61,8 +61,13 @@ export default class ParaswapAggregator extends AggregatorClient {
         });
         return undefined;
       })
-    if (!priceRouteResponse) {
+    if (!priceRouteResponse || !priceRouteResponse.priceRoute || priceRouteResponse.error) {
       // GUARD: If we don't have a price route, we can't execute the trade
+      Logger.error({
+        message: 'Found error when submitting paraswap#quote',
+        errorMessage: priceRouteResponse?.error,
+        data: priceRouteResponse,
+      });
       return undefined;
     }
 
