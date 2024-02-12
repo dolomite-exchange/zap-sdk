@@ -50,9 +50,10 @@ export default class ParaswapAggregator extends AggregatorClient {
       amount: inputAmountWei.toFixed(),
       includeContractMethods: 'megaSwap,multiSwap,simpleSwap',
     }).toString();
-    const priceRouteResponse = await (this.useProxy
-      ? axios.post(`${PROXY_API_URL}/quote?${pricesQueryParams}`)
-      : axios.get(`${API_URL}/prices?${pricesQueryParams}`))
+    // const priceRouteResponse = await (this.useProxy
+    //   ? axios.post(`${PROXY_API_URL}/quote?${pricesQueryParams}`)
+    //   : axios.get(`${API_URL}/prices?${pricesQueryParams}`))
+    const priceRouteResponse = await axios.get(`${API_URL}/prices?${pricesQueryParams}`)
       .then(response => response.data)
       .catch((error) => {
         Logger.error({
