@@ -6,11 +6,12 @@ import { PARASWAP_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 
-const PROXY_API_URL = 'https://proxy.dolomite.io/aggregator/paraswap';
+// const PROXY_API_URL = 'https://proxy.dolomite.io/aggregator/paraswap';
 const API_URL = 'https://apiv5.paraswap.io';
 
 export default class ParaswapAggregator extends AggregatorClient {
   private readonly partnerAddress: Address | undefined;
+  // @ts-ignore
   private readonly useProxy: boolean;
 
   public constructor(network: Network, partnerAddress: Address | undefined, useProxy: boolean) {
@@ -77,9 +78,10 @@ export default class ParaswapAggregator extends AggregatorClient {
       ignoreGasEstimate: 'true',
       onlyParams: 'false',
     }).toString();
-    const result = await axios.post(this.useProxy
-      ? `${PROXY_API_URL}/assemble?${transactionsQueryParams}`
-      : `${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
+    // const result = await axios.post(this.useProxy
+    //   ? `${PROXY_API_URL}/assemble?${transactionsQueryParams}`
+    //   : `${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
+    const result = await axios.post(`${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
       txOrigin,
       priceRoute: priceRouteResponse?.priceRoute,
       srcToken: inputMarket.tokenAddress,
