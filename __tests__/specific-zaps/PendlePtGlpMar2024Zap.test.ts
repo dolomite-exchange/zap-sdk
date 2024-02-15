@@ -1,4 +1,4 @@
-import Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/deployments.json';
+import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../src';
@@ -44,7 +44,7 @@ describe('PendlePtGlpMar2024Zap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV4[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -79,7 +79,7 @@ describe('PendlePtGlpMar2024Zap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtGLP2024IsolationModeWrapperTraderV2[network].address);
+          .toEqual(Deployments.PendlePtGLP2024IsolationModeWrapperTraderV4[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);

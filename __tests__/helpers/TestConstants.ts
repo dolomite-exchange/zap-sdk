@@ -1,4 +1,4 @@
-import * as Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/deployments.json';
+import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ApiMarket, MarketId, Network } from '../../src';
 import {

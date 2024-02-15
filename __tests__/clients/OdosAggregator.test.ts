@@ -1,4 +1,4 @@
-import Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/deployments.json';
+import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ApiMarket, Network, ZapConfig } from '../../src';
 import OdosAggregator from '../../src/clients/OdosAggregator';

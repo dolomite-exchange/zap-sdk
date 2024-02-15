@@ -1,4 +1,4 @@
-import Deployments from '@dolomite-exchange/dolomite-margin-modules/scripts/deployments.json';
+import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { ApiMarket, DolomiteZap, GenericTraderType, INTEGERS, Network } from '../src';
@@ -235,7 +235,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV4[network].address);
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -270,7 +270,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.GLPIsolationModeWrapperTraderV2[network].address);
+          .toEqual(Deployments.GLPIsolationModeWrapperTraderV4[network].address);
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -308,7 +308,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV4[network].address);
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -356,7 +356,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[1].trader)
-          .toEqual(Deployments.GLPIsolationModeWrapperTraderV2[network].address);
+          .toEqual(Deployments.GLPIsolationModeWrapperTraderV4[network].address);
         expect(outputParam.traderParams[1].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -394,13 +394,13 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV4[network].address);
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[1].trader)
-          .toEqual(Deployments.PlutusVaultGLPIsolationModeWrapperTraderV2[network].address);
+          .toEqual(Deployments.PlutusVaultGLPIsolationModeWrapperTraderV4[network].address);
         expect(outputParam.traderParams[1].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -438,7 +438,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV4[network].address);
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -489,7 +489,7 @@ describe('DolomiteZap', () => {
           expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
           expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
           expect(outputParam.traderParams[0].trader)
-            .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV2[network].address);
+            .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV4[network].address);
           expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
           expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -546,7 +546,7 @@ describe('DolomiteZap', () => {
           expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
           expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
           expect(outputParam.traderParams[0].trader)
-            .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV2[network].address);
+            .toEqual(Deployments.GLPIsolationModeUnwrapperTraderV4[network].address);
           expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
           expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -590,7 +590,7 @@ describe('DolomiteZap', () => {
         expect(outputParamForLiquidation.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParamForLiquidation.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParamForLiquidation.traderParams[0].trader)
-          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV2ForLiquidation[network].address);
+          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV4ForLiquidation[network].address);
         expect(outputParamForLiquidation.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParamForLiquidation.makerAccounts.length).toEqual(0);
@@ -619,7 +619,7 @@ describe('DolomiteZap', () => {
         expect(outputParamForZap.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParamForZap.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParamForZap.traderParams[0].trader)
-          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV4[network].address);
         expect(outputParamForZap.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParamForZap.makerAccounts.length).toEqual(0);
