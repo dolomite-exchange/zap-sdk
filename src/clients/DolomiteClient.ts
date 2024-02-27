@@ -32,11 +32,6 @@ export default class DolomiteClient {
     this.standardEstimator = new StandardEstimator(this.network, this._web3Provider);
   }
 
-  public set web3Provider(web3Provider: ethers.providers.Provider) {
-    this._web3Provider = web3Provider;
-    this.standardEstimator.web3Provider = web3Provider;
-  }
-
   public set subgraphUrl(subgraphUrl: string) {
     this._subgraphUrl = subgraphUrl;
   }

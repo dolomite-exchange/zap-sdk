@@ -20,14 +20,6 @@ export class PendlePtEstimator {
     });
   }
 
-  public set web3Provider(web3Provider: ethers.providers.Provider) {
-    this.pendleRouter = PendleStaticRouter.getRouter({
-      chainId: this.network as any,
-      provider: web3Provider,
-      signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
-    });
-  }
-
   public async getUnwrappedAmount(
     isolationModeToken: Address,
     amountInPt: Integer,

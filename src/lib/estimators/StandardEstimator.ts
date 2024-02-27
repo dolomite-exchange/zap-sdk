@@ -32,11 +32,7 @@ export class StandardEstimator {
     this._web3Provider = web3Provider;
   }
 
-  private _web3Provider: ethers.providers.Provider;
-
-  public set web3Provider(web3Provider: ethers.providers.Provider) {
-    this._web3Provider = web3Provider;
-  }
+  private readonly _web3Provider: ethers.providers.Provider;
 
   public async getUnwrappedAmount(
     isolationModeTokenAddress: Address,

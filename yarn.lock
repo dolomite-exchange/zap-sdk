@@ -341,10 +341,10 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@dolomite-exchange/modules-deployments@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@dolomite-exchange/modules-deployments/-/modules-deployments-0.0.1.tgz#27ad937fd1624c81bb16966c62f725902341c48c"
-  integrity sha512-T7cbpMvshQcISTmj89exRuI93JUvzozpklBEav/BBizYAJF+2BCcYEEF4/yUGr86v2tIxIBMmqjUm1sNvhtLRw==
+"@dolomite-exchange/modules-deployments@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@dolomite-exchange/modules-deployments/-/modules-deployments-0.0.2.tgz#7b948bb5b53b3f758bf0cfaf30c60aa0e56bed3e"
+  integrity sha512-i/o3k8b4ei0zyHC76/KM6Vpz081Fq2H8ofUKw76Ldb1C6VNMvMSwq7FL+AmdQzZcZDh36gu5cBWqrQCXpMTJIA==
 
 "@eth-optimism/contracts@^0.5.21":
   version "0.5.40"

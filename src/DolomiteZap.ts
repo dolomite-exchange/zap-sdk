@@ -104,7 +104,7 @@ export class DolomiteZap {
     this.client.subgraphUrl = newSubgraphUrl;
   }
 
-  private _web3Provider: ethers.providers.Provider;
+  private readonly _web3Provider: ethers.providers.Provider;
 
   public get web3Provider(): ethers.providers.Provider {
     return this._web3Provider;
@@ -124,18 +124,6 @@ export class DolomiteZap {
 
   public get defaultIsLiquidation(): boolean {
     return this._defaultIsLiquidation;
-  }
-
-  public async setWeb3Provider(newWeb3Provider: ethers.providers.Provider) {
-    const oldNetwork = await this._web3Provider.getNetwork();
-    const newNetwork = await newWeb3Provider.getNetwork();
-    if (oldNetwork.chainId !== newNetwork.chainId) {
-      return Promise.reject(new Error('Networks must match'));
-    }
-
-    this._web3Provider = newWeb3Provider;
-    this.client.web3Provider = newWeb3Provider;
-    return Promise.resolve();
   }
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {

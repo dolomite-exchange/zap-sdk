@@ -6,7 +6,7 @@ import { getPendleMarketForIsolationModeToken } from '../Constants';
 
 export class PendleYtEstimator {
   private readonly network: Network;
-  private pendleRouter: PendleRouter;
+  private readonly pendleRouter: PendleRouter;
 
   public constructor(
     network: Network,
@@ -15,14 +15,6 @@ export class PendleYtEstimator {
     this.network = network;
     this.pendleRouter = PendleStaticRouter.getRouter({
       chainId: network as any,
-      provider: web3Provider,
-      signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
-    });
-  }
-
-  public set web3Provider(web3Provider: ethers.providers.Provider) {
-    this.pendleRouter = PendleStaticRouter.getRouter({
-      chainId: this.network as any,
       provider: web3Provider,
       signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
     });

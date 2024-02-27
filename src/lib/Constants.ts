@@ -24,6 +24,8 @@ export const INVALID_NAME = 'INVALID';
 
 export const BYTES_EMPTY = '0x';
 
+// TOKENS
+
 const USDC_MARKET_ID_MAP: Record<Network, MarketId> = {
   [Network.POLYGON_ZKEVM]: new BigNumber(2),
   [Network.BASE]: new BigNumber(2),
@@ -124,6 +126,26 @@ const GLP_ISOLATION_MODE_MAP: Record<Network, Address | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: Deployments.GLPIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+};
+
+// OTHER ADDRESSES
+
+export const ARBITRUM_GAS_INFO_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: '0x000000000000000000000000000000000000006C',
+};
+
+export const GMX_V2_DATA_STORE_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: '0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8',
+};
+
+export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: '0x60a0fF4cDaF0f6D496d71e0bC0fFa86FE8E6B23c',
 };
 
 // eslint-disable-next-line max-len
