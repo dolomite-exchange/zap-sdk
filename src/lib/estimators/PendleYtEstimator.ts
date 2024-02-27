@@ -2,7 +2,7 @@ import { BaseRouter as PendleRouter, Router as PendleStaticRouter } from '@pendl
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
-import { getPendleMarketForIsolationModeToken } from '../Constants';
+import { getPendleYtMarketForIsolationModeToken } from '../Constants';
 
 export class PendleYtEstimator {
   private readonly network: Network;
@@ -26,7 +26,7 @@ export class PendleYtEstimator {
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
     const [, , , tokenOutput] = await this.pendleRouter.swapExactYtForToken(
-      getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
+      getPendleYtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       amountInYt.toFixed(),
       tokenOut as any,
       0,
@@ -62,7 +62,7 @@ export class PendleYtEstimator {
     inputToken: Address,
   ): Promise<{ tradeData: string; ytAmountOut: Integer }> {
     const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForYt(
-      getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
+      getPendleYtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       inputToken as any,
       inputAmount.toFixed(),
       0,

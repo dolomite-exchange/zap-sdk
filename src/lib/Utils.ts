@@ -20,6 +20,10 @@ export function toChecksumOpt(address: Address | undefined): Address | undefined
   }
 }
 
+export function toChecksumReq(address: Address): Address {
+  return ethers.utils.getAddress(address);
+}
+
 /**
  * @param values    The values to scan
  * @param hashFn    A function that resolves some value <T> to a string that can be used in a Set. Duplicates will be

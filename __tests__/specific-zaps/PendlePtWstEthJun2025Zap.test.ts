@@ -33,11 +33,12 @@ describe('PendlePtWstEthJun2025Zap', () => {
 
         expect(outputParams.length).toBe(zap.validAggregators.length);
 
+        const ptWstEthMarketId = PT_WST_ETH_JUN_2025_MARKET.marketId;
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
-        expect(outputParam.marketIdsPath[0]).toEqual(PT_WST_ETH_JUN_2025_MARKET.marketId);
+        expect(outputParam.marketIdsPath[0]).toEqual(ptWstEthMarketId);
         expect(outputParam.marketIdsPath[1])
-          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][PT_WST_ETH_JUN_2025_MARKET.marketId.toFixed()]!.unwrapperMarketId);
+          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][ptWstEthMarketId.toFixed()]!.unwrapperMarketId);
         expect(outputParam.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(3);
@@ -74,12 +75,13 @@ describe('PendlePtWstEthJun2025Zap', () => {
 
         expect(outputParams.length).toBe(zap.validAggregators.length);
 
+        const ptWstEthMarketId = PT_WST_ETH_JUN_2025_MARKET.marketId;
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
         expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
         expect(outputParam.marketIdsPath[1])
-          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][PT_WST_ETH_JUN_2025_MARKET.marketId.toFixed()]!.wrapperMarketId);
-        expect(outputParam.marketIdsPath[2]).toEqual(PT_WST_ETH_JUN_2025_MARKET.marketId);
+          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][ptWstEthMarketId.toFixed()]!.wrapperMarketId);
+        expect(outputParam.marketIdsPath[2]).toEqual(ptWstEthMarketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(3);
         expect(outputParam.amountWeisPath[0]).toEqual(amountIn);

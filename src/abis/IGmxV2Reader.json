@@ -3002,6 +3002,167 @@
         "type": "address"
       },
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "marketToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "indexToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "longToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "shortToken",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct GmxMarket.MarketProps",
+        "name": "_market",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "min",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "max",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct GmxPrice.PriceProps",
+            "name": "indexTokenPrice",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "min",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "max",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct GmxPrice.PriceProps",
+            "name": "longTokenPrice",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "min",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "max",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct GmxPrice.PriceProps",
+            "name": "shortTokenPrice",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct GmxMarket.MarketPrices",
+        "name": "_prices",
+        "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenIn",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountIn",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_uiFeeReceiver",
+        "type": "address"
+      }
+    ],
+    "name": "getSwapAmountOut",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "feeReceiverAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feeAmountForPool",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amountAfterFees",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "uiFeeReceiver",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "uiFeeReceiverFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "uiFeeAmount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IGmxReader.SwapFees",
+        "name": "fees",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IGmxDataStore",
+        "name": "_dataStore",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "_marketKey",
         "type": "address"

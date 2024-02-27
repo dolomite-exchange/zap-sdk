@@ -56,7 +56,7 @@ export default class DolomiteClient {
       blockTag,
       pageIndex,
     ));
-    return (marketsList.concat(...this.marketsToAdd)).reduce<Record<string, ApiMarket>>((acc, market) => {
+    return (this.marketsToAdd.concat(marketsList)).reduce<Record<string, ApiMarket>>((acc, market) => {
       acc[market.marketId.toFixed()] = market;
       return acc;
     }, {});

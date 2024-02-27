@@ -132,6 +132,7 @@ export interface ZapConfig {
   slippageTolerance: number;
   blockTag: BlockTag;
   filterOutZapsWithInsufficientOutput: boolean;
+  gasPriceInWei?: Integer;
 }
 
 export interface ZapOutputParam {

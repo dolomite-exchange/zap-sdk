@@ -4,35 +4,37 @@ import IDolomiteMarginExchangeWrapper from '../../abis/IDolomiteMarginExchangeWr
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
   BYTES_EMPTY,
-  getGlpIsolationModeAddress,
   getGlpIsolationModeMarketId,
-  getREthAddress,
-  getSGlpAddress,
-  getWstEthAddress,
+  getPendlePtTransformerTokenForIsolationModeToken,
+  getPendleYtTransformerTokenForIsolationModeToken,
+  isGmxV2IsolationModeAsset,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
-  isPtGlpToken,
-  isPtREthToken,
-  isPtWstEthJun2024Token,
-  isPtWstEthJun2025Token,
+  isPendlePtAsset,
+  isPendlePtGlpAsset,
+  isPendleYtAsset,
+  isPendleYtGlpAsset,
   isSimpleIsolationModeAsset,
-  isYtGlpToken,
 } from '../Constants';
 import { PendlePtEstimator } from './PendlePtEstimator';
 import { PendleYtEstimator } from './PendleYtEstimator';
 import { SimpleEstimator } from './SimpleEstimator';
+import { GmxV2GmEstimator } from './GmxV2GmEstimator';
 
 export class StandardEstimator {
-  private readonly network: Network;
+  private readonly gmxV2GmEstimator: GmxV2GmEstimator;
+  private readonly pendlePtEstimator: PendlePtEstimator;
+  private readonly pendleYtEstimator: PendleYtEstimator;
+  private readonly simpleEstimator: SimpleEstimator;
 
   public constructor(
-    network: Network,
-    web3Provider: ethers.providers.Provider,
+    private readonly network: Network,
+    private readonly web3Provider: ethers.providers.Provider,
   ) {
-    this.network = network;
-    this._web3Provider = web3Provider;
+    this.gmxV2GmEstimator = new GmxV2GmEstimator(this.network, this.web3Provider);
+    this.pendlePtEstimator = new PendlePtEstimator(this.network, this.web3Provider);
+    this.pendleYtEstimator = new PendleYtEstimator(this.network, this.web3Provider);
+    this.simpleEstimator = new SimpleEstimator();
   }
-
-  private readonly _web3Provider: ethers.providers.Provider;
 
   public async getUnwrappedAmount(
     isolationModeTokenAddress: Address,
@@ -43,64 +45,62 @@ export class StandardEstimator {
     marketsMap: Record<string, ApiMarket>,
   ): Promise<EstimateOutputResult> {
     const outputMarket = marketsMap[outputMarketId.toFixed()];
-    const contract = new ethers.Contract(unwrapperAddress, IDolomiteMarginExchangeWrapper, this._web3Provider);
 
-    if (isPtGlpToken(this.network, isolationModeTokenAddress)) {
-      const pendlePtEstimator = new PendlePtEstimator(this.network, this._web3Provider);
-      const result = await pendlePtEstimator.getUnwrappedAmount(
+    if (isPendlePtAsset(this.network, isolationModeTokenAddress)) {
+      const result = await this.pendlePtEstimator.getUnwrappedAmount(
         isolationModeTokenAddress,
         amountIn,
-        getSGlpAddress(this.network) as Address,
+        getPendlePtTransformerTokenForIsolationModeToken(this.network, isolationModeTokenAddress)!,
       );
-      const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
-      const estimateOutputResult = await this.getUnwrappedAmount(
-        getGlpIsolationModeAddress(this.network)!,
-        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
-        result.amountOut,
-        outputMarketId,
-        config,
-        marketsMap,
-      );
-      return { tradeData: result.tradeData, amountOut: estimateOutputResult.amountOut };
-    } else if (isPtREthToken(this.network, isolationModeTokenAddress)) {
-      const pendlePtEstimator = new PendlePtEstimator(this.network, this._web3Provider);
-      return pendlePtEstimator.getUnwrappedAmount(
+
+      if (isPendlePtGlpAsset(this.network, isolationModeTokenAddress)) {
+        const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
+        const glpResult = await this.getUnwrappedAmount(
+          marketsMap[glpMarketId.toFixed()].tokenAddress,
+          ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
+          result.amountOut,
+          marketsMap[glpMarketId.toFixed()].isolationModeUnwrapperInfo!.outputMarketId,
+          config,
+          marketsMap,
+        );
+        return { tradeData: result.tradeData, amountOut: glpResult.amountOut };
+      }
+
+      return { tradeData: result.tradeData, amountOut: result.amountOut };
+    } else if (isPendleYtAsset(this.network, isolationModeTokenAddress)) {
+      const result = await this.pendleYtEstimator.getUnwrappedAmount(
         isolationModeTokenAddress,
         amountIn,
-        getREthAddress(this.network) as Address,
+        getPendleYtTransformerTokenForIsolationModeToken(this.network, isolationModeTokenAddress)!,
       );
-    } else if (
-      isPtWstEthJun2024Token(this.network, isolationModeTokenAddress)
-      || isPtWstEthJun2025Token(this.network, isolationModeTokenAddress)
-    ) {
-      const pendlePtEstimator = new PendlePtEstimator(this.network, this._web3Provider);
-      return pendlePtEstimator.getUnwrappedAmount(
-        isolationModeTokenAddress,
-        amountIn,
-        getWstEthAddress(this.network) as Address,
-      );
-    } else if (isYtGlpToken(this.network, isolationModeTokenAddress)) {
-      const pendleYtEstimator = new PendleYtEstimator(this.network, this._web3Provider);
-      const result = await pendleYtEstimator.getUnwrappedAmount(
-        isolationModeTokenAddress,
-        amountIn,
-        getSGlpAddress(this.network) as Address,
-      );
-      const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
-      const estimateOutputResult = await this.getUnwrappedAmount(
-        getGlpIsolationModeAddress(this.network)!,
-        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
-        result.amountOut,
-        outputMarketId,
-        config,
-        marketsMap,
-      );
-      return { tradeData: result.tradeData, amountOut: estimateOutputResult.amountOut };
+
+      if (isPendleYtGlpAsset(this.network, isolationModeTokenAddress)) {
+        const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
+        const glpResult = await this.getUnwrappedAmount(
+          marketsMap[glpMarketId.toFixed()].tokenAddress,
+          ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
+          result.amountOut,
+          marketsMap[glpMarketId.toFixed()].isolationModeUnwrapperInfo!.outputMarketId,
+          config,
+          marketsMap,
+        );
+        return { tradeData: result.tradeData, amountOut: glpResult.amountOut };
+      }
+
+      return { tradeData: result.tradeData, amountOut: result.amountOut };
     } else if (isSimpleIsolationModeAsset(this.network, isolationModeTokenAddress)) {
-      const estimator = new SimpleEstimator();
-      return estimator.getUnwrappedAmount(amountIn);
+      return this.simpleEstimator.getUnwrappedAmount(amountIn);
+    } else if (isGmxV2IsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      return this.gmxV2GmEstimator.getUnwrappedAmount(
+        isolationModeTokenAddress,
+        amountIn,
+        outputMarketId,
+        marketsMap,
+        config,
+      );
     } else {
       // fallback is to call getExchangeCost
+      const contract = new ethers.Contract(unwrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
       const tradeData = BYTES_EMPTY;
       const outputAmount = await contract.getExchangeCost(
         isolationModeTokenAddress,
@@ -123,62 +123,60 @@ export class StandardEstimator {
   ): Promise<EstimateOutputResult> {
     const inputMarket = marketsMap[inputMarketId.toFixed()];
 
-    if (isPtGlpToken(this.network, isolationModeTokenAddress)) {
-      const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
-      const estimateOutputResult = await this.getWrappedAmount(
-        getGlpIsolationModeAddress(this.network)!,
-        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.wrapper,
-        amountIn,
-        inputMarketId,
-        config,
-        marketsMap,
-      );
-      const pendleEstimator = new PendlePtEstimator(this.network, this._web3Provider);
-      const result = await pendleEstimator.getWrappedAmount(
+    if (isPendlePtAsset(this.network, isolationModeTokenAddress)) {
+      let newAmountIn = amountIn;
+      if (isPendlePtGlpAsset(this.network, isolationModeTokenAddress)) {
+        const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
+        const estimateOutputResult = await this.getWrappedAmount(
+          marketsMap[glpMarketId.toFixed()].tokenAddress,
+          ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.wrapper,
+          amountIn,
+          inputMarketId,
+          config,
+          marketsMap,
+        );
+        newAmountIn = estimateOutputResult.amountOut;
+      }
+
+      const result = await this.pendlePtEstimator.getWrappedAmount(
         isolationModeTokenAddress,
-        estimateOutputResult.amountOut,
-        getSGlpAddress(this.network) as Address,
+        newAmountIn,
+        getPendlePtTransformerTokenForIsolationModeToken(this.network, isolationModeTokenAddress)!,
       );
       return { tradeData: result.tradeData, amountOut: result.amountOut };
-    } else if (isPtREthToken(this.network, isolationModeTokenAddress)) {
-      const pendlePtEstimator = new PendlePtEstimator(this.network, this._web3Provider);
-      return pendlePtEstimator.getWrappedAmount(
+    } else if (isPendleYtAsset(this.network, isolationModeTokenAddress)) {
+      let newAmountIn = amountIn;
+      if (isPendleYtGlpAsset(this.network, isolationModeTokenAddress)) {
+        const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
+        const estimateOutputResult = await this.getWrappedAmount(
+          marketsMap[glpMarketId.toFixed()].tokenAddress,
+          ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.wrapper,
+          amountIn,
+          inputMarketId,
+          config,
+          marketsMap,
+        );
+        newAmountIn = estimateOutputResult.amountOut;
+      }
+
+      const result = await this.pendleYtEstimator.getWrappedAmount(
         isolationModeTokenAddress,
-        amountIn,
-        getREthAddress(this.network) as Address,
-      );
-    } else if (
-      isPtWstEthJun2024Token(this.network, isolationModeTokenAddress)
-      || isPtWstEthJun2025Token(this.network, isolationModeTokenAddress)
-    ) {
-      const pendlePtEstimator = new PendlePtEstimator(this.network, this._web3Provider);
-      return pendlePtEstimator.getWrappedAmount(
-        isolationModeTokenAddress,
-        amountIn,
-        getWstEthAddress(this.network) as Address,
-      );
-    } else if (isYtGlpToken(this.network, isolationModeTokenAddress)) {
-      const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
-      const estimateOutputResult = await this.getWrappedAmount(
-        getGlpIsolationModeAddress(this.network)!,
-        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.wrapper,
-        amountIn,
-        inputMarketId,
-        config,
-        marketsMap,
-      );
-      const pendleEstimator = new PendleYtEstimator(this.network, this._web3Provider);
-      const result = await pendleEstimator.getWrappedAmount(
-        isolationModeTokenAddress,
-        estimateOutputResult.amountOut,
-        getSGlpAddress(this.network) as Address,
+        newAmountIn,
+        getPendleYtTransformerTokenForIsolationModeToken(this.network, isolationModeTokenAddress)!,
       );
       return { tradeData: result.tradeData, amountOut: result.ytAmountOut };
     } else if (isSimpleIsolationModeAsset(this.network, isolationModeTokenAddress)) {
-      const estimator = new SimpleEstimator();
-      return estimator.getWrappedAmount(amountIn);
+      return this.simpleEstimator.getWrappedAmount(amountIn);
+    } else if (isGmxV2IsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      return this.gmxV2GmEstimator.getWrappedAmount(
+        isolationModeTokenAddress,
+        amountIn,
+        inputMarketId,
+        marketsMap,
+        config,
+      );
     } else {
-      const contract = new ethers.Contract(wrapperAddress, IDolomiteMarginExchangeWrapper, this._web3Provider);
+      const contract = new ethers.Contract(wrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
       const tradeData = BYTES_EMPTY;
       const outputAmount = await contract.getExchangeCost(
         inputMarket.tokenAddress,

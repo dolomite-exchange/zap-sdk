@@ -1,5 +1,6 @@
 import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
+import { ethers } from 'ethers';
 import { Address, MarketId, Network } from './ApiTypes';
 
 export interface ApiMarketConverter {
@@ -18,6 +19,13 @@ export const INTEGERS = {
   ONE: new BigNumber(1),
 };
 
+export interface GmMarket {
+  indexTokenId: MarketId;
+  shortTokenId: MarketId;
+  longTokenId: MarketId;
+  marketTokenAddress: Address;
+}
+
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
 export const INVALID_NAME = 'INVALID';
@@ -26,10 +34,28 @@ export const BYTES_EMPTY = '0x';
 
 // TOKENS
 
+const WETH_MARKET_ID_MAP: Record<Network, MarketId> = {
+  [Network.POLYGON_ZKEVM]: new BigNumber(0),
+  [Network.BASE]: new BigNumber(0),
+  [Network.ARBITRUM_ONE]: new BigNumber(0),
+};
+
 const USDC_MARKET_ID_MAP: Record<Network, MarketId> = {
   [Network.POLYGON_ZKEVM]: new BigNumber(2),
   [Network.BASE]: new BigNumber(2),
   [Network.ARBITRUM_ONE]: new BigNumber(2),
+};
+
+const LINK_MARKET_ID_MAP: Record<Network, MarketId> = {
+  [Network.POLYGON_ZKEVM]: new BigNumber(3),
+  [Network.BASE]: new BigNumber(3),
+  [Network.ARBITRUM_ONE]: new BigNumber(3),
+};
+
+const WBTC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: new BigNumber(4),
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(4),
 };
 
 const GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
@@ -86,6 +112,12 @@ const PENDLE_YT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(16),
 };
 
+const NATIVE_USDC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(17),
+};
+
 const PENDLE_PT_RETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
@@ -122,10 +154,63 @@ const GMX_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(30),
 };
 
-const GLP_ISOLATION_MODE_MAP: Record<Network, Address | undefined> = {
+const GM_ARB_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
-  [Network.ARBITRUM_ONE]: Deployments.GLPIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  [Network.ARBITRUM_ONE]: new BigNumber(31),
+};
+
+const GM_BTC_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(32),
+};
+
+const GM_ETH_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(33),
+};
+
+const GM_LINK_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(34),
+};
+
+// =========================
+// ======= Addresses =======
+// =========================
+
+export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined> | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: {
+    [Deployments.GmxV2ARBIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenId: ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenId: ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407',
+    },
+    [Deployments.GmxV2BTCIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenId: WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenId: WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x47c031236e19d024b42f8AE6780E44A573170703',
+    },
+    [Deployments.GmxV2ETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenId: WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenId: WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x70d95587d40A2caf56bd97485aB3Eec10Bee6336',
+    },
+    [Deployments.GmxV2LINKIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenId: LINK_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenId: LINK_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x7f1fa204bb700853D36994DA19F830b6Ad18455C',
+    },
+  },
 };
 
 // OTHER ADDRESSES
@@ -146,6 +231,24 @@ export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x60a0fF4cDaF0f6D496d71e0bC0fFa86FE8E6B23c',
+};
+
+const S_GLP_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: '0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf',
+};
+
+const R_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
+};
+
+const WST_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: '0x5979D7b546E38E414F7E9822514be443A4800529',
 };
 
 // eslint-disable-next-line max-len
@@ -235,6 +338,38 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       unwrapperReadableName: 'GMX Isolation Mode Unwrapper',
       wrapperReadableName: 'GMX Isolation Mode Wrapper',
     },
+    [GM_ARB_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.GmxV2ARBAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2ARBAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'GM Intent Unwrapper',
+      wrapperReadableName: 'GMX Intent Wrapper',
+    },
+    [GM_BTC_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.GmxV2BTCAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2BTCAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'GM Intent Unwrapper',
+      wrapperReadableName: 'GMX Intent Wrapper',
+    },
+    [GM_ETH_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.GmxV2ETHAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2ETHAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'GM Intent Unwrapper',
+      wrapperReadableName: 'GMX Intent Wrapper',
+    },
+    [GM_LINK_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.GmxV2LINKAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2LINKAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'GM Intent Unwrapper',
+      wrapperReadableName: 'GMX Intent Wrapper',
+    },
   },
 };
 
@@ -269,96 +404,115 @@ const PT_GLP_MAR_2024_MARKET_ARBITRUM = '0x7D49E5Adc0EAAD9C027857767638613253eF1
 const PT_R_ETH_2025_MARKET_ARBITRUM = '0x14FbC760eFaF36781cB0eb3Cb255aD976117B9Bd';
 const PT_WST_ETH_2024_MARKET_ARBITRUM = '0xFd8AeE8FCC10aac1897F8D5271d112810C79e022';
 const PT_WST_ETH_2025_MARKET_ARBITRUM = '0x08a152834de126d2ef83D612ff36e4523FD0017F';
-const PENDLE_MARKET_MAP: Record<Network, Record<Address, Address | undefined>> = {
+
+interface PendleMarketProps {
+  marketTokenAddress: string;
+  transformerTokenAddress: string;
+}
+
+const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | undefined>> = {
   [Network.POLYGON_ZKEVM]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
-    [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
-    PT_GLP_MAR_2024_MARKET_ARBITRUM,
-    [Deployments.PendlePtREthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
-    PT_R_ETH_2025_MARKET_ARBITRUM,
-    [Deployments.PendlePtWstEthJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
-    PT_WST_ETH_2024_MARKET_ARBITRUM,
-    [Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
-    PT_WST_ETH_2025_MARKET_ARBITRUM,
-    [Deployments.PendleYtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]:
-    PT_GLP_MAR_2024_MARKET_ARBITRUM,
+    [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
+      transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
+    },
+    [Deployments.PendlePtREthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      marketTokenAddress: PT_R_ETH_2025_MARKET_ARBITRUM,
+      transformerTokenAddress: R_ETH_MAP[Network.ARBITRUM_ONE]!,
+    },
+    [Deployments.PendlePtWstEthJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      marketTokenAddress: PT_WST_ETH_2024_MARKET_ARBITRUM,
+      transformerTokenAddress: WST_ETH_MAP[Network.ARBITRUM_ONE]!,
+    },
+    [Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      marketTokenAddress: PT_WST_ETH_2025_MARKET_ARBITRUM,
+      transformerTokenAddress: WST_ETH_MAP[Network.ARBITRUM_ONE]!,
+    },
   },
 };
 
-const R_ETH_MAP: Record<Network, Address | undefined> = {
-  [Network.POLYGON_ZKEVM]: undefined,
-  [Network.BASE]: undefined,
-  [Network.ARBITRUM_ONE]: '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
+const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | undefined>> = {
+  [Network.POLYGON_ZKEVM]: {},
+  [Network.BASE]: {},
+  [Network.ARBITRUM_ONE]: {
+    [Deployments.PendleYtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
+      transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
+    },
+  },
 };
 
-const S_GLP_MAP: Record<Network, Address | undefined> = {
-  [Network.POLYGON_ZKEVM]: undefined,
-  [Network.BASE]: undefined,
-  [Network.ARBITRUM_ONE]: '0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf',
-};
-
-const WST_ETH_MAP: Record<Network, Address | undefined> = {
-  [Network.POLYGON_ZKEVM]: undefined,
-  [Network.BASE]: undefined,
-  [Network.ARBITRUM_ONE]: '0x5979D7b546E38E414F7E9822514be443A4800529',
-};
-
-export function isPtGlpToken(network: Network, tokenAddress: Address): boolean {
-  const ptGlpTokenAddress = Deployments.PendlePtGLP2024IsolationModeVaultFactory[network]?.address;
-  return ptGlpTokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
-}
-
-export function isPtREthToken(network: Network, tokenAddress: Address): boolean {
-  const ptREthTokenAddress = Deployments.PendlePtREthJun2025IsolationModeVaultFactory[network]?.address;
-  return ptREthTokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
-}
-
-export function isPtWstEthJun2024Token(network: Network, tokenAddress: Address): boolean {
-  const ptWstEthJun2024TokenAddress = Deployments.PendlePtWstEthJun2024IsolationModeVaultFactory[network]?.address;
-  return ptWstEthJun2024TokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
-}
-
-export function isPtWstEthJun2025Token(network: Network, tokenAddress: Address): boolean {
-  const ptWstEthJun2024TokenAddress = Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[network]?.address;
-  return ptWstEthJun2024TokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
-}
-
-export function isYtGlpToken(network: Network, tokenAddress: Address): boolean {
-  const ytGlpTokenAddress = Deployments.PendleYtGLP2024IsolationModeVaultFactory[network]?.address;
-  return ytGlpTokenAddress?.toLowerCase() === tokenAddress.toLowerCase();
+const SIMPLE_ISOLATION_MODE_MAP: Record<Network, Record<string, boolean | undefined>> = {
+  [Network.BASE]: {},
+  [Network.POLYGON_ZKEVM]: {},
+  [Network.ARBITRUM_ONE]: {
+    [Deployments.ARBIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: true,
+    [Deployments.GMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: true,
+  },
 }
 
 export function isSimpleIsolationModeAsset(network: Network, tokenAddress: Address): boolean {
-  const arbAddress = Deployments.ARBIsolationModeVaultFactory[network]?.address;
-  const gmxAddress = Deployments.GMXIsolationModeVaultFactory[network]?.address;
-  return arbAddress?.toLowerCase() === tokenAddress.toLowerCase()
-    || gmxAddress?.toLowerCase() === tokenAddress.toLowerCase();
+  return !!SIMPLE_ISOLATION_MODE_MAP[network][tokenAddress]
 }
 
-export function getGlpIsolationModeAddress(network: Network): Address | undefined {
-  return GLP_ISOLATION_MODE_MAP[network];
+export function isPendlePtAsset(network: Network, tokenAddress: Address): boolean {
+  return !!PENDLE_PT_MARKET_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
-export function getGlpIsolationModeMarketId(network: Network): BigNumber | undefined {
+export function isPendleYtAsset(network: Network, tokenAddress: Address): boolean {
+  return !!PENDLE_YT_MARKET_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
+export function isGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): boolean {
+  return !!GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
+export function getGlpIsolationModeMarketId(
+  network: Network,
+): MarketId | undefined {
   return GLP_MARKET_ID_MAP[network];
 }
 
-export function getSGlpAddress(network: Network): Address | undefined {
-  return S_GLP_MAP[network];
-}
-
-export function getREthAddress(network: Network): Address | undefined {
-  return R_ETH_MAP[network];
-}
-
-export function getWstEthAddress(network: Network): Address | undefined {
-  return WST_ETH_MAP[network];
-}
-
-export function getPendleMarketForIsolationModeToken(
+export function getPendlePtMarketForIsolationModeToken(
   network: Network,
   isolationModeToken: Address,
 ): Address | undefined {
-  return PENDLE_MARKET_MAP[network][isolationModeToken];
+  return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.marketTokenAddress;
+}
+
+export function getPendleYtMarketForIsolationModeToken(
+  network: Network,
+  isolationModeToken: Address,
+): Address | undefined {
+  return PENDLE_YT_MARKET_MAP[network]?.[isolationModeToken]?.marketTokenAddress;
+}
+
+export function getPendlePtTransformerTokenForIsolationModeToken(
+  network: Network,
+  isolationModeToken: Address,
+): Address | undefined {
+  return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.transformerTokenAddress;
+}
+
+export function getPendleYtTransformerTokenForIsolationModeToken(
+  network: Network,
+  isolationModeToken: Address,
+): Address | undefined {
+  return PENDLE_YT_MARKET_MAP[network]?.[isolationModeToken]?.transformerTokenAddress;
+}
+
+export function isPendlePtGlpAsset(
+  network: Network,
+  isolationModeToken: Address,
+): boolean {
+  return Deployments.PendlePtGLP2024IsolationModeVaultFactory[network]?.address === isolationModeToken;
+}
+
+export function isPendleYtGlpAsset(
+  network: Network,
+  isolationModeToken: Address,
+): boolean {
+  return Deployments.PendleYtGLP2024IsolationModeVaultFactory[network]?.address === isolationModeToken;
 }

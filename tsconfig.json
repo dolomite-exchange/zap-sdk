@@ -30,6 +30,7 @@
   "compileOnSave": true,
   "include": [
     "src",
+    "__tests__",
     "environment.d.ts"
   ]
 }

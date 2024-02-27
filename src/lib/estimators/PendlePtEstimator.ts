@@ -2,17 +2,15 @@ import { BaseRouter as PendleRouter, Router as PendleStaticRouter } from '@pendl
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
-import { getPendleMarketForIsolationModeToken } from '../Constants';
+import { getPendlePtMarketForIsolationModeToken } from '../Constants';
 
 export class PendlePtEstimator {
-  private readonly network: Network;
-  private pendleRouter: PendleRouter;
+  private readonly pendleRouter: PendleRouter;
 
   public constructor(
-    network: Network,
+    private readonly network: Network,
     web3Provider: ethers.providers.Provider,
   ) {
-    this.network = network;
     this.pendleRouter = PendleStaticRouter.getRouter({
       chainId: network as any,
       provider: web3Provider,
@@ -26,7 +24,7 @@ export class PendlePtEstimator {
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
     const [, , , tokenOutput] = await this.pendleRouter.swapExactPtForToken(
-      getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
+      getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       amountInPt.toFixed(),
       tokenOut as any,
       0,
@@ -53,6 +51,7 @@ export class PendlePtEstimator {
     );
 
     const amountOut = new BigNumber(tokenOutput.minTokenOut.toString());
+
     return { tradeData, amountOut };
   }
 
@@ -62,7 +61,7 @@ export class PendlePtEstimator {
     inputToken: Address,
   ): Promise<EstimateOutputResult> {
     const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForPt(
-      getPendleMarketForIsolationModeToken(this.network, isolationModeToken) as any,
+      getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       inputToken as any,
       inputAmount.toFixed(),
       0,
