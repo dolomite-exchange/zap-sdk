@@ -44,7 +44,7 @@ describe('GmxV2Zap', () => {
           expect(outputParams.length).toBe(2);
 
           const outputParam = outputParams[0];
-          expect(outputParam.marketIdsPath.length).toEqual(2);
+          expect(outputParam.marketIdsPath.length).toEqual(3);
           expect(outputParam.marketIdsPath[0]).toEqual(market.marketId);
           expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
 
@@ -82,7 +82,7 @@ describe('GmxV2Zap', () => {
           expect(outputParams.length).toBe(2);
 
           const outputParam = outputParams[0];
-          expect(outputParam.marketIdsPath.length).toEqual(2);
+          expect(outputParam.marketIdsPath.length).toEqual(3);
           expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
           expect(outputParam.marketIdsPath[1]).toEqual(market.marketId);
 
