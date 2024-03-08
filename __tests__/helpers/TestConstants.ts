@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { ApiMarket, MarketId, Network } from '../../src';
 import {
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
-  LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
+  LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP, WE_ETH_MAP,
 } from '../../src/lib/Constants';
 import { toChecksumOpt } from '../../src/lib/Utils';
 
@@ -284,6 +284,40 @@ export const GM_LINK_MARKET: ApiMarket = getApiMarket(
   Deployments.GmxV2LINKIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
   18,
 );
+
+const WE_ETH_MARKET_ID = new BigNumber(35);
+export const WE_ETH_MARKET: ApiMarket = {
+  marketId: WE_ETH_MARKET_ID,
+  symbol: 'weETH',
+  name: 'Wrapped eETH',
+  tokenAddress: WE_ETH_MAP[Network.ARBITRUM_ONE]!,
+  decimals: 18,
+  isolationModeUnwrapperInfo: undefined,
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: undefined,
+  liquidityTokenWrapperInfo: undefined,
+};
+
+const PT_WE_ETH_APR_2024_MARKET_ID = new BigNumber(36);
+export const PT_WE_ETH_APR_2024_MARKET: ApiMarket = {
+  marketId: PT_WE_ETH_APR_2024_MARKET_ID,
+  symbol: 'dPT-weETH-APR2024',
+  name: 'Dolomite Isolation: PT weETH APR2024',
+  tokenAddress: Deployments.PendlePtWeETHApr2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapperMarketId,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
 
 function getApiMarket(
   network: Network,

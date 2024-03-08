@@ -14,22 +14,17 @@ const defaultAxiosConfig = {
 };
 
 export default class DolomiteClient {
-  private readonly network: Network;
-  private _subgraphUrl: string;
-  private _web3Provider: ethers.providers.Provider;
   private marketsToAdd: ApiMarket[];
   private standardEstimator: StandardEstimator;
 
   public constructor(
-    networkId: Network,
-    subgraphUrl: string,
+    private readonly network: Network,
+    private _subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
+    usePendleV3: boolean,
   ) {
-    this.network = networkId;
-    this._subgraphUrl = subgraphUrl;
-    this._web3Provider = web3Provider;
     this.marketsToAdd = [];
-    this.standardEstimator = new StandardEstimator(this.network, this._web3Provider);
+    this.standardEstimator = new StandardEstimator(this.network, web3Provider, usePendleV3);
   }
 
   public set subgraphUrl(subgraphUrl: string) {

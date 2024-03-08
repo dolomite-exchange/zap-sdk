@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
 import { getPendlePtMarketForIsolationModeToken } from '../Constants';
 
-export class PendlePtEstimator {
+export class PendlePtEstimatorV2 {
   private readonly pendleRouter: PendleRouter;
 
   public constructor(

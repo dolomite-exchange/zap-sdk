@@ -12,6 +12,7 @@ import {
 } from '../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
+const subAccountNumber = new BigNumber('123');
 
 describe('GmxV2Zap', () => {
   const network = Network.ARBITRUM_ONE;
@@ -65,7 +66,7 @@ describe('GmxV2Zap', () => {
           expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
           expect(outputParam.traderParams[0].trader)
             .toEqual(market.isolationModeUnwrapperInfo!.unwrapperAddress);
-          expect(outputParam.traderParams[0].tradeData.length).toEqual(66);
+          expect(outputParam.traderParams[0].tradeData.length).toEqual(130);
 
           expect(outputParam.makerAccounts.length).toEqual(0);
           expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
@@ -85,6 +86,7 @@ describe('GmxV2Zap', () => {
             market,
             minAmountOut,
             txOrigin,
+            { subAccountNumber },
           );
 
           expect(outputParams.length).toBe(2);
@@ -104,7 +106,7 @@ describe('GmxV2Zap', () => {
           expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
           expect(outputParam.traderParams[1].trader)
             .toEqual(market.isolationModeWrapperInfo?.wrapperAddress);
-          expect(outputParam.traderParams[1].tradeData.length).toEqual(66);
+          expect(outputParam.traderParams[1].tradeData.length).toEqual(130);
 
           expect(outputParam.makerAccounts.length).toEqual(0);
           expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))

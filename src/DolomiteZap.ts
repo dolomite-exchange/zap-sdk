@@ -63,6 +63,7 @@ export class DolomiteZap {
    * @param useProxyServer            True if the Dolomite proxy server should be used for aggregators that support it.
    *                                  The proxy server is used to make the API requests consistent and prevent browser
    *                                  plugins from blocking requests. Defaults to true.
+   * @param usePendleV3               True to use the Pendle V3 router, false to use V2. Defaults to `false`.
    */
   public constructor(
     network: Network,
@@ -77,6 +78,7 @@ export class DolomiteZap {
       referralAddress: undefined,
     },
     useProxyServer: boolean = true,
+    usePendleV3: boolean = false,
   ) {
     this.network = network;
     this._subgraphUrl = subgraphUrl;
@@ -85,7 +87,7 @@ export class DolomiteZap {
     this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
 
-    this.client = new DolomiteClient(network, subgraphUrl, web3Provider);
+    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, usePendleV3);
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
 
@@ -170,6 +172,7 @@ export class DolomiteZap {
       slippageTolerance: config?.slippageTolerance ?? this.defaultSlippageTolerance,
       blockTag: config?.blockTag ?? this._defaultBlockTag,
       filterOutZapsWithInsufficientOutput: config?.filterOutZapsWithInsufficientOutput ?? true,
+      subAccountNumber: config?.subAccountNumber,
     };
     const marketsMap = await this.getMarketIdToMarketMap();
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);

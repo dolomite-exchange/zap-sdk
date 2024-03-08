@@ -178,6 +178,18 @@ const GM_LINK_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(34),
 };
 
+const WE_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(35),
+};
+
+const PENDLE_PT_WE_ETH_APR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(36),
+};
+
 // =========================
 // ======= Addresses =======
 // =========================
@@ -243,6 +255,12 @@ const R_ETH_MAP: Record<Network, Address | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
+};
+
+export const WE_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: '0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe',
 };
 
 const WST_ETH_MAP: Record<Network, Address | undefined> = {
@@ -370,6 +388,14 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       unwrapperReadableName: 'GM Intent Unwrapper',
       wrapperReadableName: 'GMX Intent Wrapper',
     },
+    [PENDLE_PT_WE_ETH_APR_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.PendlePtWeETHApr2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtWeETHApr2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketId: WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      wrapperMarketId: WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperReadableName: 'PT-weETH Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-weETH Isolation Mode Wrapper',
+    },
   },
 };
 
@@ -404,6 +430,7 @@ const PT_GLP_MAR_2024_MARKET_ARBITRUM = '0x7D49E5Adc0EAAD9C027857767638613253eF1
 const PT_R_ETH_2025_MARKET_ARBITRUM = '0x14FbC760eFaF36781cB0eb3Cb255aD976117B9Bd';
 const PT_WST_ETH_2024_MARKET_ARBITRUM = '0xFd8AeE8FCC10aac1897F8D5271d112810C79e022';
 const PT_WST_ETH_2025_MARKET_ARBITRUM = '0x08a152834de126d2ef83D612ff36e4523FD0017F';
+const PT_WE_ETH_APR_2024_MARKET_ARBITRUM = '0xE11f9786B06438456b044B3E21712228ADcAA0D1';
 
 interface PendleMarketProps {
   marketTokenAddress: string;
@@ -429,6 +456,10 @@ const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
     [Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WST_ETH_2025_MARKET_ARBITRUM,
       transformerTokenAddress: WST_ETH_MAP[Network.ARBITRUM_ONE]!,
+    },
+    [Deployments.PendlePtWeETHApr2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      marketTokenAddress: PT_WE_ETH_APR_2024_MARKET_ARBITRUM,
+      transformerTokenAddress: WE_ETH_MAP[Network.ARBITRUM_ONE]!,
     },
   },
 };

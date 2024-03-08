@@ -1,13 +1,13 @@
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { BigNumberish, ethers } from 'ethers';
-import { keccak256 } from 'ethers/lib/utils';
+import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
 import IArbitrumGasInfoAbi from '../../abis/IArbitrumGasInfo.json';
 import IGmxV2DataStoreAbi from '../../abis/IGmxV2DataStore.json';
 import IGmxV2ReaderAbi from '../../abis/IGmxV2Reader.json';
 import { IArbitrumGasInfo } from '../../abis/types/IArbitrumGasInfo';
 import { IGmxV2DataStore } from '../../abis/types/IGmxV2DataStore';
-import { GmxMarket, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
+import { GmxMarket, GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
   ADDRESS_ZERO,
@@ -37,12 +37,7 @@ const DEPOSIT_GAS_LIMIT_KEY = keccak256(
   ),
 );
 
-const SINGLE_SWAP_GAS_LIMIT_KEY = keccak256(
-  abiCoder.encode(
-    ['bytes32'],
-    [keccak256(abiCoder.encode(['string'], ['SINGLE_SWAP_GAS_LIMIT']))],
-  ),
-);
+const SINGLE_SWAP_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['SINGLE_SWAP_GAS_LIMIT']));
 
 const WITHDRAWAL_GAS_LIMIT_KEY = keccak256(
   abiCoder.encode(
@@ -50,6 +45,10 @@ const WITHDRAWAL_GAS_LIMIT_KEY = keccak256(
     [keccak256(abiCoder.encode(['string'], ['WITHDRAWAL_GAS_LIMIT']))],
   ),
 );
+
+const POOL_AMOUNT_KEY = keccak256(abiCoder.encode(['string'], ['POOL_AMOUNT']));
+
+const ONE_ETH = ethers.utils.parseEther('1');
 
 export class GmxV2GmEstimator {
   private readonly gmxV2Reader: IGmxV2Reader;
@@ -110,6 +109,19 @@ export class GmxV2GmEstimator {
       }, {}));
   }
 
+  private static averagePrices(prices: GmxPrice.PricePropsStruct): ethers.BigNumber {
+    return ethers.BigNumber.from(prices.min.toString()).add(prices.max.toString()).div(2);
+  }
+
+  private static getPoolAmountKey(market: string, token: string): string {
+    return keccak256(
+      defaultAbiCoder.encode(
+        ['bytes32', 'address', 'address'],
+        [POOL_AMOUNT_KEY, market, token],
+      ),
+    )
+  }
+
   public async getUnwrappedAmount(
     isolationModeTokenAddress: Address,
     amountIn: Integer,
@@ -141,6 +153,14 @@ export class GmxV2GmEstimator {
       ADDRESS_ZERO,
     );
 
+    const weight = await this.getWeightForOtherAmount(
+      outputToken,
+      longToken,
+      shortToken,
+      marketToken,
+      pricesStruct,
+    );
+
     const amountOut = outputToken.tokenAddress === longToken ? longAmountOut : shortAmountOut;
     const extraSwapAmountOut = await this.gmxV2Reader.getSwapAmountOut(
       this.gmxV2DataStore.address,
@@ -160,7 +180,10 @@ export class GmxV2GmEstimator {
 
     return {
       amountOut: new BigNumber(amountOut.add(extraSwapAmountOut[0]).toString()),
-      tradeData: abiCoder.encode(['uint256'], [totalWithdrawalGasLimit.mul(gasPriceWei).mul(GAS_MULTIPLIER)]),
+      tradeData: abiCoder.encode(['tuple(uint256 value)', 'uint256'], [{ value: weight }, extraSwapAmountOut[0]]),
+      extraData: {
+        executionFee: new BigNumber(totalWithdrawalGasLimit.mul(gasPriceWei).mul(GAS_MULTIPLIER).toString()),
+      },
     };
   }
 
@@ -171,6 +194,9 @@ export class GmxV2GmEstimator {
     marketsMap: Record<string, ApiMarket>,
     config: ZapConfig,
   ): Promise<EstimateOutputResult> {
+    if (!config.subAccountNumber) {
+      return Promise.reject(new Error('Missing subAccountNumber on zapConfig!'));
+    }
     const tokenToSignedPriceMap = await GmxV2GmEstimator.getTokenPrices();
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
@@ -199,11 +225,36 @@ export class GmxV2GmEstimator {
       this.getGasPrice(config),
     ]);
     const totalDepositGasLimit = depositGasLimit.add(CALLBACK_GAS_LIMIT);
+    const executionFee = new BigNumber(totalDepositGasLimit.mul(gasPriceWei).mul(GAS_MULTIPLIER).toString());
 
     return {
       amountOut: new BigNumber(amountOut.toString()),
-      tradeData: abiCoder.encode(['uint256'], [totalDepositGasLimit.mul(gasPriceWei).mul(GAS_MULTIPLIER)]),
+      tradeData: abiCoder.encode(['uint256', 'uint256'], [config.subAccountNumber.toFixed(), executionFee.toFixed()]),
+      extraData: {
+        executionFee,
+      },
     };
+  }
+
+  private async getWeightForOtherAmount(
+    outputToken: ApiMarket,
+    longToken: string,
+    shortToken: string,
+    marketToken: string,
+    pricesStruct: GmxMarket.MarketPricesStruct,
+  ): Promise<ethers.BigNumber> {
+    const divisor = ethers.BigNumber.from(longToken === shortToken ? 2 : 1);
+    const [longBalance, shortBalance] = await Promise.all([
+      this.gmxV2DataStore.getUint(GmxV2GmEstimator.getPoolAmountKey(marketToken, longToken)),
+      this.gmxV2DataStore.getUint(GmxV2GmEstimator.getPoolAmountKey(marketToken, shortToken)),
+    ]);
+
+    const longBalanceUsd = longBalance.mul(GmxV2GmEstimator.averagePrices(pricesStruct.longTokenPrice)).div(divisor);
+    const shortBalanceUsd = shortBalance.mul(GmxV2GmEstimator.averagePrices(pricesStruct.shortTokenPrice)).div(divisor);
+    const totalBalanceUsd = longBalanceUsd.add(shortBalanceUsd);
+    return outputToken.tokenAddress === longToken
+      ? ONE_ETH.mul(shortBalanceUsd).div(totalBalanceUsd)
+      : ONE_ETH.mul(longBalanceUsd).div(totalBalanceUsd);
   }
 
   private async getGasPrice(config: ZapConfig): Promise<BigNumberish> {

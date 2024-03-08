@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
 import { getPendleYtMarketForIsolationModeToken } from '../Constants';
 
-export class PendleYtEstimator {
+export class PendleYtEstimatorV2 {
   private readonly network: Network;
   private readonly pendleRouter: PendleRouter;
 
@@ -60,7 +60,7 @@ export class PendleYtEstimator {
     isolationModeToken: Address,
     inputAmount: Integer,
     inputToken: Address,
-  ): Promise<{ tradeData: string; ytAmountOut: Integer }> {
+  ): Promise<EstimateOutputResult> {
     const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForYt(
       getPendleYtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       inputToken as any,
@@ -97,7 +97,6 @@ export class PendleYtEstimator {
       ],
     );
 
-    const ytAmountOut = new BigNumber(approxParams.guessOffchain.toString());
-    return { tradeData, ytAmountOut };
+    return { tradeData, amountOut: new BigNumber(approxParams.guessOffchain.toString()) };
   }
 }

@@ -4,7 +4,7 @@
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
-    "test:specific": "NODE_ENV=test jest __tests__/specific-zaps/GmxV2Zap.test.ts",
+    "test:specific": "NODE_ENV=test jest __tests__/specific-zaps/PendlePtWeEthApr2024Zap.test.ts",
     "coverage": "NODE_ENV=test jest --coverage --runInBand --forceExit --coverageReporters=text-lcov | node_modules/.bin/coveralls",
     "build": "rm -rf dist/ && node_modules/.bin/tsc --module commonjs",
     "prepublishOnly": "npm run build"
@@ -27,7 +27,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@dolomite-exchange/modules-deployments": "^0.0.2",
+    "@dolomite-exchange/modules-deployments": "^0.0.4",
     "@pendle/sdk-v2": "^2.8.2",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.1",

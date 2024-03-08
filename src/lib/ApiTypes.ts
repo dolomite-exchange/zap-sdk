@@ -66,6 +66,9 @@ export interface ApiMarketHelper {
 export interface EstimateOutputResult {
   amountOut: Integer;
   tradeData: string;
+  extraData?: {
+    executionFee: BigNumber;
+  };
 }
 
 export interface ApiUnwrapperHelper {
@@ -132,6 +135,7 @@ export interface ZapConfig {
   slippageTolerance: number;
   blockTag: BlockTag;
   filterOutZapsWithInsufficientOutput: boolean;
+  subAccountNumber?: Integer;
   gasPriceInWei?: Integer;
 }
 
