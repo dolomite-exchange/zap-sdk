@@ -15,7 +15,12 @@ describe('PendlePtWeEthApr2024Zap', () => {
   }
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   const NO_CACHE = -1;
-  const zap = new DolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
+  const zap = new DolomiteZap({
+    network,
+    subgraphUrl,
+    web3Provider,
+    cacheSeconds: NO_CACHE,
+  });
   zap.setMarketsToAdd([PT_WE_ETH_APR_2024_MARKET, WE_ETH_MARKET]);
 
   describe('#getSwapExactTokensForTokensData', () => {

@@ -1,15 +1,16 @@
-import { GmxV2GmEstimator } from '../../../src/lib/estimators/GmxV2GmEstimator';
-import { ApiMarket, Network, ZapConfig } from '../../../src';
-import { ethers } from 'ethers';
 import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
+import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
+import { ApiMarket, Network, ZapConfig } from '../../../src';
+import { GmxV2GmEstimator } from '../../../src/lib/estimators/GmxV2GmEstimator';
 import { NATIVE_USDC_MARKET, WETH_MARKET } from '../../helpers/TestConstants';
 
 describe('GmxV2GmEstimator', () => {
   const network = Network.ARBITRUM_ONE;
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
-  const estimator = new GmxV2GmEstimator(network, web3Provider);
+  const gasMultiplier = new BigNumber(3);
+  const estimator = new GmxV2GmEstimator(network, web3Provider, gasMultiplier);
   const marketsMap: Record<string, ApiMarket> = {
     [WETH_MARKET.marketId.toFixed()]: WETH_MARKET,
     [NATIVE_USDC_MARKET.marketId.toFixed()]: NATIVE_USDC_MARKET,

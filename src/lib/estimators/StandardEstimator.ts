@@ -34,8 +34,9 @@ export class StandardEstimator {
     private readonly network: Network,
     private readonly web3Provider: ethers.providers.Provider,
     private readonly usePendleV3: boolean,
+    gasMultiplier: BigNumber,
   ) {
-    this.gmxV2GmEstimator = new GmxV2GmEstimator(this.network, this.web3Provider);
+    this.gmxV2GmEstimator = new GmxV2GmEstimator(this.network, this.web3Provider, gasMultiplier);
     this.pendlePtEstimatorV2 = new PendlePtEstimatorV2(this.network, this.web3Provider);
     this.pendlePtEstimatorV3 = new PendlePtEstimatorV3(this.network);
     this.pendleYtEstimatorV2 = new PendleYtEstimatorV2(this.network, this.web3Provider);

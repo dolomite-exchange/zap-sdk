@@ -28,8 +28,6 @@ const abiCoder = ethers.utils.defaultAbiCoder;
 
 const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(2_000_000);
 
-const GAS_MULTIPLIER = ethers.BigNumber.from(5);
-
 const DEPOSIT_GAS_LIMIT_KEY = keccak256(
   abiCoder.encode(
     ['bytes32', 'bool'],
@@ -58,6 +56,7 @@ export class GmxV2GmEstimator {
   public constructor(
     private readonly network: Network,
     private readonly web3Provider: ethers.providers.Provider,
+    private readonly gasMultiplier: BigNumber,
   ) {
     this.gmxV2Reader = new ethers.Contract(
       GMX_V2_READER_MAP[this.network]!,
@@ -76,6 +75,10 @@ export class GmxV2GmEstimator {
       IArbitrumGasInfoAbi,
       this.web3Provider,
     ) as IArbitrumGasInfo;
+
+    if (gasMultiplier.lt(1)) {
+      throw new Error(`Invalid gasMultiplier, expected at least 1.0, but found ${gasMultiplier.toFixed()}`);
+    }
   }
 
   private static getPricesStruct(
@@ -177,12 +180,15 @@ export class GmxV2GmEstimator {
       this.getGasPrice(config),
     ]);
     const totalWithdrawalGasLimit = withdrawalGasLimit.add(swapGasLimit).add(CALLBACK_GAS_LIMIT);
+    const executionFee = new BigNumber(
+      totalWithdrawalGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
+    );
 
     return {
       amountOut: new BigNumber(amountOut.add(extraSwapAmountOut[0]).toString()),
       tradeData: abiCoder.encode(['tuple(uint256 value)', 'uint256'], [{ value: weight }, extraSwapAmountOut[0]]),
       extraData: {
-        executionFee: new BigNumber(totalWithdrawalGasLimit.mul(gasPriceWei).mul(GAS_MULTIPLIER).toString()),
+        executionFee,
       },
     };
   }
@@ -225,7 +231,9 @@ export class GmxV2GmEstimator {
       this.getGasPrice(config),
     ]);
     const totalDepositGasLimit = depositGasLimit.add(CALLBACK_GAS_LIMIT);
-    const executionFee = new BigNumber(totalDepositGasLimit.mul(gasPriceWei).mul(GAS_MULTIPLIER).toString());
+    const executionFee = new BigNumber(
+      totalDepositGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
+    );
 
     return {
       amountOut: new BigNumber(amountOut.toString()),

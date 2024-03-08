@@ -25,7 +25,12 @@ describe('DolomiteZap', () => {
   }
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   const NO_CACHE = -1;
-  const zap = new DolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
+  const zap = new DolomiteZap({
+    network,
+    subgraphUrl,
+    web3Provider,
+    cacheSeconds: NO_CACHE,
+  });
   const validAggregatorsLength = zap.validAggregators.length;
 
   const allTraders = [
@@ -33,7 +38,7 @@ describe('DolomiteZap', () => {
     Deployments.OdosAggregatorTrader[network].address,
   ];
 
-  beforeAll(async() => {
+  beforeAll(async () => {
     expect(validAggregatorsLength).toBe(2);
   });
 
@@ -171,11 +176,16 @@ describe('DolomiteZap', () => {
       })
 
       it('should work when there is one of the aggregators returns bad data', async () => {
-        const zap = new TestDolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
+        const testZap = new TestDolomiteZap({
+          network,
+          subgraphUrl,
+          web3Provider,
+          cacheSeconds: NO_CACHE,
+        });
 
         const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
         const minAmountOut = new BigNumber('100000000'); // 100 USDC
-        const outputParams = await zap.getSwapExactTokensForTokensParams(
+        const outputParams = await testZap.getSwapExactTokensForTokensParams(
           WETH_MARKET,
           amountIn,
           USDC_MARKET,
@@ -183,7 +193,7 @@ describe('DolomiteZap', () => {
           txOrigin,
         );
 
-        expect(zap.validAggregators.length).toBe(2);
+        expect(testZap.validAggregators.length).toBe(2);
         expect(outputParams.length).toBe(1);
 
         const outputParam = outputParams[0];

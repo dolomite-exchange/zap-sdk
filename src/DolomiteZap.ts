@@ -41,6 +41,55 @@ const THIRTY_BASIS_POINTS = 0.003;
 const marketsKey = 'MARKETS';
 const marketHelpersKey = 'MARKET_HELPERS';
 
+export interface DolomiteZapConfig {
+  /**
+   * The network on which this instance of the Dolomite Zap is running.
+   */
+  network: Network,
+  /**
+   * The URL of the subgraph to use for fetching market data.
+   */
+  subgraphUrl: string,
+  /**
+   * The web3 provider to use for fetching on-chain data.
+   */
+  web3Provider: ethers.providers.Provider,
+  /**
+   * The number of seconds to cache market data for. Defaults to 1 hour (3600s).
+   */
+  cacheSeconds?: number;
+  /**
+   * True if these zaps are for processing liquidations or false for ordinary zaps.
+   */
+  defaultIsLiquidation?: boolean;
+  /**
+   * The default slippage tolerance to use when estimating output. Defaults to 0.3% (0.003).
+   */
+  defaultSlippageTolerance?: number;
+  /**
+   * The default block tag to use when fetching on-chain data. Defaults to 'latest'.
+   */
+  defaultBlockTag?: BlockTag;
+  /**
+   * The referral information to use for the various aggregators. Defaults to undefined.
+   */
+  referralInfo?: ReferralOutput;
+  /**
+   * True if the Dolomite proxy server should be used for aggregators that support it. The proxy server is used to make
+   * the API requests consistent and prevent browser plugins from blocking requests. Defaults to true.
+   */
+  useProxyServer?: boolean;
+  /**
+   * True to use the Pendle V3 router, false to use V2. Defaults to `false`.
+   */
+  usePendleV3?: boolean;
+  /**
+   * The multiplier to apply to any gas prices being used for estimating execution fees for intent-driven calls (like
+   * GMX V2).
+   */
+  gasMultiplier?: BigNumber;
+}
+
 export class DolomiteZap {
   public readonly network: Network;
   public readonly validAggregators: AggregatorClient[];
@@ -48,37 +97,25 @@ export class DolomiteZap {
   private client: DolomiteClient;
   private marketsCache: LocalCache<Record<string, ApiMarket>>;
   private marketHelpersCache: LocalCache<Record<string, ApiMarketHelper>>;
+  private readonly _web3Provider: ethers.providers.Provider;
 
-  /**
-   * @param network                   The network on which this instance of the Dolomite Zap is running.
-   * @param subgraphUrl               The URL of the subgraph to use for fetching market data.
-   * @param web3Provider              The web3 provider to use for fetching on-chain data.
-   * @param cacheSeconds              The number of seconds to cache market data for. Defaults to 1 hour (3600s).
-   * @param defaultIsLiquidation      True if these zaps are for processing liquidations or false for ordinary zaps.
-   * @param defaultSlippageTolerance  The default slippage tolerance to use when estimating output. Defaults to 0.3%
-   *                                  (0.003).
-   * @param defaultBlockTag           The default block tag to use when fetching on-chain data. Defaults to 'latest'.
-   * @param referralInfo              The referral information to use for the various aggregators.
-   *                                  Defaults to undefined.
-   * @param useProxyServer            True if the Dolomite proxy server should be used for aggregators that support it.
-   *                                  The proxy server is used to make the API requests consistent and prevent browser
-   *                                  plugins from blocking requests. Defaults to true.
-   * @param usePendleV3               True to use the Pendle V3 router, false to use V2. Defaults to `false`.
-   */
   public constructor(
-    network: Network,
-    subgraphUrl: string,
-    web3Provider: ethers.providers.Provider,
-    cacheSeconds: number = ONE_HOUR,
-    defaultIsLiquidation: boolean = false,
-    defaultSlippageTolerance: number = THIRTY_BASIS_POINTS,
-    defaultBlockTag: BlockTag = 'latest',
-    referralInfo: ReferralOutput = {
-      odosReferralCode: undefined,
-      referralAddress: undefined,
-    },
-    useProxyServer: boolean = true,
-    usePendleV3: boolean = false,
+    {
+      network,
+      subgraphUrl,
+      web3Provider,
+      cacheSeconds = ONE_HOUR,
+      defaultIsLiquidation = false,
+      defaultSlippageTolerance = THIRTY_BASIS_POINTS,
+      defaultBlockTag = 'latest',
+      referralInfo = {
+        odosReferralCode: undefined,
+        referralAddress: undefined,
+      },
+      useProxyServer = true,
+      usePendleV3 = false,
+      gasMultiplier = new BigNumber('1'),
+    }: DolomiteZapConfig,
   ) {
     this.network = network;
     this._subgraphUrl = subgraphUrl;
@@ -87,7 +124,7 @@ export class DolomiteZap {
     this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
 
-    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, usePendleV3);
+    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, usePendleV3, gasMultiplier);
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
 
@@ -105,8 +142,6 @@ export class DolomiteZap {
     this._subgraphUrl = newSubgraphUrl;
     this.client.subgraphUrl = newSubgraphUrl;
   }
-
-  private readonly _web3Provider: ethers.providers.Provider;
 
   public get web3Provider(): ethers.providers.Provider {
     return this._web3Provider;

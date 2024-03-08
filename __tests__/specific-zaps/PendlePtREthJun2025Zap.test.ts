@@ -15,7 +15,12 @@ describe('PendlePtREthJun2025Zap', () => {
   }
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   const NO_CACHE = -1;
-  const zap = new DolomiteZap(network, subgraphUrl, web3Provider, NO_CACHE);
+  const zap = new DolomiteZap({
+    network,
+    subgraphUrl,
+    web3Provider,
+    cacheSeconds: NO_CACHE,
+  });
   zap.setMarketsToAdd([PT_R_ETH_JUN_2025_MARKET]);
 
   describe('#getSwapExactTokensForTokensData', () => {
