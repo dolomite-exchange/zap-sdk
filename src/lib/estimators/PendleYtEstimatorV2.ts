@@ -1,23 +1,24 @@
-import { BaseRouter as PendleRouter, Router as PendleStaticRouter } from '@pendle/sdk-v2';
+import { BaseRouter as PendleRouter } from '@pendle/sdk-v2';
+import { Router as PendleStaticRouter } from '@pendle/sdk-v2/dist/entities/Router/Router';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
 import { getPendleYtMarketForIsolationModeToken } from '../Constants';
 
 export class PendleYtEstimatorV2 {
-  private readonly network: Network;
-  private readonly pendleRouter: PendleRouter;
+  private readonly pendleRouter?: PendleRouter;
 
   public constructor(
-    network: Network,
+    private readonly network: Network,
     web3Provider: ethers.providers.Provider,
   ) {
-    this.network = network;
-    this.pendleRouter = PendleStaticRouter.getRouter({
-      chainId: network as any,
-      provider: web3Provider,
-      signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
-    });
+    if (network === Network.ARBITRUM_ONE) {
+      this.pendleRouter = PendleStaticRouter.getRouter({
+        chainId: network as any,
+        provider: web3Provider,
+        signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
+      });
+    }
   }
 
   public async getUnwrappedAmount(
@@ -25,7 +26,7 @@ export class PendleYtEstimatorV2 {
     amountInYt: Integer,
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
-    const [, , , tokenOutput] = await this.pendleRouter.swapExactYtForToken(
+    const [, , , tokenOutput] = await this.pendleRouter!.swapExactYtForToken(
       getPendleYtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       amountInYt.toFixed(),
       tokenOut as any,
@@ -61,7 +62,7 @@ export class PendleYtEstimatorV2 {
     inputAmount: Integer,
     inputToken: Address,
   ): Promise<EstimateOutputResult> {
-    const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForYt(
+    const [, , , approxParams, tokenInput] = await this.pendleRouter!.swapExactTokenForYt(
       getPendleYtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       inputToken as any,
       inputAmount.toFixed(),

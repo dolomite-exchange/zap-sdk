@@ -49,15 +49,19 @@ const POOL_AMOUNT_KEY = keccak256(abiCoder.encode(['string'], ['POOL_AMOUNT']));
 const ONE_ETH = ethers.utils.parseEther('1');
 
 export class GmxV2GmEstimator {
-  private readonly gmxV2Reader: IGmxV2Reader;
-  private readonly gmxV2DataStore: IGmxV2DataStore;
-  private readonly arbitrumGasInfo: IArbitrumGasInfo;
+  private readonly gmxV2Reader?: IGmxV2Reader;
+  private readonly gmxV2DataStore?: IGmxV2DataStore;
+  private readonly arbitrumGasInfo?: IArbitrumGasInfo;
 
   public constructor(
     private readonly network: Network,
     private readonly web3Provider: ethers.providers.Provider,
     private readonly gasMultiplier: BigNumber,
   ) {
+    if (network !== Network.ARBITRUM_ONE) {
+      return
+    }
+
     this.gmxV2Reader = new ethers.Contract(
       GMX_V2_READER_MAP[this.network]!,
       IGmxV2ReaderAbi,
@@ -148,8 +152,8 @@ export class GmxV2GmEstimator {
     };
     const pricesStruct = GmxV2GmEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken);
 
-    const [longAmountOut, shortAmountOut] = await this.gmxV2Reader.getWithdrawalAmountOut(
-      this.gmxV2DataStore.address,
+    const [longAmountOut, shortAmountOut] = await this.gmxV2Reader!.getWithdrawalAmountOut(
+      this.gmxV2DataStore!.address,
       gmMarketProps,
       pricesStruct,
       amountIn.toFixed(),
@@ -165,8 +169,8 @@ export class GmxV2GmEstimator {
     );
 
     const amountOut = outputToken.tokenAddress === longToken ? longAmountOut : shortAmountOut;
-    const extraSwapAmountOut = await this.gmxV2Reader.getSwapAmountOut(
-      this.gmxV2DataStore.address,
+    const extraSwapAmountOut = await this.gmxV2Reader!.getSwapAmountOut(
+      this.gmxV2DataStore!.address,
       gmMarketProps,
       pricesStruct,
       outputToken.tokenAddress === longToken ? shortToken : longToken,
@@ -175,8 +179,8 @@ export class GmxV2GmEstimator {
     );
 
     const [withdrawalGasLimit, swapGasLimit, gasPriceWei] = await Promise.all([
-      this.gmxV2DataStore.getUint(WITHDRAWAL_GAS_LIMIT_KEY),
-      this.gmxV2DataStore.getUint(SINGLE_SWAP_GAS_LIMIT_KEY),
+      this.gmxV2DataStore!.getUint(WITHDRAWAL_GAS_LIMIT_KEY),
+      this.gmxV2DataStore!.getUint(SINGLE_SWAP_GAS_LIMIT_KEY),
       this.getGasPrice(config),
     ]);
     const totalWithdrawalGasLimit = withdrawalGasLimit.add(swapGasLimit).add(CALLBACK_GAS_LIMIT);
@@ -212,8 +216,8 @@ export class GmxV2GmEstimator {
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
 
-    const amountOut = await this.gmxV2Reader.getDepositAmountOut(
-      this.gmxV2DataStore.address,
+    const amountOut = await this.gmxV2Reader!.getDepositAmountOut(
+      this.gmxV2DataStore!.address,
       {
         indexToken,
         longToken,
@@ -227,7 +231,7 @@ export class GmxV2GmEstimator {
     );
 
     const [depositGasLimit, gasPriceWei] = await Promise.all([
-      this.gmxV2DataStore.getUint(DEPOSIT_GAS_LIMIT_KEY),
+      this.gmxV2DataStore!.getUint(DEPOSIT_GAS_LIMIT_KEY),
       this.getGasPrice(config),
     ]);
     const totalDepositGasLimit = depositGasLimit.add(CALLBACK_GAS_LIMIT);
@@ -253,8 +257,8 @@ export class GmxV2GmEstimator {
   ): Promise<ethers.BigNumber> {
     const divisor = ethers.BigNumber.from(longToken === shortToken ? 2 : 1);
     const [longBalance, shortBalance] = await Promise.all([
-      this.gmxV2DataStore.getUint(GmxV2GmEstimator.getPoolAmountKey(marketToken, longToken)),
-      this.gmxV2DataStore.getUint(GmxV2GmEstimator.getPoolAmountKey(marketToken, shortToken)),
+      this.gmxV2DataStore!.getUint(GmxV2GmEstimator.getPoolAmountKey(marketToken, longToken)),
+      this.gmxV2DataStore!.getUint(GmxV2GmEstimator.getPoolAmountKey(marketToken, shortToken)),
     ]);
 
     const longBalanceUsd = longBalance.mul(GmxV2GmEstimator.averagePrices(pricesStruct.longTokenPrice)).div(divisor);
@@ -268,6 +272,6 @@ export class GmxV2GmEstimator {
   private async getGasPrice(config: ZapConfig): Promise<BigNumberish> {
     return config.gasPriceInWei
       ? config.gasPriceInWei.toFixed()
-      : (await this.arbitrumGasInfo.getPricesInWei())[5];
+      : (await this.arbitrumGasInfo!.getPricesInWei())[5];
   }
 }

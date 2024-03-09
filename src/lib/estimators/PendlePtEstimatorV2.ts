@@ -1,21 +1,24 @@
-import { BaseRouter as PendleRouter, Router as PendleStaticRouter } from '@pendle/sdk-v2';
+import { BaseRouter as PendleRouter } from '@pendle/sdk-v2';
+import { Router as PendleStaticRouter } from '@pendle/sdk-v2/dist/entities/Router/Router';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
 import { getPendlePtMarketForIsolationModeToken } from '../Constants';
 
 export class PendlePtEstimatorV2 {
-  private readonly pendleRouter: PendleRouter;
+  private readonly pendleRouter?: PendleRouter;
 
   public constructor(
     private readonly network: Network,
     web3Provider: ethers.providers.Provider,
   ) {
-    this.pendleRouter = PendleStaticRouter.getRouter({
-      chainId: network as any,
-      provider: web3Provider,
-      signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
-    });
+    if (network === Network.ARBITRUM_ONE) {
+      this.pendleRouter = PendleStaticRouter.getRouter({
+        chainId: network as any,
+        provider: web3Provider,
+        signer: new ethers.VoidSigner('0x1234567812345678123456781234567812345678', web3Provider),
+      });
+    }
   }
 
   public async getUnwrappedAmount(
@@ -23,7 +26,7 @@ export class PendlePtEstimatorV2 {
     amountInPt: Integer,
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
-    const [, , , tokenOutput] = await this.pendleRouter.swapExactPtForToken(
+    const [, , , tokenOutput] = await this.pendleRouter!.swapExactPtForToken(
       getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       amountInPt.toFixed(),
       tokenOut as any,
@@ -60,7 +63,7 @@ export class PendlePtEstimatorV2 {
     inputAmount: Integer,
     inputToken: Address,
   ): Promise<EstimateOutputResult> {
-    const [, , , approxParams, tokenInput] = await this.pendleRouter.swapExactTokenForPt(
+    const [, , , approxParams, tokenInput] = await this.pendleRouter!.swapExactTokenForPt(
       getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       inputToken as any,
       inputAmount.toFixed(),
