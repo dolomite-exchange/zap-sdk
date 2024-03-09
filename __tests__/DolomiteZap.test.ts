@@ -888,4 +888,46 @@ describe('DolomiteZap', () => {
       });
     });
   });
+
+  describe('#getIsAsyncAssetByMarketId', () => {
+    it('should work for any GM token', async () => {
+      const testZap = new DolomiteZap({
+        network,
+        subgraphUrl,
+        web3Provider,
+      });
+      await testZap.forceRefreshCache();
+
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(31))).toBeTruthy();
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(32))).toBeTruthy();
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(33))).toBeTruthy();
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(34))).toBeTruthy();
+    });
+
+    it('should work for any non-GM token', async () => {
+      const testZap = new DolomiteZap({
+        network,
+        subgraphUrl,
+        web3Provider,
+      });
+      await testZap.forceRefreshCache();
+
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(30))).toBeFalsy();
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(35))).toBeFalsy();
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(36))).toBeFalsy();
+    });
+
+    it('should default to false when the cache is empty', async () => {
+      const testZap = new DolomiteZap({
+        network,
+        subgraphUrl,
+        web3Provider,
+      });
+
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(31))).toBeFalsy();
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(32))).toBeFalsy();
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(33))).toBeFalsy();
+      expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(34))).toBeFalsy();
+    });
+  });
 });

@@ -21,6 +21,7 @@ describe('GmxV2GmEstimator', () => {
     filterOutZapsWithInsufficientOutput: false,
     isLiquidation: false,
     slippageTolerance: 0.003,
+    subAccountNumber: new BigNumber('12321'),
   }
 
   const gmEthIsolationModeAddress = Deployments.GmxV2ETHIsolationModeVaultFactory[network]!.address;

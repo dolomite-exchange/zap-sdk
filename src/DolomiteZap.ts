@@ -27,6 +27,7 @@ import {
   BYTES_EMPTY,
   INTEGERS,
   INVALID_NAME,
+  isGmxV2IsolationModeAsset,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
 } from './lib/Constants';
@@ -163,6 +164,23 @@ export class DolomiteZap {
     return this._defaultIsLiquidation;
   }
 
+  public async forceRefreshCache(): Promise<void> {
+    await this.getMarketIdToMarketMap(true);
+  }
+
+  public getIsAsyncAssetByMarketId(marketId: MarketId): boolean {
+    const cachedMarkets = this.marketsCache.get(marketsKey);
+    if (!cachedMarkets) {
+      return false;
+    }
+
+    const market = cachedMarkets[marketId.toFixed()];
+    if (!market) {
+      return false;
+    }
+    return isGmxV2IsolationModeAsset(this.network, market.tokenAddress);
+  }
+
   public setDefaultSlippageTolerance(slippageTolerance: number): void {
     this._defaultSlippageTolerance = slippageTolerance;
   }
@@ -209,7 +227,7 @@ export class DolomiteZap {
       filterOutZapsWithInsufficientOutput: config?.filterOutZapsWithInsufficientOutput ?? true,
       subAccountNumber: config?.subAccountNumber,
     };
-    const marketsMap = await this.getMarketIdToMarketMap();
+    const marketsMap = await this.getMarketIdToMarketMap(false);
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
     const inputMarket = marketsMap[tokenIn.marketId.toFixed()];
     const inputHelper = marketHelpersMap[tokenIn.marketId.toFixed()];
@@ -458,10 +476,12 @@ export class DolomiteZap {
     return [odosAggregator, paraswapAggregator];
   }
 
-  protected async getMarketIdToMarketMap(): Promise<Record<string, ApiMarket>> {
-    const cachedMarkets = this.marketsCache.get(marketsKey);
-    if (cachedMarkets) {
-      return cachedMarkets;
+  protected async getMarketIdToMarketMap(forceRefresh: boolean): Promise<Record<string, ApiMarket>> {
+    if (!forceRefresh) {
+      const cachedMarkets = this.marketsCache.get(marketsKey);
+      if (cachedMarkets) {
+        return cachedMarkets;
+      }
     }
 
     const marketsMap = await this.client.getDolomiteMarketsMap();
