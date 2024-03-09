@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../src';
 import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../src/lib/Constants';
 import { PT_WE_ETH_APR_2024_MARKET, USDC_MARKET, WE_ETH_MARKET } from '../helpers/TestConstants';
+import sleep from '../helpers/sleep';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
@@ -22,6 +23,11 @@ describe('PendlePtWeEthApr2024Zap', () => {
     cacheSeconds: NO_CACHE,
   });
   zap.setMarketsToAdd([PT_WE_ETH_APR_2024_MARKET, WE_ETH_MARKET]);
+
+  beforeEach(async () => {
+    // Sleep so Paraswap does not rate limit
+    await sleep(1_500);
+  });
 
   describe('#getSwapExactTokensForTokensData', () => {
     describe('Pendle PT-weETH', () => {

@@ -205,7 +205,7 @@ export class GmxV2GmEstimator {
     config: ZapConfig,
   ): Promise<EstimateOutputResult> {
     if (!config.subAccountNumber) {
-      return Promise.reject(new Error('Missing subAccountNumber on zapConfig!'));
+      return Promise.reject(new Error('Missing subAccountNumber on zapConfig'));
     }
     const tokenToSignedPriceMap = await GmxV2GmEstimator.getTokenPrices();
     const inputToken = marketsMap[inputMarketId.toFixed()];

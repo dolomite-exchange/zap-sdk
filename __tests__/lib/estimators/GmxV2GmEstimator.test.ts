@@ -26,6 +26,16 @@ describe('GmxV2GmEstimator', () => {
 
   const gmEthIsolationModeAddress = Deployments.GmxV2ETHIsolationModeVaultFactory[network]!.address;
 
+  describe('constructor', () => {
+    it('should fail if the gas multiplier is invalid', () => {
+      const invalidGasMultiplier = new BigNumber('0');
+      expect(() => {
+        // eslint-disable-next-line no-new
+        new GmxV2GmEstimator(network, web3Provider, invalidGasMultiplier);
+      }).toThrow(`Invalid gasMultiplier, expected at least 1.0, but found ${invalidGasMultiplier.toFixed()}`)
+    });
+  });
+
   describe('#getUnwrappedAmount', () => {
     it('should work normally', async () => {
       const gmAmountIn = new BigNumber(parseEther('100').toString());
@@ -79,6 +89,23 @@ describe('GmxV2GmEstimator', () => {
         marketAmountOutFromEth.amountOut.toString(),
         marketAmountOutFromUsdc.amountOut.toString(),
       );
+    });
+
+    it('should fail if sub account number is not included', async () => {
+      const ethAmountIn = new BigNumber(parseEther('0.1').toString()); // 0.1 ETH
+      const newConfig = {
+        ...config,
+        subAccountNumber: undefined,
+      };
+      await expect(
+        estimator.getWrappedAmount(
+          gmEthIsolationModeAddress,
+          ethAmountIn,
+          WETH_MARKET.marketId,
+          marketsMap,
+          newConfig,
+        ),
+      ).rejects.toThrow('Missing subAccountNumber on zapConfig');
     });
   });
 });

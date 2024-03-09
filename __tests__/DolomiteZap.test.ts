@@ -2,7 +2,8 @@ import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deplo
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { ApiMarket, DolomiteZap, GenericTraderType, INTEGERS, Network } from '../src';
-import { BYTES_EMPTY } from '../src/lib/Constants';
+import { ADDRESS_ZERO, BYTES_EMPTY } from '../src/lib/Constants';
+import sleep from './helpers/sleep';
 import {
   ARB_MARKET,
   GLP_MARKET,
@@ -29,7 +30,6 @@ describe('DolomiteZap', () => {
     network,
     subgraphUrl,
     web3Provider,
-    cacheSeconds: NO_CACHE,
   });
   const validAggregatorsLength = zap.validAggregators.length;
 
@@ -40,6 +40,49 @@ describe('DolomiteZap', () => {
 
   beforeAll(async () => {
     expect(validAggregatorsLength).toBe(2);
+  });
+
+  beforeEach(async () => {
+    // Sleep so Paraswap does not rate limit
+    await sleep(1_500);
+  });
+
+  describe('getters', () => {
+    it('should work normally', () => {
+      const cacheSeconds = NO_CACHE;
+      const defaultIsLiquidation = true;
+      const defaultSlippageTolerance = 0.1;
+      const defaultBlockTag = 123123123;
+      const useProxyServer = true;
+      const usePendleV3 = true;
+      const gasMultiplier = new BigNumber(2.5);
+      const testZap = new DolomiteZap({
+        network,
+        subgraphUrl,
+        web3Provider,
+        cacheSeconds,
+        defaultIsLiquidation,
+        defaultSlippageTolerance,
+        defaultBlockTag,
+        referralInfo: {
+          referralAddress: ADDRESS_ZERO,
+          odosReferralCode: new BigNumber(21231),
+        },
+        useProxyServer,
+        usePendleV3,
+        gasMultiplier,
+      });
+      expect(testZap.subgraphUrl).toBe(subgraphUrl);
+      expect(testZap.web3Provider).toBe(web3Provider);
+      expect(testZap.network).toBe(network);
+      expect(testZap.defaultSlippageTolerance).toBe(defaultSlippageTolerance);
+      expect(testZap.defaultBlockTag).toBe(defaultBlockTag);
+      expect(testZap.defaultIsLiquidation).toBe(defaultIsLiquidation);
+      expect(testZap.getIsolationModeConverterByMarketId(new BigNumber(11))).toBeDefined();
+      expect(testZap.getIsolationModeConverterByMarketId(new BigNumber(0))).toBeUndefined();
+      expect(testZap.getLiquidityTokenConverterByMarketId(new BigNumber(8))).toBeDefined();
+      expect(testZap.getLiquidityTokenConverterByMarketId(new BigNumber(0))).toBeUndefined();
+    });
   });
 
   describe('#setDefaultSlippageTolerance', () => {

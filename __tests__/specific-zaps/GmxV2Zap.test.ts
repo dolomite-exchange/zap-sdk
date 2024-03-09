@@ -10,6 +10,7 @@ import {
   NATIVE_USDC_MARKET,
   USDC_MARKET,
 } from '../helpers/TestConstants';
+import sleep from '../helpers/sleep';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 const subAccountNumber = new BigNumber('123');
@@ -37,6 +38,11 @@ describe('GmxV2Zap', () => {
 
   beforeAll(async () => {
     zap.setMarketsToAdd(markets);
+  });
+
+  beforeEach(async () => {
+    // Sleep so Paraswap does not rate limit
+    await sleep(1_500);
   });
 
   describe('#getSwapExactTokensForTokensData', () => {
