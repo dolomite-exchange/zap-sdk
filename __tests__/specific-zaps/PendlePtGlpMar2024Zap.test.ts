@@ -2,7 +2,7 @@ import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deplo
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../src';
-import { PT_GLP_MARKET, USDC_MARKET } from '../helpers/TestConstants';
+import { PT_GLP_MARKET, SLEEP_DURATION_BETWEEN_TESTS, USDC_MARKET } from '../helpers/TestConstants';
 import sleep from '../helpers/sleep';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
@@ -24,7 +24,7 @@ describe('PendlePtGlpMar2024Zap', () => {
 
   beforeEach(async () => {
     // Sleep so Paraswap does not rate limit
-    await sleep(1_500);
+    await sleep(SLEEP_DURATION_BETWEEN_TESTS);
   });
 
   describe('#getSwapExactTokensForTokensData', () => {

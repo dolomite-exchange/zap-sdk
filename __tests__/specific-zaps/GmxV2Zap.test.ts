@@ -7,7 +7,7 @@ import {
   GM_BTC_MARKET,
   GM_ETH_MARKET,
   GM_LINK_MARKET,
-  NATIVE_USDC_MARKET,
+  NATIVE_USDC_MARKET, SLEEP_DURATION_BETWEEN_TESTS,
   USDC_MARKET,
 } from '../helpers/TestConstants';
 import sleep from '../helpers/sleep';
@@ -42,7 +42,7 @@ describe('GmxV2Zap', () => {
 
   beforeEach(async () => {
     // Sleep so Paraswap does not rate limit
-    await sleep(1_500);
+    await sleep(SLEEP_DURATION_BETWEEN_TESTS);
   });
 
   describe('#getSwapExactTokensForTokensData', () => {

@@ -10,7 +10,7 @@ import {
   J_USDC_MARKET,
   MAGIC_GLP_MARKET,
   PLV_GLP_MARKET,
-  setUnwrapperMarketIdByMarketId,
+  setUnwrapperMarketIdByMarketId, SLEEP_DURATION_BETWEEN_TESTS,
   USDC_MARKET,
   WETH_MARKET,
 } from './helpers/TestConstants';
@@ -44,7 +44,7 @@ describe('DolomiteZap', () => {
 
   beforeEach(async () => {
     // Sleep so Paraswap does not rate limit
-    await sleep(1_500);
+    await sleep(SLEEP_DURATION_BETWEEN_TESTS);
   });
 
   describe('getters', () => {

@@ -8,6 +8,8 @@ import {
 } from '../../src/lib/Constants';
 import { toChecksumOpt } from '../../src/lib/Utils';
 
+export const SLEEP_DURATION_BETWEEN_TESTS = 1_500;
+
 export const WETH_MARKET: ApiMarket = {
   marketId: new BigNumber(0),
   symbol: 'WETH',
