@@ -25,6 +25,7 @@ import {
   ADDRESS_ZERO,
   ApiMarketConverter,
   BYTES_EMPTY,
+  getGmxV2IsolationModeAsset,
   INTEGERS,
   INVALID_NAME,
   isGmxV2IsolationModeAsset,
@@ -179,6 +180,24 @@ export class DolomiteZap {
       return false;
     }
     return isGmxV2IsolationModeAsset(this.network, market.tokenAddress);
+  }
+
+  public getAsyncAssetOutputMarketsByMarketId(marketId: MarketId): MarketId[] | undefined {
+    const cachedMarkets = this.marketsCache.get(marketsKey);
+    if (!cachedMarkets) {
+      return undefined;
+    }
+
+    const market = cachedMarkets[marketId.toFixed()];
+    if (!market) {
+      return undefined;
+    }
+    const gmMarket = getGmxV2IsolationModeAsset(this.network, market.tokenAddress);
+    if (!gmMarket) {
+      return undefined;
+    }
+
+    return [gmMarket.longTokenId, gmMarket.shortTokenId];
   }
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {

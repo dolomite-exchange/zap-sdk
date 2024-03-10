@@ -10,7 +10,8 @@ import {
   J_USDC_MARKET,
   MAGIC_GLP_MARKET,
   PLV_GLP_MARKET,
-  setUnwrapperMarketIdByMarketId, SLEEP_DURATION_BETWEEN_TESTS,
+  setUnwrapperMarketIdByMarketId,
+  SLEEP_DURATION_BETWEEN_TESTS,
   USDC_MARKET,
   WETH_MARKET,
 } from './helpers/TestConstants';
@@ -971,6 +972,57 @@ describe('DolomiteZap', () => {
       expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(32))).toBeFalsy();
       expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(33))).toBeFalsy();
       expect(testZap.getIsAsyncAssetByMarketId(new BigNumber(34))).toBeFalsy();
+    });
+  });
+
+  describe('#getAsyncAssetOutputMarketsByMarketId', () => {
+    it('should work for any GM token', async () => {
+      const testZap = new DolomiteZap({
+        network,
+        subgraphUrl,
+        web3Provider,
+      });
+      await testZap.forceRefreshCache();
+
+      const nativeUsdcMarketId = new BigNumber(17);
+      const arbMarketId = new BigNumber(7);
+      const btcMarketId = new BigNumber(4);
+      const ethMarketId = new BigNumber(0);
+      const linkMarketId = new BigNumber(3);
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(31)))
+        .toEqual([arbMarketId, nativeUsdcMarketId]);
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(32)))
+        .toEqual([btcMarketId, nativeUsdcMarketId]);
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(33)))
+        .toEqual([ethMarketId, nativeUsdcMarketId]);
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(34)))
+        .toEqual([linkMarketId, nativeUsdcMarketId]);
+    });
+
+    it('should work for any non-GM token', async () => {
+      const testZap = new DolomiteZap({
+        network,
+        subgraphUrl,
+        web3Provider,
+      });
+      await testZap.forceRefreshCache();
+
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(30))).toBeUndefined();
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(35))).toBeUndefined();
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(36))).toBeUndefined();
+    });
+
+    it('should default to false when the cache is empty', async () => {
+      const testZap = new DolomiteZap({
+        network,
+        subgraphUrl,
+        web3Provider,
+      });
+
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(31))).toBeUndefined();
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(32))).toBeUndefined();
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(33))).toBeUndefined();
+      expect(testZap.getAsyncAssetOutputMarketsByMarketId(new BigNumber(34))).toBeUndefined();
     });
   });
 });

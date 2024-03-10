@@ -500,6 +500,10 @@ export function isGmxV2IsolationModeAsset(network: Network, tokenAddress: Addres
   return !!GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
+export function getGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): GmMarket | undefined {
+  return GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
 export function getGlpIsolationModeMarketId(
   network: Network,
 ): MarketId | undefined {
