@@ -20,4 +20,7 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 100000,
   reporters: ['default', 'jest-junit'],
+  collectCoverageFrom: [
+    'src/**/*.ts',
+  ],
 };
