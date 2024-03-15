@@ -271,6 +271,27 @@ export const PT_WST_ETH_JUN_2025_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
+const VOTE_ENABLED_ARB_MARKET_ID = new BigNumber(28);
+export const VOTE_ENABLED_ARB_MARKET: ApiMarket = {
+  marketId: VOTE_ENABLED_ARB_MARKET_ID,
+  symbol: 'dARB',
+  name: 'Dolomite Isolation: Arbitrum',
+  tokenAddress: Deployments.ARBIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][VOTE_ENABLED_ARB_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][VOTE_ENABLED_ARB_MARKET_ID.toFixed()]!.unwrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][VOTE_ENABLED_ARB_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][VOTE_ENABLED_ARB_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][VOTE_ENABLED_ARB_MARKET_ID.toFixed()]!.wrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][VOTE_ENABLED_ARB_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
+
 const GM_ARB_MARKET_ID = new BigNumber(31);
 export const GM_ARB_MARKET: ApiMarket = getApiMarket(
   Network.ARBITRUM_ONE,

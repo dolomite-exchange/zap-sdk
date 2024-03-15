@@ -126,7 +126,7 @@ describe('GmxV2Zap', () => {
         }
       });
 
-      it.only('should work when unwrapping GM with aggregator disabled', async () => {
+      it('should work when unwrapping GM with aggregator disabled', async () => {
         for (let i = 0; i < markets.length; i += 1) {
           const market = markets[i];
           const amountIn = new BigNumber(parseEther('100').toString()); // 100 GM

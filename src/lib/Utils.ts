@@ -47,15 +47,6 @@ export function removeDuplicatesAndInvalids<T>(
   });
 }
 
-export function zapOutputParamToJson(param: ZapOutputParam): string {
-  return JSON.stringify({
-    marketIdsPath: param.marketIdsPath.map(marketId => marketId.toFixed()),
-    amountWeisPath: param.amountWeisPath.map(wei => wei.toFixed()),
-    traderParams: param.traderParams,
-    makerAccounts: param.makerAccounts,
-  });
-}
-
 export function zapOutputParamIsInvalid(value: ZapOutputParam): boolean {
   return value.amountWeisPath.some(p => p.eq(INTEGERS.NEGATIVE_ONE));
 }
