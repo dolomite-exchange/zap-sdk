@@ -17,6 +17,7 @@ export const INTEGERS = {
   NEGATIVE_ONE: new BigNumber(-1),
   ZERO: new BigNumber(0),
   ONE: new BigNumber(1),
+  TEN: new BigNumber(10),
 };
 
 export interface GmMarket {

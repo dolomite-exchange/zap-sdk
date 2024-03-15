@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
-import { DolomiteZap, GenericTraderType, Network } from '../../src';
+import { DolomiteZap, GenericTraderType, INTEGERS, Network } from '../../src';
 import sleep from '../helpers/sleep';
 import {
   ARB_MARKET,
@@ -46,6 +46,12 @@ describe('GmxV2Zap', () => {
     WBTC_MARKET,
     WETH_MARKET,
     LINK_MARKET,
+  ];
+  const minOutputAmountsForLongToken = [
+    new BigNumber('50').multipliedBy(INTEGERS.TEN.pow(18)),
+    new BigNumber('0.0005').multipliedBy(INTEGERS.TEN.pow(8)),
+    new BigNumber('0.005').multipliedBy(INTEGERS.TEN.pow(18)),
+    new BigNumber('3').multipliedBy(INTEGERS.TEN.pow(18)),
   ];
 
   beforeAll(async () => {
@@ -117,6 +123,80 @@ describe('GmxV2Zap', () => {
           expect(outputParam1.expectedAmountOut.gt(outputParam1.amountWeisPath[outputParam1.amountWeisPath.length - 1]))
             .toBeTruthy();
           expect(outputParam1.originalAmountOutMin).toEqual(minAmountOut);
+        }
+      });
+
+      it.only('should work when unwrapping GM with aggregator disabled', async () => {
+        for (let i = 0; i < markets.length; i += 1) {
+          const market = markets[i];
+          const amountIn = new BigNumber(parseEther('100').toString()); // 100 GM
+          const minAmountOut = new BigNumber('50000000'); // 50 USDC
+
+          const outputParamsResult0 = await zap.getSwapExactTokensForTokensParams(
+            market,
+            amountIn,
+            NATIVE_USDC_MARKET,
+            minAmountOut,
+            txOrigin,
+            { disallowAggregator: true },
+          );
+
+          expect(outputParamsResult0.length).toBe(1);
+
+          const outputParam0 = outputParamsResult0[0];
+          expect(outputParam0.marketIdsPath.length).toEqual(2);
+          expect(outputParam0.marketIdsPath[0]).toEqual(market.marketId);
+          expect(outputParam0.marketIdsPath[1]).toEqual(NATIVE_USDC_MARKET.marketId);
+
+          expect(outputParam0.amountWeisPath.length).toEqual(2);
+          expect(outputParam0.amountWeisPath[0]).toEqual(amountIn);
+          expect(outputParam0.amountWeisPath[1].isGreaterThan(minAmountOut)).toBeTruthy();
+
+          expect(outputParam0.traderParams.length).toEqual(1);
+          expect(outputParam0.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+          expect(outputParam0.traderParams[0].makerAccountIndex).toEqual(0);
+          expect(outputParam0.traderParams[0].trader)
+            .toEqual(market.isolationModeUnwrapperInfo!.unwrapperAddress);
+          expect(outputParam0.traderParams[0].tradeData.length).toEqual(130);
+
+          expect(outputParam0.makerAccounts.length).toEqual(0);
+          expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))
+            .toBeTruthy();
+          expect(outputParam0.originalAmountOutMin).toEqual(minAmountOut);
+
+          await sleep(SLEEP_DURATION_BETWEEN_TESTS);
+
+          const outputParamsResult1 = await zap.getSwapExactTokensForTokensParams(
+            market,
+            amountIn,
+            longMarkets[i],
+            minOutputAmountsForLongToken[i],
+            txOrigin,
+            { disallowAggregator: true },
+          );
+
+          expect(outputParamsResult1.length).toBe(1);
+
+          const outputParam1 = outputParamsResult1[0];
+          expect(outputParam1.marketIdsPath.length).toEqual(2);
+          expect(outputParam1.marketIdsPath[0]).toEqual(market.marketId);
+          expect(outputParam1.marketIdsPath[1]).toEqual(longMarkets[i].marketId);
+
+          expect(outputParam1.amountWeisPath.length).toEqual(2);
+          expect(outputParam1.amountWeisPath[0]).toEqual(amountIn);
+          expect(outputParam1.amountWeisPath[1].isGreaterThan(minOutputAmountsForLongToken[i])).toBeTruthy();
+
+          expect(outputParam1.traderParams.length).toEqual(1);
+          expect(outputParam1.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+          expect(outputParam1.traderParams[0].makerAccountIndex).toEqual(0);
+          expect(outputParam1.traderParams[0].trader)
+            .toEqual(market.isolationModeUnwrapperInfo!.unwrapperAddress);
+          expect(outputParam1.traderParams[0].tradeData.length).toEqual(130);
+
+          expect(outputParam1.makerAccounts.length).toEqual(0);
+          expect(outputParam1.expectedAmountOut.gt(outputParam1.amountWeisPath[outputParam1.amountWeisPath.length - 1]))
+            .toBeTruthy();
+          expect(outputParam1.originalAmountOutMin).toEqual(minOutputAmountsForLongToken[i]);
         }
       });
 

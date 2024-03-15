@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { Address, ZapOutputParam } from './ApiTypes';
-import { INVALID_NAME } from './Constants';
+import { INTEGERS } from './Constants';
 
 export async function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -57,5 +57,5 @@ export function zapOutputParamToJson(param: ZapOutputParam): string {
 }
 
 export function zapOutputParamIsInvalid(value: ZapOutputParam): boolean {
-  return value.traderParams.some(p => p.readableName === INVALID_NAME)
+  return value.amountWeisPath.some(p => p.eq(INTEGERS.NEGATIVE_ONE));
 }

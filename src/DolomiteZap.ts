@@ -34,7 +34,7 @@ import {
 } from './lib/Constants';
 import { LocalCache } from './lib/LocalCache';
 import Logger from './lib/Logger';
-import { removeDuplicatesAndInvalids, toChecksumOpt, zapOutputParamIsInvalid, zapOutputParamToJson } from './lib/Utils';
+import { toChecksumOpt, zapOutputParamIsInvalid } from './lib/Utils';
 
 const ONE_HOUR = 60 * 60;
 
@@ -251,6 +251,7 @@ export class DolomiteZap {
       blockTag: config?.blockTag ?? this._defaultBlockTag,
       filterOutZapsWithInsufficientOutput: config?.filterOutZapsWithInsufficientOutput ?? true,
       subAccountNumber: config?.subAccountNumber,
+      disallowAggregator: config?.disallowAggregator ?? false,
     };
     const marketsMap = await this.getMarketIdToMarketMap(false);
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
@@ -379,14 +380,24 @@ export class DolomiteZap {
           const effectiveInputMarket = marketsMap[effectiveInputMarketId.toFixed()];
           const effectiveOutputMarket = marketsMap[effectiveOutputMarketId.toFixed()];
           const aggregatorOutputOrUndefinedList = await Promise.all(
-            this.validAggregators.map(aggregator => aggregator.getSwapExactTokensForTokensData(
-              effectiveInputMarket,
-              amountsPaths[c][amountsPaths[c].length - 1],
-              effectiveOutputMarket,
-              INTEGERS.ONE,
-              txOrigin,
-              actualConfig,
-            ).catch(() => undefined)),
+            this.validAggregators.map(async aggregator => {
+              if (actualConfig.disallowAggregator) {
+                return undefined;
+              }
+
+              try {
+                return aggregator.getSwapExactTokensForTokensData(
+                  effectiveInputMarket,
+                  amountsPaths[c][amountsPaths[c].length - 1],
+                  effectiveOutputMarket,
+                  INTEGERS.ONE,
+                  txOrigin,
+                  actualConfig,
+                );
+              } catch (e) {
+                return undefined;
+              }
+            }),
           );
 
           // eslint-disable-next-line no-loop-func
@@ -492,7 +503,9 @@ export class DolomiteZap {
       .integerValue(BigNumber.ROUND_DOWN)
 
     const result = marketIdsPaths.map<ZapOutputParam>((_, i) => {
-      amountsPaths[i][amountsPaths[i].length - 1] = minAmountOut;
+      if (!amountsPaths[i][amountsPaths[i].length - 1].eq(INVALID_ESTIMATION.amountOut)) {
+        amountsPaths[i][amountsPaths[i].length - 1] = minAmountOut;
+      }
       return {
         marketIdsPath: marketIdsPaths[i],
         tokensPath: tokensPaths[i],
@@ -505,11 +518,7 @@ export class DolomiteZap {
       };
     });
 
-    const zaps = removeDuplicatesAndInvalids(
-      result,
-      zapOutputParamToJson,
-      zapOutputParamIsInvalid,
-    );
+    const zaps = result.filter(p => !zapOutputParamIsInvalid(p));
     if (actualConfig.filterOutZapsWithInsufficientOutput) {
       return zaps.filter(zap => zap.expectedAmountOut.gte(amountOutMin));
     } else {

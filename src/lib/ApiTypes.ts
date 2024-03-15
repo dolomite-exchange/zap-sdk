@@ -137,6 +137,7 @@ export interface ZapConfig {
   filterOutZapsWithInsufficientOutput: boolean;
   subAccountNumber?: Integer;
   gasPriceInWei?: Integer;
+  disallowAggregator?: boolean;
 }
 
 export interface ZapOutputParam {
