@@ -386,7 +386,7 @@ export class DolomiteZap {
               }
 
               try {
-                return aggregator.getSwapExactTokensForTokensData(
+                return await aggregator.getSwapExactTokensForTokensData(
                   effectiveInputMarket,
                   amountsPaths[c][amountsPaths[c].length - 1],
                   effectiveOutputMarket,
