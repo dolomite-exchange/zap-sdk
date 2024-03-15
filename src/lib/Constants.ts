@@ -7,8 +7,8 @@ export interface ApiMarketConverter {
   unwrapper: Address;
   unwrapperForLiquidation?: Address;
   wrapper: Address;
-  unwrapperMarketId: MarketId;
-  wrapperMarketId: MarketId;
+  unwrapperMarketIds: MarketId[];
+  wrapperMarketIds: MarketId[];
   unwrapperReadableName: string;
   wrapperReadableName: string;
 }
@@ -46,7 +46,7 @@ const USDC_MARKET_ID_MAP: Record<Network, MarketId> = {
   [Network.ARBITRUM_ONE]: new BigNumber(2),
 };
 
-const LINK_MARKET_ID_MAP: Record<Network, MarketId> = {
+const LINK_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.POLYGON_ZKEVM]: new BigNumber(3),
   [Network.BASE]: new BigNumber(3),
   [Network.ARBITRUM_ONE]: new BigNumber(3),
@@ -277,16 +277,16 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
     [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.GLPIsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.GLPIsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
-      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'GLP Isolation Mode Unwrapper',
       wrapperReadableName: 'GLP Isolation Mode Wrapper',
     },
     [PLV_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PlutusVaultGLPIsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PlutusVaultGLPIsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
-      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'plvGLP Isolation Mode Unwrapper',
       wrapperReadableName: 'plvGLP Isolation Mode Wrapper',
     },
@@ -295,119 +295,144 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       unwrapperForLiquidation:
       Deployments.JonesUSDCIsolationModeUnwrapperTraderV4ForLiquidation[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.JonesUSDCIsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
-      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'jUSDC Isolation Mode Unwrapper',
       wrapperReadableName: 'jUSDC Isolation Mode Wrapper',
     },
     [PENDLE_PT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendlePtGLP2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
-      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'PT-GLP Isolation Mode Unwrapper',
       wrapperReadableName: 'PT-GLP Isolation Mode Wrapper',
     },
     [PENDLE_YT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PendleYtGLP2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendleYtGLP2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
-      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'YT-GLP Isolation Mode Unwrapper',
       wrapperReadableName: 'YT-GLP Isolation Mode Wrapper',
     },
     [PENDLE_PT_RETH_JUN_2025_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PendlePtREthJun2025IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendlePtREthJun2025IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: R_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: R_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [R_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [R_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-rETH Isolation Mode Unwrapper',
       wrapperReadableName: 'PT-rETH Isolation Mode Wrapper',
     },
     [PENDLE_PT_WST_ETH_JUN_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PendlePtWstEthJun2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendlePtWstEthJun2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-wstETH Isolation Mode Unwrapper',
       wrapperReadableName: 'PT-wstETH Isolation Mode Wrapper',
     },
     [PENDLE_PT_WST_ETH_JUN_2025_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PendlePtWstEthJun2025IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendlePtWstEthJun2025IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-wstETH Isolation Mode Unwrapper',
       wrapperReadableName: 'PT-wstETH Isolation Mode Wrapper',
     },
     [ARB_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.ARBIsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.ARBIsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'ARB Isolation Mode Unwrapper',
       wrapperReadableName: 'ARB Isolation Mode Wrapper',
     },
     [GMX_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.GMXIsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.GMXIsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'GMX Isolation Mode Unwrapper',
       wrapperReadableName: 'GMX Isolation Mode Wrapper',
     },
     [GM_ARB_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.GmxV2ARBAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.GmxV2ARBAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [
+        NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+        ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      ],
+      wrapperMarketIds: [
+        NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+        ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      ],
       unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GMX Intent Wrapper',
+      wrapperReadableName: 'GM Intent Wrapper',
     },
     [GM_BTC_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.GmxV2BTCAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.GmxV2BTCAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [
+        NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+        WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      ],
+      wrapperMarketIds: [
+        NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+        WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      ],
       unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GMX Intent Wrapper',
+      wrapperReadableName: 'GM Intent Wrapper',
     },
     [GM_ETH_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.GmxV2ETHAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.GmxV2ETHAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [
+        NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+        WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      ],
+      wrapperMarketIds: [
+        NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+        WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      ],
       unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GMX Intent Wrapper',
+      wrapperReadableName: 'GM Intent Wrapper',
     },
     [GM_LINK_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.GmxV2LINKAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.GmxV2LINKAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [
+        NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+        LINK_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      ],
+      wrapperMarketIds: [
+        NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+        LINK_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      ],
       unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GMX Intent Wrapper',
+      wrapperReadableName: 'GM Intent Wrapper',
     },
     [PENDLE_PT_WE_ETH_APR_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PendlePtWeETHApr2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendlePtWeETHApr2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
-      wrapperMarketId: WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      unwrapperMarketIds: [WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-weETH Isolation Mode Unwrapper',
       wrapperReadableName: 'PT-weETH Isolation Mode Wrapper',
     },
   },
 };
 
-export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<string, ApiMarketConverter>> = {
+// eslint-disable-next-line max-len
+export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<string, ApiMarketConverter | undefined>> = {
   [Network.POLYGON_ZKEVM]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [MAGIC_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.MagicGLPUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.MagicGLPWrapperTraderV2[Network.ARBITRUM_ONE].address,
-      unwrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
-      wrapperMarketId: USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE],
+      unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'magicGLP Unwrapper',
       wrapperReadableName: 'magicGLP Wrapper',
     },

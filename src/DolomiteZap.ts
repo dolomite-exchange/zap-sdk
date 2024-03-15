@@ -43,6 +43,12 @@ const THIRTY_BASIS_POINTS = 0.003;
 const marketsKey = 'MARKETS';
 const marketHelpersKey = 'MARKET_HELPERS';
 
+const INVALID_ESTIMATION = {
+  amountOut: INTEGERS.NEGATIVE_ONE,
+  tradeData: BYTES_EMPTY,
+  extraData: undefined,
+};
+
 export interface DolomiteZapConfig {
   /**
    * The network on which this instance of the Dolomite Zap is running.
@@ -267,47 +273,61 @@ export class DolomiteZap {
       return Promise.reject(new Error('Invalid slippageTolerance. Must be between 0 and 0.1 (10%)'));
     }
 
-    const marketIdsPath: MarketId[] = [inputMarket.marketId];
-    const amountsPaths = new Array<Integer[]>(this.validAggregators.length).fill([amountIn]);
-    const traderParamsArrays = new Array<GenericTraderParam[]>(this.validAggregators.length).fill([]);
-    let effectiveInputMarketId = inputMarket.marketId;
-    let effectiveOutputMarketId = outputMarket.marketId;
+    let marketIdsPaths: MarketId[][] = [];
+    let amountsPaths: BigNumber[][] = [];
+    let traderParamsArrays: GenericTraderParam[][] = [];
+    let executionFees: BigNumber[] = [];
+    let effectiveInputMarketIds = [inputMarket.marketId];
+    let effectiveOutputMarketIds = [outputMarket.marketId];
 
     const isIsolationModeUnwrapper = inputMarket.isolationModeUnwrapperInfo;
     const unwrapperInfo = inputMarket.isolationModeUnwrapperInfo ?? inputMarket.liquidityTokenUnwrapperInfo;
     const unwrapperHelper = inputHelper.isolationModeUnwrapperHelper ?? inputHelper.liquidityTokenUnwrapperHelper;
     if (unwrapperInfo && unwrapperHelper) {
-      effectiveInputMarketId = unwrapperInfo.outputMarketId;
-      marketIdsPath.push(effectiveInputMarketId);
+      effectiveInputMarketIds = unwrapperInfo.outputMarketIds;
 
-      const { amountOut, tradeData } = await unwrapperHelper.estimateOutputFunction(
-        amountsPaths[0][0],
-        unwrapperInfo.outputMarketId,
-        actualConfig,
-      ).catch(e => {
-        Logger.error({
-          message: `Caught error while estimating wrapping: ${e.message}`,
-          error: e,
-        });
-        return Promise.reject(e);
-      });
+      const estimateResults = await Promise.all(
+        effectiveInputMarketIds.map((inputMarketId, i) => {
+          marketIdsPaths[i] = [inputMarket.marketId];
+          amountsPaths[i] = [amountIn];
 
-      amountsPaths.forEach((_, i) => {
-        amountsPaths[i] = amountsPaths[i].concat(amountOut)
+          return unwrapperHelper.estimateOutputFunction(
+            amountIn,
+            inputMarketId,
+            actualConfig,
+          ).catch(e => {
+            Logger.error({
+              message: `Caught error while estimating wrapping: ${e.message}`,
+              error: e,
+            });
+            return INVALID_ESTIMATION;
+          });
+        }),
+      );
+
+      estimateResults.forEach(({ amountOut, tradeData, extraData }, i) => {
+        marketIdsPaths[i] = marketIdsPaths[i].concat(effectiveInputMarketIds[i]);
+        amountsPaths[i] = amountsPaths[i].concat(amountOut);
+        traderParamsArrays[i] = [
+          {
+            traderType: isIsolationModeUnwrapper
+              ? GenericTraderType.IsolationModeUnwrapper
+              : GenericTraderType.ExternalLiquidity,
+            makerAccountIndex: 0,
+            trader: actualConfig.isLiquidation
+              ? (unwrapperInfo.unwrapperForLiquidationAddress ?? unwrapperInfo.unwrapperAddress)
+              : unwrapperInfo.unwrapperAddress,
+            tradeData,
+            readableName: unwrapperInfo.readableName,
+          },
+        ];
+        executionFees[i] = extraData?.executionFee ?? INTEGERS.ZERO;
       });
-      traderParamsArrays.forEach((_, i) => {
-        traderParamsArrays[i] = traderParamsArrays[i].concat({
-          traderType: isIsolationModeUnwrapper
-            ? GenericTraderType.IsolationModeUnwrapper
-            : GenericTraderType.ExternalLiquidity,
-          makerAccountIndex: 0,
-          trader: actualConfig.isLiquidation
-            ? (unwrapperInfo.unwrapperForLiquidationAddress ?? unwrapperInfo.unwrapperAddress)
-            : unwrapperInfo.unwrapperAddress,
-          tradeData,
-          readableName: unwrapperInfo.readableName,
-        });
-      });
+    } else {
+      marketIdsPaths[0] = [inputMarket.marketId];
+      amountsPaths[0] = [amountIn];
+      traderParamsArrays[0] = [];
+      executionFees[0] = INTEGERS.ZERO;
     }
 
     const isIsolationModeWrapper = outputMarket.isolationModeWrapperInfo;
@@ -315,161 +335,173 @@ export class DolomiteZap {
     const wrapperHelper = outputHelper.isolationModeWrapperHelper ?? outputHelper.liquidityTokenWrapperHelper;
     if (wrapperInfo) {
       // We can't get the amount yet until we know if we need to use an aggregator in the middle
-      effectiveOutputMarketId = wrapperInfo.inputMarketId;
-      if (!effectiveInputMarketId.eq(effectiveOutputMarketId)) {
-        marketIdsPath.push(wrapperInfo.inputMarketId);
-      }
+      effectiveOutputMarketIds = wrapperInfo.inputMarketIds;
+      [
+        marketIdsPaths,
+        amountsPaths,
+        traderParamsArrays,
+        executionFees,
+      ] = effectiveOutputMarketIds.reduce((acc, outputMarketId) => {
+        marketIdsPaths.forEach((path, i) => {
+          if (!outputMarketId.eq(path[path.length - 1])) {
+            acc[0].push(path.concat(outputMarketId));
+            acc[1].push([...amountsPaths[i]]);
+            acc[2].push([...traderParamsArrays[i]]);
+            acc[3].push(...executionFees);
+          } else {
+            acc[0].push(path);
+            acc[1].push([...amountsPaths[i]]);
+            acc[2].push([...traderParamsArrays[i]]);
+            acc[3].push(...executionFees);
+          }
+        });
+        return acc;
+      }, [[] as MarketId[][], [] as BigNumber[][], [] as GenericTraderParam[][], [] as BigNumber[]])
     }
 
-    if (!effectiveInputMarketId.eq(effectiveOutputMarketId)) {
-      if (!marketIdsPath.find(marketId => marketId.eq(effectiveOutputMarketId))) {
-        marketIdsPath.push(effectiveOutputMarketId);
-      }
-      const effectiveInputMarket = marketsMap[effectiveInputMarketId.toFixed()];
-      const effectiveOutputMarket = marketsMap[effectiveOutputMarketId.toFixed()];
-      const aggregatorOutputOrUndefinedList = await Promise.all(
-        this.validAggregators.map((aggregator, i) => {
-          return aggregator.getSwapExactTokensForTokensData(
-            effectiveInputMarket,
-            amountsPaths[i][amountsPaths[i].length - 1],
-            effectiveOutputMarket,
-            INTEGERS.ONE,
-            txOrigin,
-            actualConfig,
-          ).catch(() => undefined);
-        }),
-      );
+    if (
+      effectiveInputMarketIds.length !== marketIdsPaths.length
+      && effectiveOutputMarketIds.length !== marketIdsPaths.length
+    ) {
+      // eslint-disable-next-line max-len
+      return Promise.reject(new Error(`Developer error: marketIds length does not match <${effectiveInputMarketIds.length}, ${marketIdsPaths.length}>`));
+    } else if (marketIdsPaths.length !== amountsPaths.length) {
+      // eslint-disable-next-line max-len
+      return Promise.reject(new Error(`Developer error: amountsPaths length does not match <${amountsPaths.length}, ${marketIdsPaths.length}>`));
+    }
 
-      amountsPaths.forEach((_, i) => {
-        const aggregatorOutput = aggregatorOutputOrUndefinedList[i];
-        amountsPaths[i] = amountsPaths[i].concat(aggregatorOutput?.expectedAmountOut ?? INTEGERS.NEGATIVE_ONE);
-      });
-      traderParamsArrays.forEach((_, i) => {
-        const aggregatorOutput = aggregatorOutputOrUndefinedList[i];
-        traderParamsArrays[i] = traderParamsArrays[i].concat({
-          traderType: GenericTraderType.ExternalLiquidity,
-          makerAccountIndex: 0,
-          trader: aggregatorOutput?.traderAddress ?? ADDRESS_ZERO,
-          tradeData: aggregatorOutput?.tradeData ?? BYTES_EMPTY,
-          readableName: aggregatorOutput?.readableName ?? INVALID_NAME,
-        });
-      });
+    for (let i = 0; i < effectiveInputMarketIds.length; i += 1) {
+      const effectiveInputMarketId = effectiveInputMarketIds[i];
+      for (let j = 0; j < effectiveOutputMarketIds.length; j += 1) {
+        const c = i * effectiveOutputMarketIds.length + j;
+        const effectiveOutputMarketId = effectiveOutputMarketIds[j];
+        if (!effectiveInputMarketId.eq(effectiveOutputMarketId)) {
+          const effectiveInputMarket = marketsMap[effectiveInputMarketId.toFixed()];
+          const effectiveOutputMarket = marketsMap[effectiveOutputMarketId.toFixed()];
+          const aggregatorOutputOrUndefinedList = await Promise.all(
+            this.validAggregators.map(aggregator => aggregator.getSwapExactTokensForTokensData(
+              effectiveInputMarket,
+              amountsPaths[c][amountsPaths[c].length - 1],
+              effectiveOutputMarket,
+              INTEGERS.ONE,
+              txOrigin,
+              actualConfig,
+            ).catch(() => undefined)),
+          );
+
+          // eslint-disable-next-line no-loop-func
+          aggregatorOutputOrUndefinedList.forEach((aggregatorOutput, aggregatorIndex) => {
+            if (aggregatorIndex === 0) {
+              amountsPaths[c] = amountsPaths[c].concat(aggregatorOutput?.expectedAmountOut ?? INTEGERS.NEGATIVE_ONE);
+              traderParamsArrays[c] = traderParamsArrays[c].concat({
+                traderType: GenericTraderType.ExternalLiquidity,
+                makerAccountIndex: 0,
+                trader: aggregatorOutput?.traderAddress ?? ADDRESS_ZERO,
+                tradeData: aggregatorOutput?.tradeData ?? BYTES_EMPTY,
+                readableName: aggregatorOutput?.readableName ?? INVALID_NAME,
+              });
+            } else {
+              marketIdsPaths.push([...marketIdsPaths[c]]);
+              amountsPaths.push(
+                [...amountsPaths[c]].concat(aggregatorOutput?.expectedAmountOut ?? INTEGERS.NEGATIVE_ONE),
+              );
+              traderParamsArrays.push(
+                [...traderParamsArrays[c]].concat({
+                  traderType: GenericTraderType.ExternalLiquidity,
+                  makerAccountIndex: 0,
+                  trader: aggregatorOutput?.traderAddress ?? ADDRESS_ZERO,
+                  tradeData: aggregatorOutput?.tradeData ?? BYTES_EMPTY,
+                  readableName: aggregatorOutput?.readableName ?? INVALID_NAME,
+                }),
+              );
+              executionFees.push(executionFees[c]);
+            }
+          });
+        }
+      }
     }
 
     if (wrapperInfo && wrapperHelper) {
       // Append the amounts and trader params for the wrapper
-      let amountsAndTraderParams;
-      const lastAmount = amountsPaths[0][amountsPaths[0].length - 1];
-      if (
-        amountsPaths.every(amountsPath => amountsPath[amountsPath.length - 1].eq(lastAmount))
-        && !lastAmount.eq(INTEGERS.NEGATIVE_ONE)
-      ) {
-        const outputEstimate = await wrapperHelper.estimateOutputFunction(
-          lastAmount,
-          wrapperInfo.inputMarketId,
-          actualConfig,
-        ).catch(e => {
-          Logger.error({
-            message: `Caught error while estimating wrapping: ${e.message}`,
-            error: e,
-          });
-          return Promise.reject(e);
-        });
-        amountsAndTraderParams = amountsPaths.map(() => {
-          const traderParam: GenericTraderParam = {
+      await Promise.all(
+        marketIdsPaths.map(async (marketIdsPath, i) => {
+          const amountsPath = amountsPaths[i];
+          let outputEstimate: EstimateOutputResult
+          if (amountsPath.some(a => a.eq(INVALID_ESTIMATION.amountOut))) {
+            outputEstimate = INVALID_ESTIMATION;
+          } else {
+            outputEstimate = await wrapperHelper.estimateOutputFunction(
+              amountsPath[amountsPath.length - 1],
+              marketIdsPath[marketIdsPath.length - 1],
+              actualConfig,
+            ).catch(e => {
+              Logger.error({
+                message: `Caught error while estimating wrapping: ${e.message}`,
+                error: e,
+              });
+              return INVALID_ESTIMATION;
+            });
+          }
+
+          marketIdsPath.push(outputMarket.marketId);
+          amountsPath.push(outputEstimate.amountOut);
+          traderParamsArrays[i].push({
             traderType: isIsolationModeWrapper
               ? GenericTraderType.IsolationModeWrapper
               : GenericTraderType.ExternalLiquidity,
             makerAccountIndex: 0,
             trader: wrapperInfo.wrapperAddress,
             tradeData: outputEstimate.tradeData,
-            readableName: wrapperInfo.readableName,
-          };
-          return {
-            amountOut: outputEstimate.amountOut,
-            traderParam,
-          };
-        });
-      } else {
-        amountsAndTraderParams = await Promise.all(
-          amountsPaths.map(async (amountsPath) => {
-            const amountInForEstimation = amountsPath[amountsPath.length - 1];
-            let outputEstimate: EstimateOutputResult;
-            if (amountInForEstimation.eq(INTEGERS.NEGATIVE_ONE)) {
-              outputEstimate = {
-                amountOut: INTEGERS.NEGATIVE_ONE,
-                tradeData: BYTES_EMPTY,
-              };
-            } else {
-              outputEstimate = await wrapperHelper.estimateOutputFunction(
-                amountInForEstimation,
-                wrapperInfo.inputMarketId,
-                actualConfig,
-              ).catch(e => {
-                Logger.error({
-                  message: `Caught error while estimating wrapping: ${e.message}`,
-                  error: e,
-                });
-                return {
-                  amountOut: INTEGERS.NEGATIVE_ONE,
-                  tradeData: BYTES_EMPTY,
-                };
-              });
-            }
-
-            const traderParam: GenericTraderParam = {
-              traderType: isIsolationModeWrapper
-                ? GenericTraderType.IsolationModeWrapper
-                : GenericTraderType.ExternalLiquidity,
-              makerAccountIndex: 0,
-              trader: wrapperInfo.wrapperAddress,
-              tradeData: outputEstimate.tradeData,
-              readableName: outputEstimate.amountOut.eq(INTEGERS.NEGATIVE_ONE)
-                ? INVALID_NAME
-                : wrapperInfo.readableName,
-            };
-            return {
-              amountOut: outputEstimate.amountOut,
-              traderParam,
-            };
-          }),
-        )
-      }
-
-      amountsPaths.forEach((_, i) => {
-        amountsPaths[i] = amountsPaths[i].concat(amountsAndTraderParams[i].amountOut);
-        traderParamsArrays[i] = traderParamsArrays[i].concat(amountsAndTraderParams[i].traderParam);
+            readableName: outputEstimate.amountOut.eq(INVALID_ESTIMATION.amountOut)
+              ? INVALID_NAME
+              : wrapperInfo.readableName,
+          });
+          executionFees[i] = executionFees[i].plus(outputEstimate.extraData?.executionFee ?? INTEGERS.ZERO);
+        }),
+      );
+    } else {
+      marketIdsPaths.forEach(marketIdsPath => {
+        if (!marketIdsPath[marketIdsPath.length - 1].eq(outputMarket.marketId)) {
+          marketIdsPath.push(outputMarket.marketId);
+        }
       });
     }
 
-    if (!marketIdsPath.find(marketId => marketId.eq(outputMarket.marketId))) {
-      marketIdsPath.push(outputMarket.marketId);
-    }
-
-    const tokensPath = marketIdsPath.map<ApiToken>(marketId => ({
-      marketId,
-      symbol: marketsMap[marketId.toFixed()].symbol,
-      name: marketsMap[marketId.toFixed()].name,
-      tokenAddress: marketsMap[marketId.toFixed()].tokenAddress,
-      decimals: marketsMap[marketId.toFixed()].decimals,
-    }));
+    const tokensPaths = marketIdsPaths.map<ApiToken[]>(marketIdsPath => {
+      return marketIdsPath.map(marketId => ({
+        marketId,
+        symbol: marketsMap[marketId.toFixed()].symbol,
+        name: marketsMap[marketId.toFixed()].name,
+        tokenAddress: marketsMap[marketId.toFixed()].tokenAddress,
+        decimals: marketsMap[marketId.toFixed()].decimals,
+      }));
+    });
 
     // Unify the min amount out to be the same for UX's sake
-    const expectedAmountOut = amountsPaths[0][amountsPaths[0].length - 1];
+    const expectedAmountOut = amountsPaths.reduce((max, currentPath) => {
+      const current = currentPath[currentPath.length - 1];
+      if (current.gt(max)) {
+        return current;
+      }
+
+      return max;
+    }, INTEGERS.ZERO);
+
     const minAmountOut = expectedAmountOut
       .multipliedBy(1 - actualConfig.slippageTolerance)
       .integerValue(BigNumber.ROUND_DOWN)
 
-    const result = this.validAggregators.map<ZapOutputParam>((_, i) => {
+    const result = marketIdsPaths.map<ZapOutputParam>((_, i) => {
       amountsPaths[i][amountsPaths[i].length - 1] = minAmountOut;
       return {
-        marketIdsPath,
-        tokensPath,
+        marketIdsPath: marketIdsPaths[i],
+        tokensPath: tokensPaths[i],
         expectedAmountOut,
         amountWeisPath: amountsPaths[i],
         traderParams: traderParamsArrays[i],
         makerAccounts: [],
         originalAmountOutMin: amountOutMin,
+        executionFee: executionFees[i].gt(INTEGERS.ZERO) ? executionFees[i] : undefined,
       };
     });
 

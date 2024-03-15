@@ -49,7 +49,7 @@ describe('PendlePtREthJun2025Zap', () => {
         expect(outputParam.marketIdsPath.length).toEqual(3);
         expect(outputParam.marketIdsPath[0]).toEqual(ptREthMarketId);
         expect(outputParam.marketIdsPath[1])
-          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][ptREthMarketId.toFixed()]!.unwrapperMarketId);
+          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][ptREthMarketId.toFixed()]!.unwrapperMarketIds[0]);
         expect(outputParam.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(3);
@@ -91,7 +91,7 @@ describe('PendlePtREthJun2025Zap', () => {
         expect(outputParam.marketIdsPath.length).toEqual(3);
         expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
         expect(outputParam.marketIdsPath[1])
-          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][ptREthMarketId.toFixed()]!.wrapperMarketId);
+          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][ptREthMarketId.toFixed()]!.wrapperMarketIds[0]);
         expect(outputParam.marketIdsPath[2]).toEqual(ptREthMarketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(3);

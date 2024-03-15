@@ -45,6 +45,7 @@ describe('DolomiteZap', () => {
 
   beforeEach(async () => {
     // Sleep so Paraswap does not rate limit
+    setUnwrapperMarketIdByMarketId(GLP_MARKET.marketId, USDC_MARKET.marketId, network);
     await sleep(SLEEP_DURATION_BETWEEN_TESTS);
   });
 
@@ -128,13 +129,13 @@ describe('DolomiteZap', () => {
         tokenAddress: '0x1234567812345678123456781234567812345678',
         isolationModeWrapperInfo: {
           wrapperAddress: '0x1234567812345678123456781234567812345678',
-          inputMarketId: new BigNumber(2),
+          inputMarketIds: [new BigNumber(2)],
           readableName: 'NEW Isolation Mode Wrapper',
         },
         liquidityTokenWrapperInfo: undefined,
         isolationModeUnwrapperInfo: {
           unwrapperAddress: '0x1234567812345678123456781234567812345678',
-          outputMarketId: new BigNumber(2),
+          outputMarketIds: [new BigNumber(2)],
           readableName: 'NEW Isolation Mode Unwrapper',
         },
         liquidityTokenUnwrapperInfo: undefined,
@@ -511,6 +512,7 @@ describe('DolomiteZap', () => {
         'should work when there is an Isolation Mode token to be unwrapped into a wrapper and uses an aggregator',
         async () => {
           setUnwrapperMarketIdByMarketId(GLP_MARKET.marketId, WETH_MARKET.marketId, network);
+          await zap.forceRefreshCache();
 
           const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
           const minAmountOut = new BigNumber('50000000000000000000'); // 50 mGLP
@@ -568,6 +570,7 @@ describe('DolomiteZap', () => {
         'should work when there is an Isolation Mode token to be unwrapped into a Liquidity Token & uses an aggregator',
         async () => {
           setUnwrapperMarketIdByMarketId(GLP_MARKET.marketId, WETH_MARKET.marketId, network);
+          await zap.forceRefreshCache();
 
           const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
           const minAmountOut = new BigNumber('50000000000000000000'); // 50 mGLP

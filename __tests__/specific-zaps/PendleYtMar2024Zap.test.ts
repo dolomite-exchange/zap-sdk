@@ -32,7 +32,7 @@ describe('PendleYtGlpMar2024Zap', () => {
     describe('Pendle YT-GLP', () => {
       it('should work when unwrapping YT-GLP', async () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 YT
-        const minAmountOut = new BigNumber('1000000'); // 1 USDC
+        const minAmountOut = new BigNumber('100000'); // 0.1 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
           YT_GLP_MARKET,
           amountIn,

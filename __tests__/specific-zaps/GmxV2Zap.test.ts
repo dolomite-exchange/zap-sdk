@@ -2,18 +2,24 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import { DolomiteZap, GenericTraderType, Network } from '../../src';
+import sleep from '../helpers/sleep';
 import {
+  ARB_MARKET,
   GM_ARB_MARKET,
   GM_BTC_MARKET,
   GM_ETH_MARKET,
   GM_LINK_MARKET,
-  NATIVE_USDC_MARKET, SLEEP_DURATION_BETWEEN_TESTS,
+  LINK_MARKET,
+  NATIVE_USDC_MARKET,
+  SLEEP_DURATION_BETWEEN_TESTS,
   USDC_MARKET,
+  WBTC_MARKET,
+  WETH_MARKET,
 } from '../helpers/TestConstants';
-import sleep from '../helpers/sleep';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 const subAccountNumber = new BigNumber('123');
+const GM_POOL_ASSETS_LENGTH = 2;
 
 describe('GmxV2Zap', () => {
   const network = Network.ARBITRUM_ONE;
@@ -34,6 +40,12 @@ describe('GmxV2Zap', () => {
     GM_BTC_MARKET,
     GM_ETH_MARKET,
     GM_LINK_MARKET,
+  ];
+  const longMarkets = [
+    ARB_MARKET,
+    WBTC_MARKET,
+    WETH_MARKET,
+    LINK_MARKET,
   ];
 
   beforeAll(async () => {
@@ -60,36 +72,58 @@ describe('GmxV2Zap', () => {
             txOrigin,
           );
 
-          expect(outputParams.length).toBe(2);
+          expect(outputParams.length).toBe(zap.validAggregators.length * GM_POOL_ASSETS_LENGTH);
 
-          const outputParam = outputParams[0];
-          expect(outputParam.marketIdsPath.length).toEqual(3);
-          expect(outputParam.marketIdsPath[0]).toEqual(market.marketId);
-          expect(outputParam.marketIdsPath[1]).toEqual(NATIVE_USDC_MARKET.marketId);
-          expect(outputParam.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
+          const outputParam0 = outputParams[0];
+          expect(outputParam0.marketIdsPath.length).toEqual(3);
+          expect(outputParam0.marketIdsPath[0]).toEqual(market.marketId);
+          expect(outputParam0.marketIdsPath[1]).toEqual(NATIVE_USDC_MARKET.marketId);
+          expect(outputParam0.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
 
-          expect(outputParam.amountWeisPath.length).toEqual(3);
-          expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
-          expect(outputParam.amountWeisPath[2].isGreaterThan(minAmountOut)).toBeTruthy();
+          expect(outputParam0.amountWeisPath.length).toEqual(3);
+          expect(outputParam0.amountWeisPath[0]).toEqual(amountIn);
+          expect(outputParam0.amountWeisPath[2].isGreaterThan(minAmountOut)).toBeTruthy();
 
-          expect(outputParam.traderParams.length).toEqual(2);
-          expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
-          expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
-          expect(outputParam.traderParams[0].trader)
+          expect(outputParam0.traderParams.length).toEqual(2);
+          expect(outputParam0.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+          expect(outputParam0.traderParams[0].makerAccountIndex).toEqual(0);
+          expect(outputParam0.traderParams[0].trader)
             .toEqual(market.isolationModeUnwrapperInfo!.unwrapperAddress);
-          expect(outputParam.traderParams[0].tradeData.length).toEqual(130);
+          expect(outputParam0.traderParams[0].tradeData.length).toEqual(130);
 
-          expect(outputParam.makerAccounts.length).toEqual(0);
-          expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          expect(outputParam0.makerAccounts.length).toEqual(0);
+          expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))
             .toBeTruthy();
-          expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
+          expect(outputParam0.originalAmountOutMin).toEqual(minAmountOut);
+
+          const outputParam1 = outputParams[1];
+          expect(outputParam1.marketIdsPath.length).toEqual(3);
+          expect(outputParam1.marketIdsPath[0]).toEqual(market.marketId);
+          expect(outputParam1.marketIdsPath[1]).toEqual(longMarkets[i].marketId);
+          expect(outputParam1.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
+
+          expect(outputParam1.amountWeisPath.length).toEqual(3);
+          expect(outputParam1.amountWeisPath[0]).toEqual(amountIn);
+          expect(outputParam1.amountWeisPath[2].isGreaterThan(minAmountOut)).toBeTruthy();
+
+          expect(outputParam1.traderParams.length).toEqual(2);
+          expect(outputParam1.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+          expect(outputParam1.traderParams[0].makerAccountIndex).toEqual(0);
+          expect(outputParam1.traderParams[0].trader)
+            .toEqual(market.isolationModeUnwrapperInfo!.unwrapperAddress);
+          expect(outputParam1.traderParams[0].tradeData.length).toEqual(130);
+
+          expect(outputParam1.makerAccounts.length).toEqual(0);
+          expect(outputParam1.expectedAmountOut.gt(outputParam1.amountWeisPath[outputParam1.amountWeisPath.length - 1]))
+            .toBeTruthy();
+          expect(outputParam1.originalAmountOutMin).toEqual(minAmountOut);
         }
       });
 
       it('should work when wrapping GM', async () => {
         for (let i = 0; i < markets.length; i += 1) {
           const market = markets[i];
-          const amountIn = new BigNumber('100000000'); // 100 USDC
+          const amountIn = new BigNumber('1000000000'); // 100 USDC
           const minAmountOut = new BigNumber('50000000000000000000'); // 50 GM
           const outputParams = await zap.getSwapExactTokensForTokensParams(
             USDC_MARKET,
@@ -100,29 +134,53 @@ describe('GmxV2Zap', () => {
             { subAccountNumber },
           );
 
-          expect(outputParams.length).toBe(2);
+          expect(outputParams.length).toBe(zap.validAggregators.length * GM_POOL_ASSETS_LENGTH);
 
-          const outputParam = outputParams[0];
-          expect(outputParam.marketIdsPath.length).toEqual(3);
-          expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
-          expect(outputParam.marketIdsPath[1]).toEqual(NATIVE_USDC_MARKET.marketId);
-          expect(outputParam.marketIdsPath[2]).toEqual(market.marketId);
+          const outputParam0 = outputParams[0];
+          expect(outputParam0.marketIdsPath.length).toEqual(3);
+          expect(outputParam0.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
+          expect(outputParam0.marketIdsPath[1]).toEqual(NATIVE_USDC_MARKET.marketId);
+          expect(outputParam0.marketIdsPath[2]).toEqual(market.marketId);
 
-          expect(outputParam.amountWeisPath.length).toEqual(3);
-          expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
-          expect(outputParam.amountWeisPath[2].isGreaterThan(minAmountOut)).toBeTruthy();
+          expect(outputParam0.amountWeisPath.length).toEqual(3);
+          expect(outputParam0.amountWeisPath[0]).toEqual(amountIn);
+          expect(outputParam0.amountWeisPath[2].isGreaterThan(minAmountOut)).toBeTruthy();
 
-          expect(outputParam.traderParams.length).toEqual(2);
-          expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
-          expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
-          expect(outputParam.traderParams[1].trader)
+          expect(outputParam0.traderParams.length).toEqual(2);
+          expect(outputParam0.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
+          expect(outputParam0.traderParams[1].makerAccountIndex).toEqual(0);
+          expect(outputParam0.traderParams[1].trader)
             .toEqual(market.isolationModeWrapperInfo?.wrapperAddress);
-          expect(outputParam.traderParams[1].tradeData.length).toEqual(130);
+          expect(outputParam0.traderParams[1].tradeData.length).toEqual(130);
 
-          expect(outputParam.makerAccounts.length).toEqual(0);
-          expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          expect(outputParam0.makerAccounts.length).toEqual(0);
+          expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))
             .toBeTruthy();
-          expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
+          expect(outputParam0.originalAmountOutMin).toEqual(minAmountOut);
+
+          const outputParam1 = outputParams[1];
+          expect(outputParam1.marketIdsPath.length).toEqual(3);
+          expect(outputParam1.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
+          expect(outputParam1.marketIdsPath[1]).toEqual(longMarkets[i].marketId);
+          expect(outputParam1.marketIdsPath[2]).toEqual(market.marketId);
+
+          expect(outputParam1.amountWeisPath.length).toEqual(3);
+          expect(outputParam1.amountWeisPath[0]).toEqual(amountIn);
+          expect(outputParam1.amountWeisPath[2].isGreaterThan(minAmountOut)).toBeTruthy();
+
+          expect(outputParam1.traderParams.length).toEqual(2);
+          expect(outputParam1.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
+          expect(outputParam1.traderParams[1].makerAccountIndex).toEqual(0);
+          expect(outputParam1.traderParams[1].trader)
+            .toEqual(market.isolationModeWrapperInfo?.wrapperAddress);
+          expect(outputParam1.traderParams[1].tradeData.length).toEqual(130);
+
+          expect(outputParam1.makerAccounts.length).toEqual(0);
+          expect(outputParam1.expectedAmountOut.gt(outputParam1.amountWeisPath[outputParam1.amountWeisPath.length - 1]))
+            .toBeTruthy();
+          expect(outputParam1.originalAmountOutMin).toEqual(minAmountOut);
+
+          await sleep(SLEEP_DURATION_BETWEEN_TESTS);
         }
       });
     });

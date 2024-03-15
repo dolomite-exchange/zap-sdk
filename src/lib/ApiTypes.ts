@@ -45,13 +45,13 @@ export interface ApiMarket {
 export interface ApiUnwrapperInfo {
   unwrapperAddress: Address;
   unwrapperForLiquidationAddress?: Address;
-  outputMarketId: MarketId;
+  outputMarketIds: MarketId[];
   readableName: string;
 }
 
 export interface ApiWrapperInfo {
   wrapperAddress: Address;
-  inputMarketId: MarketId;
+  inputMarketIds: MarketId[];
   readableName: string;
 }
 
@@ -169,4 +169,9 @@ export interface ZapOutputParam {
    * amountWeisPath[amountWeisPath.length - 1] (since the last amount is the `expected` amount out including slippage)
    */
   originalAmountOutMin: Integer;
+  /**
+   * The `msg.value` to pass along to the transaction for paying for gas fees. Usually this is (slightly)
+   * over-estimated.
+   */
+  executionFee?: Integer;
 }

@@ -15,12 +15,12 @@ export default class IsolationModeClient {
     return token.name.includes('Dolomite Isolation:') || token.symbol === 'dfsGLP';
   }
 
-  public getIsolationModeUnwrapperMarketIdByMarketId(token: GraphqlToken): MarketId | undefined {
-    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapperMarketId;
+  public getIsolationModeUnwrapperMarketIdsByToken(token: GraphqlToken): MarketId[] | undefined {
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapperMarketIds;
   }
 
-  public getIsolationModeWrapperMarketIdByMarketId(token: GraphqlToken): MarketId | undefined {
-    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapperMarketId;
+  public getIsolationModeWrapperMarketIdsByToken(token: GraphqlToken): MarketId[] | undefined {
+    return ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapperMarketIds;
   }
 
   public getIsolationModeUnwrapperByMarketId(token: GraphqlToken): string | undefined {
@@ -49,27 +49,27 @@ export default class IsolationModeClient {
     return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId] !== undefined;
   }
 
-  public getLiquidityTokenUnwrapperMarketIdByToken(token: GraphqlToken): MarketId {
-    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].unwrapperMarketId;
+  public getLiquidityTokenUnwrapperMarketIdsByToken(token: GraphqlToken): MarketId[] | undefined {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapperMarketIds;
   }
 
-  public getLiquidityTokenWrapperMarketIdByToken(token: GraphqlToken): MarketId {
-    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].wrapperMarketId;
+  public getLiquidityTokenWrapperMarketIdsByToken(token: GraphqlToken): MarketId[] | undefined {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapperMarketIds;
   }
 
-  public getLiquidityTokenUnwrapperByToken(token: GraphqlToken): string {
-    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].unwrapper;
+  public getLiquidityTokenUnwrapperByToken(token: GraphqlToken): string | undefined {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapper;
   }
 
-  public getLiquidityTokenWrapperByToken(token: GraphqlToken): string {
-    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].wrapper;
+  public getLiquidityTokenWrapperByToken(token: GraphqlToken): string | undefined {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapper;
   }
 
-  public getLiquidityTokenUnwrapperReadableNameByToken(token: GraphqlToken): string {
-    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].unwrapperReadableName;
+  public getLiquidityTokenUnwrapperReadableNameByToken(token: GraphqlToken): string | undefined {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.unwrapperReadableName;
   }
 
-  public getLiquidityTokenWrapperReadableNameByToken(token: GraphqlToken): string {
-    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId].wrapperReadableName;
+  public getLiquidityTokenWrapperReadableNameByToken(token: GraphqlToken): string | undefined {
+    return LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[this.network][token.marketId]?.wrapperReadableName;
   }
 }

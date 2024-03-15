@@ -8,7 +8,7 @@ import {
 } from '../../src/lib/Constants';
 import { toChecksumOpt } from '../../src/lib/Utils';
 
-export const SLEEP_DURATION_BETWEEN_TESTS = 2_000;
+export const SLEEP_DURATION_BETWEEN_TESTS = 1_000;
 
 export const WETH_MARKET: ApiMarket = {
   marketId: new BigNumber(0),
@@ -46,6 +46,30 @@ export const NATIVE_USDC_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
+export const LINK_MARKET: ApiMarket = {
+  marketId: new BigNumber(3),
+  symbol: 'LINK',
+  name: 'Chainlink Token',
+  tokenAddress: toChecksumOpt('0xf97f4df75117a78c1A5a0DBb814Af92458539FB4')!,
+  decimals: 8,
+  isolationModeUnwrapperInfo: undefined,
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: undefined,
+  liquidityTokenWrapperInfo: undefined,
+};
+
+export const WBTC_MARKET: ApiMarket = {
+  marketId: new BigNumber(4),
+  symbol: 'WBTC',
+  name: 'Wrapped BTC',
+  tokenAddress: toChecksumOpt('0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f')!,
+  decimals: 8,
+  isolationModeUnwrapperInfo: undefined,
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: undefined,
+  liquidityTokenWrapperInfo: undefined,
+};
+
 const GLP_MARKET_ID = new BigNumber(6);
 export const GLP_MARKET: ApiMarket = {
   marketId: GLP_MARKET_ID,
@@ -55,13 +79,13 @@ export const GLP_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -88,15 +112,15 @@ export const MAGIC_GLP_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: undefined,
   liquidityTokenUnwrapperInfo: {
-    unwrapperAddress: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()].unwrapper,
-    outputMarketId: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()].unwrapperMarketId,
-    readableName: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()].unwrapperReadableName,
+    unwrapperAddress: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketIds: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
+    readableName: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   isolationModeWrapperInfo: undefined,
   liquidityTokenWrapperInfo: {
-    wrapperAddress: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()].wrapper,
-    inputMarketId: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()].wrapperMarketId,
-    readableName: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()].wrapperReadableName,
+    wrapperAddress: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketIds: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
+    readableName: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][MAGIC_GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
 };
 
@@ -109,13 +133,13 @@ export const PLV_GLP_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PLV_GLP_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PLV_GLP_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PLV_GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PLV_GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PLV_GLP_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PLV_GLP_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PLV_GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PLV_GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -130,13 +154,13 @@ export const J_USDC_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][J_USDC_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -151,13 +175,13 @@ export const PT_GLP_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -172,13 +196,13 @@ export const YT_GLP_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][YT_GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -193,13 +217,13 @@ export const PT_R_ETH_JUN_2025_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_R_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -214,13 +238,13 @@ export const PT_WST_ETH_JUN_2024_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -235,13 +259,13 @@ export const PT_WST_ETH_JUN_2025_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WST_ETH_JUN_2025_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -267,7 +291,7 @@ export const GM_BTC_MARKET: ApiMarket = getApiMarket(
   18,
 );
 
-const GM_ETH_MARKET_ID = new BigNumber(31);
+const GM_ETH_MARKET_ID = new BigNumber(33);
 export const GM_ETH_MARKET: ApiMarket = getApiMarket(
   Network.ARBITRUM_ONE,
   GM_ETH_MARKET_ID,
@@ -277,7 +301,7 @@ export const GM_ETH_MARKET: ApiMarket = getApiMarket(
   18,
 );
 
-const GM_LINK_MARKET_ID = new BigNumber(31);
+const GM_LINK_MARKET_ID = new BigNumber(34);
 export const GM_LINK_MARKET: ApiMarket = getApiMarket(
   Network.ARBITRUM_ONE,
   GM_LINK_MARKET_ID,
@@ -309,13 +333,13 @@ export const PT_WE_ETH_APR_2024_MARKET: ApiMarket = {
   decimals: 18,
   isolationModeUnwrapperInfo: {
     unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.unwrapperMarketId,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.unwrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapperMarketId,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
@@ -337,13 +361,13 @@ function getApiMarket(
     decimals,
     isolationModeUnwrapperInfo: {
       unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.unwrapper,
-      outputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.unwrapperMarketId,
+      outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.unwrapperMarketIds,
       readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.unwrapperReadableName,
     },
     liquidityTokenUnwrapperInfo: undefined,
     isolationModeWrapperInfo: {
       wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.wrapper,
-      inputMarketId: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.wrapperMarketId,
+      inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.wrapperMarketIds,
       readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.wrapperReadableName,
     },
     liquidityTokenWrapperInfo: undefined,
@@ -355,5 +379,5 @@ export function setUnwrapperMarketIdByMarketId(
   outputMarketId: MarketId,
   network: Network = Network.ARBITRUM_ONE,
 ) {
-  ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.unwrapperMarketId = outputMarketId;
+  ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.unwrapperMarketIds = [outputMarketId];
 }

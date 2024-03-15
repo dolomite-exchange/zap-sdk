@@ -5,7 +5,6 @@ import { TestParaswapAggregator } from './TestParaswapAggregator';
 
 export class TestDolomiteZap extends DolomiteZap {
 
-
   protected getAllAggregators(
     network: Network,
     referralInfo: ReferralOutput,

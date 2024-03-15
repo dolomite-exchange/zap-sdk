@@ -69,6 +69,9 @@ export default class OdosAggregator extends AggregatorClient {
       });
     if (!quoteResponse) {
       // GUARD: If we don't have a price route, we can't execute the trade
+      Logger.warn({
+        message: 'OdosAggregator: quoteResponse was undefined!',
+      });
       return undefined;
     }
 
@@ -89,6 +92,9 @@ export default class OdosAggregator extends AggregatorClient {
       });
     if (!result) {
       // GUARD: If we don't have the result, we can't execute the trade
+      Logger.warn({
+        message: 'OdosAggregator: result was undefined!',
+      });
       return undefined;
     }
 

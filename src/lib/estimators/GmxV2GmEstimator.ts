@@ -216,6 +216,10 @@ export class GmxV2GmEstimator {
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
 
+    if (inputToken.tokenAddress !== longToken && inputToken.tokenAddress !== shortToken) {
+      return Promise.reject(new Error(`Invalid inputToken, found: ${inputToken.symbol} / ${inputToken.tokenAddress}`));
+    }
+
     const amountOut = await this.gmxV2Reader!.getDepositAmountOut(
       this.gmxV2DataStore!.address,
       {

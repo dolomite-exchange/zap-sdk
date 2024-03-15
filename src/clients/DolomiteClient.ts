@@ -204,24 +204,26 @@ export default class DolomiteClient {
       const isolationModeClient = new IsolationModeClient(this.network);
       let isolationModeUnwrapperInfo: ApiUnwrapperInfo | undefined;
       let isolationModeWrapperInfo: ApiWrapperInfo | undefined;
+      let liquidityTokenUnwrapperInfo: ApiUnwrapperInfo | undefined;
+      let liquidityTokenWrapperInfo: ApiWrapperInfo | undefined;
       if (isolationModeClient.isIsolationModeToken(market.token)) {
         const unwrapperAddress = isolationModeClient.getIsolationModeUnwrapperByMarketId(market.token);
         const unwrapperForLiquidationAddress = isolationModeClient.getIsolationModeUnwrapperForLiquidationByMarketId(
           market.token,
         );
-        const outputMarketId = isolationModeClient.getIsolationModeUnwrapperMarketIdByMarketId(market.token);
+        const outputMarketIds = isolationModeClient.getIsolationModeUnwrapperMarketIdsByToken(market.token);
         const wrapperAddress = isolationModeClient.getIsolationModeWrapperByMarketId(market.token);
-        const inputMarketId = isolationModeClient.getIsolationModeWrapperMarketIdByMarketId(market.token);
+        const inputMarketIds = isolationModeClient.getIsolationModeWrapperMarketIdsByToken(market.token);
         const unwrapperReadableName = isolationModeClient.getIsolationModeUnwrapperReadableNameByMarketId(market.token);
         const wrapperReadableName = isolationModeClient.getIsolationModeWrapperReadableNameByMarketId(market.token);
 
-        if (!unwrapperAddress || typeof outputMarketId === 'undefined' || !unwrapperReadableName) {
+        if (!unwrapperAddress || typeof outputMarketIds === 'undefined' || !unwrapperReadableName) {
           Logger.warn({
             message: 'Isolation Mode token cannot find unwrapper info!',
             marketId: market.token.marketId,
           });
           return undefined;
-        } else if (!wrapperAddress || typeof inputMarketId === 'undefined' || !wrapperReadableName) {
+        } else if (!wrapperAddress || typeof inputMarketIds === 'undefined' || !wrapperReadableName) {
           Logger.warn({
             message: 'Isolation Mode token cannot find wrapper info!',
             marketId: market.token.marketId,
@@ -232,28 +234,44 @@ export default class DolomiteClient {
         isolationModeUnwrapperInfo = {
           unwrapperAddress,
           unwrapperForLiquidationAddress,
-          outputMarketId,
+          outputMarketIds,
           readableName: unwrapperReadableName,
         };
         isolationModeWrapperInfo = {
           wrapperAddress,
-          inputMarketId,
+          inputMarketIds,
           readableName: wrapperReadableName,
         };
-      }
+      } else if (isolationModeClient.isLiquidityToken(market.token)) {
+        const unwrapperAddress = isolationModeClient.getLiquidityTokenUnwrapperByToken(market.token);
+        const outputMarketIds = isolationModeClient.getLiquidityTokenUnwrapperMarketIdsByToken(market.token);
+        const unwrapperReadableName = isolationModeClient.getLiquidityTokenUnwrapperReadableNameByToken(market.token);
+        const wrapperAddress = isolationModeClient.getLiquidityTokenWrapperByToken(market.token);
+        const inputMarketIds = isolationModeClient.getLiquidityTokenWrapperMarketIdsByToken(market.token);
+        const wrapperReadableName = isolationModeClient.getLiquidityTokenWrapperReadableNameByToken(market.token);
 
-      let liquidityTokenUnwrapperInfo: ApiUnwrapperInfo | undefined;
-      let liquidityTokenWrapperInfo: ApiWrapperInfo | undefined;
-      if (isolationModeClient.isLiquidityToken(market.token)) {
+        if (!unwrapperAddress || typeof outputMarketIds === 'undefined' || !unwrapperReadableName) {
+          Logger.warn({
+            message: 'Isolation Mode token cannot find unwrapper info!',
+            marketId: market.token.marketId,
+          });
+          return undefined;
+        } else if (!wrapperAddress || typeof inputMarketIds === 'undefined' || !wrapperReadableName) {
+          Logger.warn({
+            message: 'Isolation Mode token cannot find wrapper info!',
+            marketId: market.token.marketId,
+          });
+          return undefined;
+        }
         liquidityTokenUnwrapperInfo = {
-          unwrapperAddress: isolationModeClient.getLiquidityTokenUnwrapperByToken(market.token),
-          outputMarketId: isolationModeClient.getLiquidityTokenUnwrapperMarketIdByToken(market.token),
-          readableName: isolationModeClient.getLiquidityTokenUnwrapperReadableNameByToken(market.token),
+          unwrapperAddress,
+          outputMarketIds,
+          readableName: unwrapperReadableName,
         };
         liquidityTokenWrapperInfo = {
-          wrapperAddress: isolationModeClient.getLiquidityTokenWrapperByToken(market.token),
-          inputMarketId: isolationModeClient.getLiquidityTokenWrapperMarketIdByToken(market.token),
-          readableName: isolationModeClient.getLiquidityTokenWrapperReadableNameByToken(market.token),
+          wrapperAddress,
+          inputMarketIds,
+          readableName: wrapperReadableName,
         };
       }
 

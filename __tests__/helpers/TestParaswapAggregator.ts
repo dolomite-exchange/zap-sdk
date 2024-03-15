@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, ZapConfig } from '../../src';
 import ParaswapAggregator from '../../src/clients/ParaswapAggregator';
 

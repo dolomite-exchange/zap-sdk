@@ -76,7 +76,7 @@ export class StandardEstimator {
           marketsMap[glpMarketId.toFixed()].tokenAddress,
           ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
           result.amountOut,
-          marketsMap[glpMarketId.toFixed()].isolationModeUnwrapperInfo!.outputMarketId,
+          marketsMap[glpMarketId.toFixed()].isolationModeUnwrapperInfo!.outputMarketIds[0],
           config,
           marketsMap,
         );
@@ -106,7 +106,7 @@ export class StandardEstimator {
           marketsMap[glpMarketId.toFixed()].tokenAddress,
           ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
           result.amountOut,
-          marketsMap[glpMarketId.toFixed()].isolationModeUnwrapperInfo!.outputMarketId,
+          marketsMap[glpMarketId.toFixed()].isolationModeUnwrapperInfo!.outputMarketIds[0],
           config,
           marketsMap,
         );

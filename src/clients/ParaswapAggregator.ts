@@ -52,9 +52,11 @@ export default class ParaswapAggregator extends AggregatorClient {
       includeContractMethods: 'megaSwap,multiSwap,simpleSwap',
       partner: 'dolomite',
     }).toString();
+
     // const priceRouteResponse = await (this.useProxy
     //   ? axios.post(`${PROXY_API_URL}/quote?${pricesQueryParams}`)
     //   : axios.get(`${API_URL}/prices?${pricesQueryParams}`))
+
     const priceRouteResponse = await axios.get(`${API_URL}/prices?${pricesQueryParams}`)
       .then(response => response.data)
       .catch((error) => {
@@ -79,9 +81,11 @@ export default class ParaswapAggregator extends AggregatorClient {
       ignoreGasEstimate: 'true',
       onlyParams: 'false',
     }).toString();
+
     // const result = await axios.post(this.useProxy
     //   ? `${PROXY_API_URL}/assemble?${transactionsQueryParams}`
     //   : `${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
+
     const result = await axios.post(`${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
       txOrigin,
       priceRoute: priceRouteResponse?.priceRoute,
@@ -109,10 +113,13 @@ export default class ParaswapAggregator extends AggregatorClient {
       });
     if (!result) {
       // GUARD: If we don't have the result, we can't execute the trade
+      Logger.warn({
+        message: 'ParaswapAggregator: result was undefined!',
+      });
       return undefined;
     } else if (!result.data) {
       Logger.error({
-        message: 'Paraswap result.data is undefined',
+        message: 'ParaswapAggregator result.data is undefined',
         result,
       });
       return undefined;
