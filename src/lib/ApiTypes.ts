@@ -132,6 +132,7 @@ export interface ReferralOutput {
 
 export interface ZapConfig {
   isLiquidation: boolean;
+  isVaporizable: boolean;
   slippageTolerance: number;
   blockTag: BlockTag;
   filterOutZapsWithInsufficientOutput: boolean;
@@ -175,4 +176,60 @@ export interface ZapOutputParam {
    * over-estimated.
    */
   executionFee?: Integer;
+}
+
+export interface ApiOraclePrice {
+  /**
+   * The oracle price of a corresponding asset. Formatted as a number with `36 - decimals`.
+   */
+  oraclePrice: Integer;
+}
+
+export enum ApiAsyncDepositStatus {
+  CREATED = 'CREATED',
+  DEPOSIT_EXECUTED = 'DEPOSIT_EXECUTED',
+  DEPOSIT_FAILED = 'DEPOSIT_FAILED',
+  DEPOSIT_CANCELLED = 'DEPOSIT_CANCELLED',
+  DEPOSIT_CANCELLED_FAILED = 'DEPOSIT_CANCELLED_FAILED',
+}
+
+export enum ApiAsyncActionType {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAWAL = 'WITHDRAWAL',
+}
+
+export interface ApiAsyncAction {
+  id: string;
+  key: string;
+  actionType: ApiAsyncActionType;
+  owner: string;
+  accountNumber: BigNumber;
+  status: ApiAsyncDepositStatus | ApiAsyncWithdrawalStatus;
+  inputToken: ApiToken;
+  inputAmount: Integer;
+  outputToken: ApiToken;
+  outputAmount: Integer;
+}
+
+export interface ApiAsyncDeposit extends ApiAsyncAction {
+  actionType: ApiAsyncActionType.DEPOSIT;
+  status: ApiAsyncDepositStatus;
+}
+
+export enum ApiAsyncWithdrawalStatus {
+  CREATED = 'CREATED',
+  WITHDRAWAL_EXECUTED = 'WITHDRAWAL_EXECUTED',
+  WITHDRAWAL_EXECUTION_FAILED = 'WITHDRAWAL_EXECUTION_FAILED',
+  WITHDRAWAL_CANCELLED = 'WITHDRAWAL_CANCELLED',
+}
+
+export interface ApiAsyncWithdrawal extends ApiAsyncAction {
+  actionType: ApiAsyncActionType.WITHDRAWAL;
+  status: ApiAsyncWithdrawalStatus;
+}
+
+export enum ApiAsyncTradeType {
+  FromWithdrawal = 0,
+  FromDeposit = 1,
+  NoOp = 2,
 }

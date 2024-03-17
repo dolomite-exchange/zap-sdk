@@ -1,14 +1,24 @@
 import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { ApiMarket, DolomiteZap, GenericTraderType, INTEGERS, Network } from '../src';
+import {
+  ApiAsyncActionType,
+  ApiAsyncWithdrawalStatus,
+  ApiMarket,
+  DolomiteZap,
+  GenericTraderType,
+  INTEGERS,
+  Network,
+} from '../src';
 import { ADDRESS_ZERO, BYTES_EMPTY } from '../src/lib/Constants';
 import sleep from './helpers/sleep';
 import {
   ARB_MARKET,
   GLP_MARKET,
+  GM_ARB_MARKET,
   J_USDC_MARKET,
   MAGIC_GLP_MARKET,
+  NATIVE_USDC_MARKET,
   PLV_GLP_MARKET,
   setUnwrapperMarketIdByMarketId,
   SLEEP_DURATION_BETWEEN_TESTS,
@@ -184,7 +194,7 @@ describe('DolomiteZap', () => {
     });
   });
 
-  describe('#getSwapExactTokensForTokensData', () => {
+  describe('#getSwapExactTokensForTokensParams', () => {
     describe('Normal tokens', () => {
       it('should work when there is no Isolation Mode tokens nor Liquidity tokens involved', async () => {
         const amountIn = new BigNumber('1000000000000000000'); // 1 ETH
@@ -933,6 +943,151 @@ describe('DolomiteZap', () => {
           '0x123',
         )).rejects.toThrow('Invalid address for txOrigin');
       });
+    });
+  });
+
+  describe('#getSwapExactAsyncTokensForTokensParamsForLiquidation', () => {
+    const amountIn = new BigNumber('100000000000000000000'); // 100 GM
+    const minAmountOut = new BigNumber('50000000'); // 50 USDC
+
+    it('should succeed normally', async () => {
+      const asyncMarket = GM_ARB_MARKET;
+      const key = '0x1234567812345678123456781234567812345678123456781234567812345678';
+      const zapResults = await zap.getSwapExactAsyncTokensForTokensParamsForLiquidation(
+        asyncMarket,
+        amountIn,
+        USDC_MARKET,
+        minAmountOut,
+        txOrigin,
+        {
+          [NATIVE_USDC_MARKET.marketId.toFixed()]: [
+            {
+              key,
+              id: `${asyncMarket.tokenAddress.toLowerCase()}-${key}`,
+              actionType: ApiAsyncActionType.WITHDRAWAL,
+              outputAmount: new BigNumber('100000000'),
+              inputAmount: amountIn,
+              accountNumber: new BigNumber(123),
+              inputToken: asyncMarket,
+              outputToken: NATIVE_USDC_MARKET,
+              owner: ADDRESS_ZERO,
+              status: ApiAsyncWithdrawalStatus.WITHDRAWAL_EXECUTED,
+            },
+          ],
+        },
+        {
+          [NATIVE_USDC_MARKET.marketId.toFixed()]: {
+            oraclePrice: new BigNumber('1000000000000000000000000000000'),
+          },
+        },
+        { isLiquidation: true },
+      );
+
+      expect(zapResults.length).toEqual(2);
+    });
+
+    it('should fail if isLiquidation is unset or false', async () => {
+      await expect(async () => {
+        await zap.getSwapExactAsyncTokensForTokensParamsForLiquidation(
+          GM_ARB_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          {},
+          {},
+          { isLiquidation: undefined },
+        );
+      }).rejects.toThrow('Config must include `isLiquidation=true`');
+
+      await expect(async () => {
+        await zap.getSwapExactAsyncTokensForTokensParamsForLiquidation(
+          GM_ARB_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          {},
+          {},
+          { isLiquidation: false },
+        );
+      }).rejects.toThrow('Config must include `isLiquidation=true`');
+    });
+
+    it('should fail if token in is not async', async () => {
+      await expect(async () => {
+        await zap.getSwapExactAsyncTokensForTokensParamsForLiquidation(
+          WETH_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          {},
+          {},
+          { isLiquidation: true },
+        );
+      }).rejects.toThrow('tokenIn must be an async asset!');
+    });
+
+    it('should fail if token out is async', async () => {
+      await expect(async () => {
+        await zap.getSwapExactAsyncTokensForTokensParamsForLiquidation(
+          GM_ARB_MARKET,
+          amountIn,
+          GM_ARB_MARKET,
+          minAmountOut,
+          txOrigin,
+          {},
+          {},
+          { isLiquidation: true },
+        );
+      }).rejects.toThrow('tokenOut must not be an async asset!');
+    });
+
+    it('should fail if the marketIdToActions map is empty', async () => {
+      await expect(async () => {
+        await zap.getSwapExactAsyncTokensForTokensParamsForLiquidation(
+          GM_ARB_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          {},
+          {},
+          { isLiquidation: true },
+        );
+      }).rejects.toThrow('marketIdToActionsMap must not be empty');
+    });
+
+    it('should fail if the marketIdToActions map is empty', async () => {
+      const key = '0x1234567812345678123456781234567812345678123456781234567812345678';
+      await expect(async () => {
+        await zap.getSwapExactAsyncTokensForTokensParamsForLiquidation(
+          GM_ARB_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+          {
+            [NATIVE_USDC_MARKET.marketId.toFixed()]: [
+              {
+                key,
+                id: `${GM_ARB_MARKET.tokenAddress.toLowerCase()}-${key}`,
+                actionType: ApiAsyncActionType.WITHDRAWAL,
+                outputAmount: minAmountOut,
+                inputAmount: amountIn,
+                accountNumber: new BigNumber(123),
+                inputToken: GM_ARB_MARKET,
+                outputToken: NATIVE_USDC_MARKET,
+                owner: ADDRESS_ZERO,
+                status: ApiAsyncWithdrawalStatus.WITHDRAWAL_EXECUTED,
+              },
+            ],
+          },
+          {},
+          { isLiquidation: true },
+        );
+      }).rejects.toThrow(`Oracle price for ${NATIVE_USDC_MARKET.marketId.toFixed()} could not be found!`);
     });
   });
 

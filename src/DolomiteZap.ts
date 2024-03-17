@@ -6,8 +6,12 @@ import OdosAggregator from './clients/OdosAggregator';
 import ParaswapAggregator from './clients/ParaswapAggregator';
 import {
   Address,
+  ApiAsyncAction,
+  ApiAsyncActionType,
+  ApiAsyncTradeType,
   ApiMarket,
   ApiMarketHelper,
+  ApiOraclePrice,
   ApiToken,
   BlockTag,
   EstimateOutputResult,
@@ -247,6 +251,7 @@ export class DolomiteZap {
   ): Promise<ZapOutputParam[]> {
     const actualConfig: ZapConfig = {
       isLiquidation: config?.isLiquidation ?? this.defaultIsLiquidation,
+      isVaporizable: config?.isVaporizable ?? false,
       slippageTolerance: config?.slippageTolerance ?? this.defaultSlippageTolerance,
       blockTag: config?.blockTag ?? this._defaultBlockTag,
       filterOutZapsWithInsufficientOutput: config?.filterOutZapsWithInsufficientOutput ?? true,
@@ -524,6 +529,134 @@ export class DolomiteZap {
     } else {
       return zaps;
     }
+  }
+
+  /**
+   *
+   * @param tokenIn The input token for the zap. Must be an async market.
+   * @param amountIn The input amount for the zap. This should be held amount of collateral seized for liquidation
+   * @param tokenOut The output token for the zap. Must not be an async market.
+   * @param amountOutMin The minimum amount out required for the swap to be considered valid
+   * @param txOrigin The address that will execute the transaction
+   * @param marketIdToActionsMap A mapping from output market to a list of async deposits/withdrawals that output a
+   *                             valid output token from `tokenIn`
+   * @param marketIdToOracleMap A mapping from market ID to the corresponding market's oracle price
+   * @param config The additional config for zapping
+   * @return {Promise<ZapOutputParam[]>} A list of outputs that can be used to execute the trade. The outputs are
+   * sorted by execution, with the best ones being first.
+   */
+  public async getSwapExactAsyncTokensForTokensParamsForLiquidation(
+    tokenIn: ApiToken | MinimalApiToken,
+    amountIn: Integer,
+    tokenOut: ApiToken | MinimalApiToken,
+    amountOutMin: Integer,
+    txOrigin: Address,
+    marketIdToActionsMap: Record<string, ApiAsyncAction[]>,
+    marketIdToOracleMap: Record<string, ApiOraclePrice>,
+    config?: Partial<ZapConfig>,
+  ): Promise<ZapOutputParam[]> {
+    if (typeof config?.isLiquidation === 'undefined' || !config.isLiquidation) {
+      return Promise.reject(new Error('Config must include `isLiquidation=true`'));
+    }
+
+    const marketsMap = await this.getMarketIdToMarketMap(false);
+    const allActions = Object.values(marketIdToActionsMap);
+    if (!this.getIsAsyncAssetByMarketId(tokenIn.marketId)) {
+      return Promise.reject(new Error('tokenIn must be an async asset!'));
+    } else if (this.getIsAsyncAssetByMarketId(tokenOut.marketId)) {
+      return Promise.reject(new Error('tokenOut must not be an async asset!'));
+    } else if (allActions.length === 0 || allActions.every(a => a.length === 0)) {
+      return Promise.reject(new Error('marketIdToActionsMap must not be empty'));
+    }
+
+    const outputWeiWithMarket = Object.keys(marketIdToActionsMap).reduce(
+      (acc, outputMarketId) => {
+        const actions = marketIdToActionsMap[outputMarketId];
+        const oraclePriceUsd = marketIdToOracleMap[outputMarketId]?.oraclePrice;
+        if (!oraclePriceUsd) {
+          throw new Error(`Oracle price for ${outputMarketId} could not be found!`);
+        }
+
+        const outputValue = actions.reduce(
+          (sum, action) => {
+            sum.inputValue = sum.inputValue.plus(action.inputAmount);
+            sum.outputValue = sum.outputValue.plus(action.outputAmount);
+            sum.outputValueUsd = sum.outputValueUsd.plus(action.outputAmount.times(oraclePriceUsd));
+            return sum;
+          },
+          {
+            inputValue: INTEGERS.ZERO,
+            outputValue: INTEGERS.ZERO,
+            outputValueUsd: INTEGERS.ZERO,
+            outputMarket: marketsMap[outputMarketId],
+          },
+        );
+
+        if (acc.outputValueUsd.gt(outputValue.outputValueUsd)) {
+          return acc;
+        } else {
+          return outputValue;
+        }
+      },
+      {
+        inputValue: INTEGERS.ZERO,
+        outputValue: INTEGERS.ZERO,
+        outputValueUsd: INTEGERS.ZERO,
+        outputMarket: marketsMap[Object.keys(marketIdToActionsMap)[0]],
+      },
+    );
+    const expectedOutputAmount = outputWeiWithMarket.outputValue.times(amountIn)
+      .dividedToIntegerBy(outputWeiWithMarket.inputValue);
+
+    const outputToken: MinimalApiToken = {
+      marketId: new BigNumber(outputWeiWithMarket.outputMarket.marketId.toFixed()),
+      symbol: outputWeiWithMarket.outputMarket.symbol,
+    };
+
+    const actions = marketIdToActionsMap[outputToken.marketId.toFixed()];
+
+    const outputs = await this.getSwapExactTokensForTokensParams(
+      outputToken,
+      expectedOutputAmount,
+      tokenOut,
+      amountOutMin,
+      txOrigin,
+      config,
+    );
+
+    outputs.forEach(output => {
+      output.marketIdsPath = [
+        new BigNumber(tokenIn.marketId.toFixed()),
+        ...output.marketIdsPath,
+      ];
+      output.amountWeisPath = [
+        amountIn,
+        ...output.amountWeisPath,
+      ];
+
+      const converter = this.getIsolationModeConverterByMarketId(tokenIn.marketId)!;
+      output.traderParams = [
+        {
+          traderType: GenericTraderType.IsolationModeUnwrapper,
+          tradeData: ethers.utils.defaultAbiCoder.encode(
+            ['uint8[]', 'bytes32[]', 'bool'],
+            [
+              actions.map(a => (a.actionType === ApiAsyncActionType.WITHDRAWAL
+                ? ApiAsyncTradeType.FromWithdrawal
+                : ApiAsyncTradeType.FromDeposit)),
+              actions.map(a => a.key),
+              !config.isVaporizable,
+            ],
+          ),
+          readableName: converter.unwrapperReadableName,
+          trader: converter.unwrapper,
+          makerAccountIndex: 0,
+        },
+        ...output.traderParams,
+      ];
+    });
+
+    return outputs;
   }
 
   protected getAllAggregators(

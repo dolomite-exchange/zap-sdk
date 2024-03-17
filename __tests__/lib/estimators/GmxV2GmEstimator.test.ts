@@ -20,6 +20,7 @@ describe('GmxV2GmEstimator', () => {
     blockTag: 'latest',
     filterOutZapsWithInsufficientOutput: false,
     isLiquidation: false,
+    isVaporizable: false,
     slippageTolerance: 0.003,
     subAccountNumber: new BigNumber('12321'),
   }
