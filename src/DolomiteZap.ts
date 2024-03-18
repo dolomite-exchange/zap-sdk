@@ -559,7 +559,7 @@ export class DolomiteZap {
       return Promise.reject(new Error('marketIdToActionsMap must not be empty'));
     }
 
-    const outputWeiWithMarket = Object.keys(marketIdToActionsMap).reduce(
+    const outputWeiFromActionsWithMarket = Object.keys(marketIdToActionsMap).reduce(
       (acc, outputMarketId) => {
         const actions = marketIdToActionsMap[outputMarketId];
         const oraclePriceUsd = marketIdToOracleMap[outputMarketId]?.oraclePrice;
@@ -577,7 +577,7 @@ export class DolomiteZap {
                 ? action.outputAmount.times(acc.inputValue).dividedToIntegerBy(action.inputAmount)
                 : action.outputAmount;
 
-              sum.inputValue = sum.inputValue.plus(usedInputAmount);
+              sum.inputValue = sum.inputValue.minus(usedInputAmount);
               sum.outputValue = sum.outputValue.plus(usedOutputAmount);
               sum.outputValueUsd = sum.outputValueUsd.plus(usedOutputAmount.times(oraclePriceUsd));
             } else if (action.outputToken.marketId.eq(tokenIn.marketId)) {
@@ -588,7 +588,7 @@ export class DolomiteZap {
                 ? action.inputAmount.times(acc.inputValue).dividedToIntegerBy(action.outputAmount)
                 : action.inputAmount;
 
-              sum.inputValue = sum.inputValue.plus(usedInputAmount);
+              sum.inputValue = sum.inputValue.minus(usedInputAmount);
               sum.outputValue = sum.outputValue.plus(usedOutputAmount);
               sum.outputValueUsd = sum.outputValueUsd.plus(usedOutputAmount.times(oraclePriceUsd));
             }
@@ -615,19 +615,17 @@ export class DolomiteZap {
         outputMarket: marketsMap[Object.keys(marketIdToActionsMap)[0]],
       },
     );
-    const expectedOutputAmount = outputWeiWithMarket.outputValue.times(amountIn)
-      .dividedToIntegerBy(outputWeiWithMarket.inputValue);
 
     const outputToken: MinimalApiToken = {
-      marketId: new BigNumber(outputWeiWithMarket.outputMarket.marketId.toFixed()),
-      symbol: outputWeiWithMarket.outputMarket.symbol,
+      marketId: new BigNumber(outputWeiFromActionsWithMarket.outputMarket.marketId.toFixed()),
+      symbol: outputWeiFromActionsWithMarket.outputMarket.symbol,
     };
 
     const actions = marketIdToActionsMap[outputToken.marketId.toFixed()];
 
     const outputs = await this.getSwapExactTokensForTokensParams(
       outputToken,
-      expectedOutputAmount,
+      outputWeiFromActionsWithMarket.outputValue,
       tokenOut,
       amountOutMin,
       txOrigin,
