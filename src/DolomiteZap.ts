@@ -626,17 +626,17 @@ export class DolomiteZap {
 
     let outputs: ZapOutputParam[];
     if (outputToken.marketId.eq(tokenOut.marketId)) {
-      const minAmountOut = outputWeiFromActionsWithMarket.outputValue
+      const expectedAmountOutWithSlippage = outputWeiFromActionsWithMarket.outputValue
         .multipliedBy(1 - (config.slippageTolerance ?? this.defaultSlippageTolerance))
         .integerValue(BigNumber.ROUND_DOWN);
       outputs = [{
         marketIdsPath: [tokenIn.marketId, tokenOut.marketId],
         tokensPath: [marketsMap[tokenIn.marketId.toFixed()], marketsMap[tokenOut.marketId.toFixed()]],
-        amountWeisPath: [amountIn, minAmountOut],
+        amountWeisPath: [amountIn, expectedAmountOutWithSlippage],
         traderParams: [this.getAsyncUnwrapperTraderParam(tokenIn, actions, config)],
         makerAccounts: [],
         expectedAmountOut: outputWeiFromActionsWithMarket.outputValue,
-        originalAmountOutMin: outputWeiFromActionsWithMarket.outputValue,
+        originalAmountOutMin: amountOutMin,
       }];
     } else {
       outputs = await this.getSwapExactTokensForTokensParams(

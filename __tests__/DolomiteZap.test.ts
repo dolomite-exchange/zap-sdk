@@ -946,7 +946,7 @@ describe('DolomiteZap', () => {
     });
   });
 
-  describe.only('#getSwapExactAsyncTokensForTokensParamsForLiquidation', () => {
+  describe('#getSwapExactAsyncTokensForTokensParamsForLiquidation', () => {
     const amountIn = new BigNumber('100000000000000000000'); // 100 GM
     const minAmountOut = new BigNumber('50000000'); // 50 USDC
 
@@ -984,6 +984,66 @@ describe('DolomiteZap', () => {
       );
 
       expect(zapResults.length).toEqual(2);
+    });
+
+    it('should succeed if async output is token out', async () => {
+      const asyncMarket = GM_ARB_MARKET;
+      const key = '0x1234567812345678123456781234567812345678123456781234567812345678';
+      const actions = [
+        {
+          key,
+          id: `${asyncMarket.tokenAddress.toLowerCase()}-${key}`,
+          actionType: ApiAsyncActionType.WITHDRAWAL,
+          accountNumber: new BigNumber(123),
+          inputToken: asyncMarket,
+          inputAmount: amountIn,
+          outputToken: NATIVE_USDC_MARKET,
+          outputAmount: new BigNumber('100000000'), // 100 USDC
+          owner: ADDRESS_ZERO,
+          status: ApiAsyncWithdrawalStatus.WITHDRAWAL_EXECUTED,
+        },
+      ];
+      const zapResults = await zap.getSwapExactAsyncTokensForTokensParamsForLiquidation(
+        asyncMarket,
+        amountIn,
+        NATIVE_USDC_MARKET,
+        minAmountOut,
+        txOrigin,
+        { [NATIVE_USDC_MARKET.marketId.toFixed()]: actions },
+        {
+          [NATIVE_USDC_MARKET.marketId.toFixed()]: {
+            oraclePrice: new BigNumber('1000000000000000000000000000000'),
+          },
+        },
+        { isLiquidation: true },
+      );
+
+      expect(zapResults.length).toEqual(1);
+
+      const [zapResult] = zapResults;
+      expect(zapResult.marketIdsPath.length).toEqual(2);
+      expect(zapResult.marketIdsPath[0]).toEqual(GM_ARB_MARKET.marketId);
+      expect(zapResult.marketIdsPath[1]).toEqual(NATIVE_USDC_MARKET.marketId);
+
+      expect(zapResult.amountWeisPath.length).toEqual(2);
+      expect(zapResult.amountWeisPath[0]).toEqual(amountIn);
+      expect(zapResult.amountWeisPath[1].isGreaterThan(minAmountOut)).toBeTruthy();
+
+      expect(zapResult.traderParams.length).toEqual(1);
+      expect(zapResult.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
+      expect(zapResult.traderParams[0].makerAccountIndex).toEqual(0);
+      expect(zapResult.traderParams[0].trader)
+        .toEqual(Deployments.GmxV2ARBAsyncIsolationModeUnwrapperTraderProxyV2['42161'].address);
+      expect(zapResult.traderParams[0].tradeData.length).toBeGreaterThan(66);
+
+      expect(zapResult.makerAccounts.length).toEqual(0);
+      expect(zapResult.expectedAmountOut.gt(zapResult.amountWeisPath[zapResult.amountWeisPath.length - 1]))
+        .toBeTruthy();
+      const expectedAmountOut = actions.reduce((acc, action) => {
+        return acc.plus(action.outputAmount);
+      }, INTEGERS.ZERO);
+      expect(zapResult.expectedAmountOut.eq(expectedAmountOut)).toBeTruthy();
+      expect(zapResult.originalAmountOutMin).toEqual(minAmountOut);
     });
 
     it('should fail if isLiquidation is unset or false', async () => {
