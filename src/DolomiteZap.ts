@@ -32,7 +32,6 @@ import {
   getGmxV2IsolationModeAsset,
   INTEGERS,
   INVALID_NAME,
-  isGmxV2IsolationModeAsset,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
 } from './lib/Constants';
@@ -180,16 +179,7 @@ export class DolomiteZap {
   }
 
   public getIsAsyncAssetByMarketId(marketId: MarketId): boolean {
-    const cachedMarkets = this.marketsCache.get(marketsKey);
-    if (!cachedMarkets) {
-      return false;
-    }
-
-    const market = cachedMarkets[marketId.toFixed()];
-    if (!market) {
-      return false;
-    }
-    return isGmxV2IsolationModeAsset(this.network, market.tokenAddress);
+    return !!this.getIsolationModeConverterByMarketId(marketId)?.isAsync;
   }
 
   public getAsyncAssetOutputMarketsByMarketId(marketId: MarketId): MarketId[] | undefined {
@@ -579,13 +569,33 @@ export class DolomiteZap {
 
         const outputValue = actions.reduce(
           (sum, action) => {
-            sum.inputValue = sum.inputValue.plus(action.inputAmount);
-            sum.outputValue = sum.outputValue.plus(action.outputAmount);
-            sum.outputValueUsd = sum.outputValueUsd.plus(action.outputAmount.times(oraclePriceUsd));
+            if (action.inputToken.marketId.eq(tokenIn.marketId)) {
+              const usedInputAmount = acc.inputValue.lt(action.inputAmount)
+                ? acc.inputValue
+                : action.inputAmount;
+              const usedOutputAmount = acc.inputValue.lt(action.inputAmount)
+                ? action.outputAmount.times(acc.inputValue).dividedToIntegerBy(action.inputAmount)
+                : action.outputAmount;
+
+              sum.inputValue = sum.inputValue.plus(usedInputAmount);
+              sum.outputValue = sum.outputValue.plus(usedOutputAmount);
+              sum.outputValueUsd = sum.outputValueUsd.plus(usedOutputAmount.times(oraclePriceUsd));
+            } else if (action.outputToken.marketId.eq(tokenIn.marketId)) {
+              const usedInputAmount = acc.inputValue.lt(action.outputAmount)
+                ? acc.inputValue
+                : action.outputAmount;
+              const usedOutputAmount = acc.inputValue.lt(action.outputAmount)
+                ? action.inputAmount.times(acc.inputValue).dividedToIntegerBy(action.outputAmount)
+                : action.inputAmount;
+
+              sum.inputValue = sum.inputValue.plus(usedInputAmount);
+              sum.outputValue = sum.outputValue.plus(usedOutputAmount);
+              sum.outputValueUsd = sum.outputValueUsd.plus(usedOutputAmount.times(oraclePriceUsd));
+            }
             return sum;
           },
           {
-            inputValue: INTEGERS.ZERO,
+            inputValue: amountIn,
             outputValue: INTEGERS.ZERO,
             outputValueUsd: INTEGERS.ZERO,
             outputMarket: marketsMap[outputMarketId],
