@@ -159,6 +159,11 @@ export class GmxV2GmEstimator {
       amountIn.toFixed(),
       ADDRESS_ZERO,
     );
+    const otherAmountOut = new BigNumber(
+      outputToken.tokenAddress === longToken
+        ? shortAmountOut.toString()
+        : longAmountOut.toString(),
+    );
 
     const weight = await this.getWeightForOtherAmount(
       outputToken,
@@ -188,9 +193,15 @@ export class GmxV2GmEstimator {
       totalWithdrawalGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
     );
 
+    const otherAmountOutWithSlippage = otherAmountOut
+      .multipliedBy(config.isLiquidation ? 0.05 : config.slippageTolerance)
+      .integerValue(BigNumber.ROUND_DOWN);
     return {
       amountOut: new BigNumber(amountOut.toString()),
-      tradeData: abiCoder.encode(['tuple(uint256 value)', 'uint256'], [{ value: weight }, extraSwapAmountOut[0]]),
+      tradeData: abiCoder.encode(
+        ['tuple(uint256 value)', 'uint256'],
+        [{ value: weight }, otherAmountOutWithSlippage.toFixed()],
+      ),
       extraData: {
         executionFee,
         totalAmountOut: new BigNumber(amountOut.add(extraSwapAmountOut[0]).toString()),
