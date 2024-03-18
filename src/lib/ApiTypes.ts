@@ -137,9 +137,9 @@ export interface ZapConfig {
   slippageTolerance: number;
   blockTag: BlockTag;
   filterOutZapsWithInsufficientOutput: boolean;
-  subAccountNumber?: Integer;
-  gasPriceInWei?: Integer;
-  disallowAggregator?: boolean;
+  subAccountNumber: Integer | undefined;
+  gasPriceInWei: Integer | undefined;
+  disallowAggregator: boolean;
 }
 
 export interface ZapOutputParam {

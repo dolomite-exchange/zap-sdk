@@ -23,6 +23,7 @@ describe('GmxV2GmEstimator', () => {
     isVaporizable: false,
     slippageTolerance: 0.003,
     subAccountNumber: new BigNumber('12321'),
+    disallowAggregator: false,
   }
 
   const gmEthIsolationModeAddress = Deployments.GmxV2ETHIsolationModeVaultFactory[network]!.address;

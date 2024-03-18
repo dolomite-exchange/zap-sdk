@@ -14,6 +14,9 @@ describe('OdosAggregator', () => {
     blockTag: 'latest',
     isLiquidation: false,
     isVaporizable: false,
+    gasPriceInWei: undefined,
+    disallowAggregator: false,
+    subAccountNumber: undefined,
   }
 
   describe('#getSwapExactTokensForTokensData', () => {

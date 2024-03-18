@@ -247,6 +247,7 @@ export class DolomiteZap {
       filterOutZapsWithInsufficientOutput: config?.filterOutZapsWithInsufficientOutput ?? true,
       subAccountNumber: config?.subAccountNumber,
       disallowAggregator: config?.disallowAggregator ?? false,
+      gasPriceInWei: config?.gasPriceInWei,
     };
     const marketsMap = await this.getMarketIdToMarketMap(false);
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
