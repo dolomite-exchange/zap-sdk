@@ -60,17 +60,14 @@ export default class OdosAggregator extends AggregatorClient {
       disableRFQs: true,
       compact: false,
     }).then(response => response.data)
-      .catch((error) => {
-        Logger.error({
-          message: 'Found error in odos#quote',
-          error,
-        });
-        return undefined;
-      });
-    if (!quoteResponse) {
+      .catch((error) => error);
+
+    if (!quoteResponse || !quoteResponse.pathId) {
       // GUARD: If we don't have a price route, we can't execute the trade
-      Logger.warn({
-        message: 'OdosAggregator: quoteResponse was undefined!',
+      Logger.error({
+        message: 'Found error in odos#quote',
+        error: quoteResponse.message ?? null,
+        data: quoteResponse.response?.data?.detail ?? null,
       });
       return undefined;
     }

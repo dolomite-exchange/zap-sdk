@@ -59,19 +59,13 @@ export default class ParaswapAggregator extends AggregatorClient {
 
     const priceRouteResponse = await axios.get(`${API_URL}/prices?${pricesQueryParams}`)
       .then(response => response.data)
-      .catch((error) => {
-        Logger.error({
-          message: 'Found error in paraswap#prices',
-          error,
-        });
-        return undefined;
-      })
-    if (!priceRouteResponse || !priceRouteResponse.priceRoute || priceRouteResponse.error) {
+      .catch((error) => error);
+    if (!priceRouteResponse || !priceRouteResponse.priceRoute || priceRouteResponse?.response?.data?.error) {
       // GUARD: If we don't have a price route, we can't execute the trade
       Logger.error({
-        message: 'Found error when submitting paraswap#quote',
-        errorMessage: priceRouteResponse?.error,
-        data: priceRouteResponse,
+        message: 'Found error in paraswap#prices',
+        errorMessage: priceRouteResponse?.message ?? null,
+        data: priceRouteResponse?.response?.data?.error ?? null,
       });
       return undefined;
     }

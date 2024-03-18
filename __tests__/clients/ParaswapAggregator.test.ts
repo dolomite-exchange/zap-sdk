@@ -112,5 +112,23 @@ describe('ParaswapAggregator', () => {
       expect(traderAddress).toEqual(Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
+
+    it('should fail when the amount is too large', async () => {
+      const paraswap = new ParaswapAggregator(networkIdOverride, partnerAddress, false);
+      const inputMarket: ApiMarket = USDC_MARKET;
+      const outputMarket: ApiMarket = WETH_MARKET;
+      const inputAmount = new BigNumber('1000000000000000000'); // a TON of USDC
+      const minOutputAmount = new BigNumber('100000000'); // a SMOL amount of ETH
+      const solidAccount = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+      const aggregatorOutput = await paraswap.getSwapExactTokensForTokensData(
+        inputMarket,
+        inputAmount,
+        outputMarket,
+        minOutputAmount,
+        solidAccount,
+        config,
+      );
+      expect(aggregatorOutput).toBeUndefined();
+    });
   });
 });

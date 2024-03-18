@@ -112,5 +112,26 @@ describe('OdosAggregator', () => {
       expect(traderAddress).toEqual(Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
+
+    it.only('should fail when the swap does not make sense', async () => {
+      const odos = new OdosAggregator(networkIdOverride, referralCode, false);
+      const inputMarket: ApiMarket = {
+        ...USDC_MARKET,
+        tokenAddress: '0x0000000000000000000000000000000000000001',
+      };
+      const outputMarket: ApiMarket = WETH_MARKET;
+      const inputAmount = new BigNumber('1000000'); // 1 USDC
+      const minOutputAmount = new BigNumber('10000000000000000000'); // 1 ETH
+      const solidAccount = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+      const aggregatorOutput = await odos.getSwapExactTokensForTokensData(
+        inputMarket,
+        inputAmount,
+        outputMarket,
+        minOutputAmount,
+        solidAccount,
+        config,
+      );
+      expect(aggregatorOutput).toBeUndefined();
+    });
   });
 });
