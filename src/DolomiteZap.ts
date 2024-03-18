@@ -495,7 +495,7 @@ export class DolomiteZap {
 
     const minAmountOut = expectedAmountOut
       .multipliedBy(1 - actualConfig.slippageTolerance)
-      .integerValue(BigNumber.ROUND_DOWN)
+      .integerValue(BigNumber.ROUND_DOWN);
 
     const result = marketIdsPaths.map<ZapOutputParam>((_, i) => {
       if (!amountsPaths[i][amountsPaths[i].length - 1].eq(INVALID_ESTIMATION.amountOut)) {
@@ -624,48 +624,71 @@ export class DolomiteZap {
 
     const actions = marketIdToActionsMap[outputToken.marketId.toFixed()];
 
-    const outputs = await this.getSwapExactTokensForTokensParams(
-      outputToken,
-      outputWeiFromActionsWithMarket.outputValue,
-      tokenOut,
-      amountOutMin,
-      txOrigin,
-      config,
-    );
+    let outputs: ZapOutputParam[];
+    if (outputToken.marketId.eq(tokenOut.marketId)) {
+      const minAmountOut = outputWeiFromActionsWithMarket.outputValue
+        .multipliedBy(1 - (config.slippageTolerance ?? this.defaultSlippageTolerance))
+        .integerValue(BigNumber.ROUND_DOWN);
+      outputs = [{
+        marketIdsPath: [tokenIn.marketId, tokenOut.marketId],
+        tokensPath: [marketsMap[tokenIn.marketId.toFixed()], marketsMap[tokenOut.marketId.toFixed()]],
+        amountWeisPath: [amountIn, minAmountOut],
+        traderParams: [this.getAsyncUnwrapperTraderParam(tokenIn, actions, config)],
+        makerAccounts: [],
+        expectedAmountOut: outputWeiFromActionsWithMarket.outputValue,
+        originalAmountOutMin: outputWeiFromActionsWithMarket.outputValue,
+      }];
+    } else {
+      outputs = await this.getSwapExactTokensForTokensParams(
+        outputToken,
+        outputWeiFromActionsWithMarket.outputValue,
+        tokenOut,
+        amountOutMin,
+        txOrigin,
+        config,
+      );
+      outputs.forEach(output => {
+        output.marketIdsPath = [
+          new BigNumber(tokenIn.marketId.toFixed()),
+          ...output.marketIdsPath,
+        ];
+        output.amountWeisPath = [
+          amountIn,
+          ...output.amountWeisPath,
+        ];
 
-    outputs.forEach(output => {
-      output.marketIdsPath = [
-        new BigNumber(tokenIn.marketId.toFixed()),
-        ...output.marketIdsPath,
-      ];
-      output.amountWeisPath = [
-        amountIn,
-        ...output.amountWeisPath,
-      ];
-
-      const converter = this.getIsolationModeConverterByMarketId(tokenIn.marketId)!;
-      output.traderParams = [
-        {
-          traderType: GenericTraderType.IsolationModeUnwrapper,
-          tradeData: ethers.utils.defaultAbiCoder.encode(
-            ['uint8[]', 'bytes32[]', 'bool'],
-            [
-              actions.map(a => (a.actionType === ApiAsyncActionType.WITHDRAWAL
-                ? ApiAsyncTradeType.FromWithdrawal
-                : ApiAsyncTradeType.FromDeposit)),
-              actions.map(a => a.key),
-              !config.isVaporizable,
-            ],
-          ),
-          readableName: converter.unwrapperReadableName,
-          trader: converter.unwrapper,
-          makerAccountIndex: 0,
-        },
-        ...output.traderParams,
-      ];
-    });
+        output.traderParams = [
+          this.getAsyncUnwrapperTraderParam(tokenIn, actions, config),
+          ...output.traderParams,
+        ];
+      });
+    }
 
     return outputs;
+  }
+
+  private getAsyncUnwrapperTraderParam(
+    asyncToken: MinimalApiToken,
+    actions: ApiAsyncAction[],
+    config: Partial<ZapConfig>,
+  ): GenericTraderParam {
+    const converter = this.getIsolationModeConverterByMarketId(asyncToken.marketId)!;
+    return {
+      traderType: GenericTraderType.IsolationModeUnwrapper,
+      tradeData: ethers.utils.defaultAbiCoder.encode(
+        ['uint8[]', 'bytes32[]', 'bool'],
+        [
+          actions.map(a => (a.actionType === ApiAsyncActionType.WITHDRAWAL
+            ? ApiAsyncTradeType.FromWithdrawal
+            : ApiAsyncTradeType.FromDeposit)),
+          actions.map(a => a.key),
+          !config.isVaporizable,
+        ],
+      ),
+      readableName: converter.unwrapperReadableName,
+      trader: converter.unwrapper,
+      makerAccountIndex: 0,
+    }
   }
 
   protected getAllAggregators(
