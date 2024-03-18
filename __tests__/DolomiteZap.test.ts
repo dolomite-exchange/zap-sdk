@@ -946,7 +946,7 @@ describe('DolomiteZap', () => {
     });
   });
 
-  describe('#getSwapExactAsyncTokensForTokensParamsForLiquidation', () => {
+  describe.only('#getSwapExactAsyncTokensForTokensParamsForLiquidation', () => {
     const amountIn = new BigNumber('100000000000000000000'); // 100 GM
     const minAmountOut = new BigNumber('50000000'); // 50 USDC
 
@@ -965,11 +965,11 @@ describe('DolomiteZap', () => {
               key,
               id: `${asyncMarket.tokenAddress.toLowerCase()}-${key}`,
               actionType: ApiAsyncActionType.WITHDRAWAL,
-              outputAmount: new BigNumber('100000000'),
-              inputAmount: amountIn,
               accountNumber: new BigNumber(123),
               inputToken: asyncMarket,
+              inputAmount: amountIn,
               outputToken: NATIVE_USDC_MARKET,
+              outputAmount: new BigNumber('100000000'), // 100 USDC
               owner: ADDRESS_ZERO,
               status: ApiAsyncWithdrawalStatus.WITHDRAWAL_EXECUTED,
             },

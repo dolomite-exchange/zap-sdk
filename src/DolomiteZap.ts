@@ -569,28 +569,30 @@ export class DolomiteZap {
 
         const outputValue = actions.reduce(
           (sum, action) => {
-            if (action.inputToken.marketId.eq(tokenIn.marketId)) {
-              const usedInputAmount = acc.inputValue.lt(action.inputAmount)
-                ? acc.inputValue
-                : action.inputAmount;
-              const usedOutputAmount = acc.inputValue.lt(action.inputAmount)
-                ? action.outputAmount.times(acc.inputValue).dividedToIntegerBy(action.inputAmount)
-                : action.outputAmount;
+            if (sum.inputValue.gt(INTEGERS.ZERO)) {
+              if (action.inputToken.marketId.eq(tokenIn.marketId)) {
+                const usedInputAmount = sum.inputValue.lt(action.inputAmount)
+                  ? sum.inputValue
+                  : action.inputAmount;
+                const usedOutputAmount = sum.inputValue.lt(action.inputAmount)
+                  ? action.outputAmount.times(sum.inputValue).dividedToIntegerBy(action.inputAmount)
+                  : action.outputAmount;
 
-              sum.inputValue = sum.inputValue.minus(usedInputAmount);
-              sum.outputValue = sum.outputValue.plus(usedOutputAmount);
-              sum.outputValueUsd = sum.outputValueUsd.plus(usedOutputAmount.times(oraclePriceUsd));
-            } else if (action.outputToken.marketId.eq(tokenIn.marketId)) {
-              const usedInputAmount = acc.inputValue.lt(action.outputAmount)
-                ? acc.inputValue
-                : action.outputAmount;
-              const usedOutputAmount = acc.inputValue.lt(action.outputAmount)
-                ? action.inputAmount.times(acc.inputValue).dividedToIntegerBy(action.outputAmount)
-                : action.inputAmount;
+                sum.inputValue = sum.inputValue.minus(usedInputAmount);
+                sum.outputValue = sum.outputValue.plus(usedOutputAmount);
+                sum.outputValueUsd = sum.outputValueUsd.plus(usedOutputAmount.times(oraclePriceUsd));
+              } else if (action.outputToken.marketId.eq(tokenIn.marketId)) {
+                const usedInputAmount = sum.inputValue.lt(action.outputAmount)
+                  ? sum.inputValue
+                  : action.outputAmount;
+                const usedOutputAmount = sum.inputValue.lt(action.outputAmount)
+                  ? action.inputAmount.times(sum.inputValue).dividedToIntegerBy(action.outputAmount)
+                  : action.inputAmount;
 
-              sum.inputValue = sum.inputValue.minus(usedInputAmount);
-              sum.outputValue = sum.outputValue.plus(usedOutputAmount);
-              sum.outputValueUsd = sum.outputValueUsd.plus(usedOutputAmount.times(oraclePriceUsd));
+                sum.inputValue = sum.inputValue.minus(usedInputAmount);
+                sum.outputValue = sum.outputValue.plus(usedOutputAmount);
+                sum.outputValueUsd = sum.outputValueUsd.plus(usedOutputAmount.times(oraclePriceUsd));
+              }
             }
             return sum;
           },
@@ -609,7 +611,6 @@ export class DolomiteZap {
         }
       },
       {
-        inputValue: INTEGERS.ZERO,
         outputValue: INTEGERS.ZERO,
         outputValueUsd: INTEGERS.ZERO,
         outputMarket: marketsMap[Object.keys(marketIdToActionsMap)[0]],
