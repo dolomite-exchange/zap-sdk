@@ -67,7 +67,8 @@ export interface EstimateOutputResult {
   amountOut: Integer;
   tradeData: string;
   extraData?: {
-    executionFee: BigNumber;
+    executionFee: Integer;
+    totalAmountOut?: Integer;
   };
 }
 
@@ -211,6 +212,7 @@ export interface ApiAsyncAction {
   outputAmount: Integer;
 }
 
+// noinspection JSUnusedGlobalSymbols
 export interface ApiAsyncDeposit extends ApiAsyncAction {
   actionType: ApiAsyncActionType.DEPOSIT;
   status: ApiAsyncDepositStatus;
@@ -223,6 +225,7 @@ export enum ApiAsyncWithdrawalStatus {
   WITHDRAWAL_CANCELLED = 'WITHDRAWAL_CANCELLED',
 }
 
+// noinspection JSUnusedGlobalSymbols
 export interface ApiAsyncWithdrawal extends ApiAsyncAction {
   actionType: ApiAsyncActionType.WITHDRAWAL;
   status: ApiAsyncWithdrawalStatus;

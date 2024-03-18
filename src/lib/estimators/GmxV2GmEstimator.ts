@@ -189,10 +189,11 @@ export class GmxV2GmEstimator {
     );
 
     return {
-      amountOut: new BigNumber(amountOut.add(extraSwapAmountOut[0]).toString()),
+      amountOut: new BigNumber(amountOut.toString()),
       tradeData: abiCoder.encode(['tuple(uint256 value)', 'uint256'], [{ value: weight }, extraSwapAmountOut[0]]),
       extraData: {
         executionFee,
+        totalAmountOut: new BigNumber(amountOut.add(extraSwapAmountOut[0]).toString()),
       },
     };
   }

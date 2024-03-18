@@ -48,10 +48,10 @@ describe('GmxV2Zap', () => {
     LINK_MARKET,
   ];
   const minOutputAmountsForLongToken = [
-    new BigNumber('50').multipliedBy(INTEGERS.TEN.pow(18)),
-    new BigNumber('0.0005').multipliedBy(INTEGERS.TEN.pow(8)),
-    new BigNumber('0.005').multipliedBy(INTEGERS.TEN.pow(18)),
-    new BigNumber('3').multipliedBy(INTEGERS.TEN.pow(18)),
+    new BigNumber('20').multipliedBy(INTEGERS.TEN.pow(18)),
+    new BigNumber('0.0004').multipliedBy(INTEGERS.TEN.pow(8)),
+    new BigNumber('0.004').multipliedBy(INTEGERS.TEN.pow(18)),
+    new BigNumber('0.4').multipliedBy(INTEGERS.TEN.pow(18)),
   ];
 
   beforeAll(async () => {

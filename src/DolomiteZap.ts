@@ -273,6 +273,7 @@ export class DolomiteZap {
     let amountsPaths: BigNumber[][] = [];
     let traderParamsArrays: GenericTraderParam[][] = [];
     let executionFees: BigNumber[] = [];
+    let totalAmountOuts: (BigNumber | undefined)[] = [];
     let effectiveInputMarketIds = [inputMarket.marketId];
     let effectiveOutputMarketIds = [outputMarket.marketId];
 
@@ -318,12 +319,14 @@ export class DolomiteZap {
           },
         ];
         executionFees[i] = extraData?.executionFee ?? INTEGERS.ZERO;
+        totalAmountOuts[i] = extraData?.totalAmountOut;
       });
     } else {
       marketIdsPaths[0] = [inputMarket.marketId];
       amountsPaths[0] = [amountIn];
       traderParamsArrays[0] = [];
       executionFees[0] = INTEGERS.ZERO;
+      totalAmountOuts[0] = undefined;
     }
 
     const isIsolationModeWrapper = outputMarket.isolationModeWrapperInfo;
@@ -337,22 +340,34 @@ export class DolomiteZap {
         amountsPaths,
         traderParamsArrays,
         executionFees,
-      ] = effectiveOutputMarketIds.reduce((acc, outputMarketId) => {
-        marketIdsPaths.forEach((path, i) => {
-          if (!outputMarketId.eq(path[path.length - 1])) {
-            acc[0].push(path.concat(outputMarketId));
-            acc[1].push([...amountsPaths[i]]);
-            acc[2].push([...traderParamsArrays[i]]);
-            acc[3].push(...executionFees);
-          } else {
-            acc[0].push(path);
-            acc[1].push([...amountsPaths[i]]);
-            acc[2].push([...traderParamsArrays[i]]);
-            acc[3].push(...executionFees);
-          }
-        });
-        return acc;
-      }, [[] as MarketId[][], [] as BigNumber[][], [] as GenericTraderParam[][], [] as BigNumber[]])
+        totalAmountOuts,
+      ] = effectiveOutputMarketIds.reduce(
+        (acc, outputMarketId) => {
+          marketIdsPaths.forEach((path, i) => {
+            if (!outputMarketId.eq(path[path.length - 1])) {
+              acc[0].push(path.concat(outputMarketId));
+              acc[1].push([...amountsPaths[i]]);
+              acc[2].push([...traderParamsArrays[i]]);
+              acc[3].push(...executionFees);
+              acc[4].push(...totalAmountOuts);
+            } else {
+              acc[0].push(path);
+              acc[1].push([...amountsPaths[i]]);
+              acc[2].push([...traderParamsArrays[i]]);
+              acc[3].push(...executionFees);
+              acc[4].push(...totalAmountOuts);
+            }
+          });
+          return acc;
+        },
+        [
+          [] as MarketId[][],
+          [] as BigNumber[][],
+          [] as GenericTraderParam[][],
+          [] as BigNumber[],
+          [] as (BigNumber | undefined)[],
+        ],
+      )
     }
 
     if (
@@ -421,6 +436,7 @@ export class DolomiteZap {
                 }),
               );
               executionFees.push(executionFees[c]);
+              totalAmountOuts.push(totalAmountOuts[c]);
             }
           });
         }
@@ -463,6 +479,7 @@ export class DolomiteZap {
               : wrapperInfo.readableName,
           });
           executionFees[i] = executionFees[i].plus(outputEstimate.extraData?.executionFee ?? INTEGERS.ZERO);
+          totalAmountOuts[i] = outputEstimate.extraData?.totalAmountOut;
         }),
       );
     } else {
@@ -510,6 +527,7 @@ export class DolomiteZap {
         makerAccounts: [],
         originalAmountOutMin: amountOutMin,
         executionFee: executionFees[i].gt(INTEGERS.ZERO) ? executionFees[i] : undefined,
+        totalAmountOut: totalAmountOuts[i],
       };
     });
 
@@ -629,15 +647,17 @@ export class DolomiteZap {
       const expectedAmountOutWithSlippage = outputWeiFromActionsWithMarket.outputValue
         .multipliedBy(1 - (config.slippageTolerance ?? this.defaultSlippageTolerance))
         .integerValue(BigNumber.ROUND_DOWN);
-      outputs = [{
-        marketIdsPath: [tokenIn.marketId, tokenOut.marketId],
-        tokensPath: [marketsMap[tokenIn.marketId.toFixed()], marketsMap[tokenOut.marketId.toFixed()]],
-        amountWeisPath: [amountIn, expectedAmountOutWithSlippage],
-        traderParams: [this.getAsyncUnwrapperTraderParam(tokenIn, actions, config)],
-        makerAccounts: [],
-        expectedAmountOut: outputWeiFromActionsWithMarket.outputValue,
-        originalAmountOutMin: amountOutMin,
-      }];
+      outputs = [
+        {
+          marketIdsPath: [tokenIn.marketId, tokenOut.marketId],
+          tokensPath: [marketsMap[tokenIn.marketId.toFixed()], marketsMap[tokenOut.marketId.toFixed()]],
+          amountWeisPath: [amountIn, expectedAmountOutWithSlippage],
+          traderParams: [this.getAsyncUnwrapperTraderParam(tokenIn, actions, config)],
+          makerAccounts: [],
+          expectedAmountOut: outputWeiFromActionsWithMarket.outputValue,
+          originalAmountOutMin: amountOutMin,
+        },
+      ];
     } else {
       outputs = await this.getSwapExactTokensForTokensParams(
         outputToken,
@@ -667,6 +687,29 @@ export class DolomiteZap {
     return outputs;
   }
 
+  protected getAllAggregators(
+    network: Network,
+    referralInfo: ReferralOutput,
+    useProxyServer: boolean,
+  ): AggregatorClient[] {
+    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer);
+    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer);
+    return [odosAggregator, paraswapAggregator];
+  }
+
+  protected async getMarketIdToMarketMap(forceRefresh: boolean): Promise<Record<string, ApiMarket>> {
+    if (!forceRefresh) {
+      const cachedMarkets = this.marketsCache.get(marketsKey);
+      if (cachedMarkets) {
+        return cachedMarkets;
+      }
+    }
+
+    const marketsMap = await this.client.getDolomiteMarketsMap();
+    this.marketsCache.set(marketsKey, marketsMap);
+    return marketsMap;
+  }
+
   private getAsyncUnwrapperTraderParam(
     asyncToken: MinimalApiToken,
     actions: ApiAsyncAction[],
@@ -689,29 +732,6 @@ export class DolomiteZap {
       trader: converter.unwrapper,
       makerAccountIndex: 0,
     }
-  }
-
-  protected getAllAggregators(
-    network: Network,
-    referralInfo: ReferralOutput,
-    useProxyServer: boolean,
-  ): AggregatorClient[] {
-    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer);
-    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer);
-    return [odosAggregator, paraswapAggregator];
-  }
-
-  protected async getMarketIdToMarketMap(forceRefresh: boolean): Promise<Record<string, ApiMarket>> {
-    if (!forceRefresh) {
-      const cachedMarkets = this.marketsCache.get(marketsKey);
-      if (cachedMarkets) {
-        return cachedMarkets;
-      }
-    }
-
-    const marketsMap = await this.client.getDolomiteMarketsMap();
-    this.marketsCache.set(marketsKey, marketsMap);
-    return marketsMap;
   }
 
   private async getMarketHelpersMap(
