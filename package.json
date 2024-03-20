@@ -27,7 +27,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "dependencies": {
-    "@dolomite-exchange/modules-deployments": "^0.0.4",
+    "@dolomite-exchange/modules-deployments": "^0.0.5",
     "@pendle/sdk-v2": "^2.8.2",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.1",

@@ -159,11 +159,6 @@ export class GmxV2GmEstimator {
       amountIn.toFixed(),
       ADDRESS_ZERO,
     );
-    const otherAmountOut = new BigNumber(
-      outputToken.tokenAddress === longToken
-        ? shortAmountOut.toString()
-        : longAmountOut.toString(),
-    );
 
     const weight = await this.getWeightForOtherAmount(
       outputToken,
@@ -174,7 +169,8 @@ export class GmxV2GmEstimator {
     );
 
     const amountOut = outputToken.tokenAddress === longToken ? longAmountOut : shortAmountOut;
-    const extraSwapAmountOut = await this.gmxV2Reader!.getSwapAmountOut(
+
+    const [otherAmountOut] = await this.gmxV2Reader!.getSwapAmountOut(
       this.gmxV2DataStore!.address,
       gmMarketProps,
       pricesStruct,
@@ -197,7 +193,7 @@ export class GmxV2GmEstimator {
     const amountOutWithSlippage = new BigNumber(amountOut.toString())
       .multipliedBy(1 - (config.isLiquidation ? 0.05 : 0))
       .integerValue(BigNumber.ROUND_DOWN)
-    const otherAmountOutWithSlippage = otherAmountOut
+    const otherAmountOutWithSlippage = new BigNumber(otherAmountOut.toString())
       .multipliedBy(1 - (config.isLiquidation ? 0.05 : config.slippageTolerance))
       .integerValue(BigNumber.ROUND_DOWN);
     return {
@@ -208,7 +204,7 @@ export class GmxV2GmEstimator {
       ),
       extraData: {
         executionFee,
-        totalAmountOut: new BigNumber(amountOut.add(extraSwapAmountOut[0]).toString()),
+        totalAmountOut: new BigNumber(amountOut.add(otherAmountOut).toString()),
       },
     };
   }

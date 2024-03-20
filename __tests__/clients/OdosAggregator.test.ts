@@ -116,7 +116,7 @@ describe('OdosAggregator', () => {
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
 
-    it.only('should fail when the swap does not make sense', async () => {
+    it('should fail when the swap does not make sense', async () => {
       const odos = new OdosAggregator(networkIdOverride, referralCode, false);
       const inputMarket: ApiMarket = {
         ...USDC_MARKET,
