@@ -295,7 +295,7 @@ export class DolomiteZap {
             actualConfig,
           ).catch(e => {
             Logger.error({
-              message: `Caught error while estimating wrapping: ${e.message}`,
+              message: `Caught error while estimating unwrapping: ${e.message}`,
               error: e,
             });
             return INVALID_ESTIMATION;
