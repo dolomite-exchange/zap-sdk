@@ -16,6 +16,7 @@ import {
   GMX_V2_DATA_STORE_MAP,
   GMX_V2_READER_MAP,
 } from '../Constants';
+import { LocalCache } from '../LocalCache';
 import MarketPricesStruct = GmxMarket.MarketPricesStruct;
 
 interface SignedPriceData {
@@ -48,16 +49,30 @@ const POOL_AMOUNT_KEY = keccak256(abiCoder.encode(['string'], ['POOL_AMOUNT']));
 
 const ONE_ETH = ethers.utils.parseEther('1');
 
+const WithdrawalGasLimitsCacheKey = 'WithdrawalGasLimits';
+const DepositGasLimitsCacheKey = 'DepositGasLimits';
+
+interface WithdrawalGasLimits {
+  withdrawalGasLimit: ethers.BigNumber;
+  swapGasLimit: ethers.BigNumber;
+}
+
+interface DepositGasLimits {
+  depositGasLimit: ethers.BigNumber;
+}
+
 export class GmxV2GmEstimator {
   private readonly gmxV2Reader?: IGmxV2Reader;
   private readonly gmxV2DataStore?: IGmxV2DataStore;
   private readonly arbitrumGasInfo?: IArbitrumGasInfo;
+  private readonly dataStoreCache: LocalCache<any>;
 
   public constructor(
     private readonly network: Network,
     private readonly web3Provider: ethers.providers.Provider,
     private readonly gasMultiplier: BigNumber,
   ) {
+    this.dataStoreCache = new LocalCache<WithdrawalGasLimits>(3600);
     if (network !== Network.ARBITRUM_ONE) {
       return
     }
@@ -179,12 +194,11 @@ export class GmxV2GmEstimator {
       ADDRESS_ZERO,
     );
 
-    const [withdrawalGasLimit, swapGasLimit, gasPriceWei] = await Promise.all([
-      this.gmxV2DataStore!.getUint(WITHDRAWAL_GAS_LIMIT_KEY),
-      this.gmxV2DataStore!.getUint(SINGLE_SWAP_GAS_LIMIT_KEY),
+    const [limits, gasPriceWei] = await Promise.all([
+      this.getWithdrawalGasLimits(),
       this.getGasPrice(config),
     ]);
-    const totalWithdrawalGasLimit = withdrawalGasLimit.add(swapGasLimit).add(CALLBACK_GAS_LIMIT);
+    const totalWithdrawalGasLimit = limits.withdrawalGasLimit.add(limits.swapGasLimit).add(CALLBACK_GAS_LIMIT);
     const executionFee = new BigNumber(
       totalWithdrawalGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
     );
@@ -246,11 +260,11 @@ export class GmxV2GmEstimator {
       ADDRESS_ZERO,
     );
 
-    const [depositGasLimit, gasPriceWei] = await Promise.all([
-      this.gmxV2DataStore!.getUint(DEPOSIT_GAS_LIMIT_KEY),
+    const [limits, gasPriceWei] = await Promise.all([
+      this.getDepositGasLimits(),
       this.getGasPrice(config),
     ]);
-    const totalDepositGasLimit = depositGasLimit.add(CALLBACK_GAS_LIMIT);
+    const totalDepositGasLimit = limits.depositGasLimit.add(CALLBACK_GAS_LIMIT);
     const executionFee = new BigNumber(
       totalDepositGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
     );
@@ -283,6 +297,38 @@ export class GmxV2GmEstimator {
     return outputToken.tokenAddress === longToken
       ? ONE_ETH.mul(shortBalanceUsd).div(totalBalanceUsd)
       : ONE_ETH.mul(longBalanceUsd).div(totalBalanceUsd);
+  }
+
+  private async getWithdrawalGasLimits(): Promise<WithdrawalGasLimits> {
+    const cachedValue = this.dataStoreCache.get(WithdrawalGasLimitsCacheKey)
+    if (cachedValue) {
+      return cachedValue;
+    }
+
+    const withdrawalGasLimit = await this.gmxV2DataStore!.getUint(WITHDRAWAL_GAS_LIMIT_KEY);
+    const swapGasLimit = await this.gmxV2DataStore!.getUint(SINGLE_SWAP_GAS_LIMIT_KEY);
+    const value = {
+      withdrawalGasLimit,
+      swapGasLimit,
+    };
+    this.dataStoreCache.set(WithdrawalGasLimitsCacheKey, value);
+
+    return value;
+  }
+
+  private async getDepositGasLimits(): Promise<DepositGasLimits> {
+    const cachedValue = this.dataStoreCache.get(DepositGasLimitsCacheKey)
+    if (cachedValue) {
+      return cachedValue;
+    }
+
+    const depositGasLimit = await this.gmxV2DataStore!.getUint(DEPOSIT_GAS_LIMIT_KEY);
+    const value: DepositGasLimits = {
+      depositGasLimit,
+    };
+    this.dataStoreCache.set(DepositGasLimitsCacheKey, value);
+
+    return value;
   }
 
   private async getGasPrice(config: ZapConfig): Promise<BigNumberish> {

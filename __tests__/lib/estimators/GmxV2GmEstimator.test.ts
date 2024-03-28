@@ -56,9 +56,14 @@ describe('GmxV2GmEstimator', () => {
         config,
       );
       console.log(
-        'GM amounts amounts out [ETH, USDC]:',
+        'GM amounts amounts out [ETH]:',
         ethAmount.amountOut.toString(),
+        ethAmount.extraData?.totalAmountOut?.toFixed(),
+      );
+      console.log(
+        'GM amounts amounts out [USDC]:',
         usdcAmount.amountOut.toString(),
+        usdcAmount.extraData?.totalAmountOut?.toFixed(),
       );
     });
   });

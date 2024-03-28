@@ -274,7 +274,7 @@ export class DolomiteZap {
     let amountsPaths: BigNumber[][] = [];
     let traderParamsArrays: GenericTraderParam[][] = [];
     let executionFees: BigNumber[] = [];
-    let totalAmountOuts: (BigNumber | undefined)[] = [];
+    let totalAmountOuts: BigNumber[] = [];
     let effectiveInputMarketIds = [inputMarket.marketId];
     let effectiveOutputMarketIds = [outputMarket.marketId];
 
@@ -320,14 +320,14 @@ export class DolomiteZap {
           },
         ];
         executionFees[i] = extraData?.executionFee ?? INTEGERS.ZERO;
-        totalAmountOuts[i] = extraData?.totalAmountOut;
+        totalAmountOuts[i] = extraData?.totalAmountOut ?? INTEGERS.ZERO;
       });
     } else {
       marketIdsPaths[0] = [inputMarket.marketId];
       amountsPaths[0] = [amountIn];
       traderParamsArrays[0] = [];
       executionFees[0] = INTEGERS.ZERO;
-      totalAmountOuts[0] = undefined;
+      totalAmountOuts[0] = INTEGERS.ZERO;
     }
 
     const isIsolationModeWrapper = outputMarket.isolationModeWrapperInfo;
@@ -366,7 +366,7 @@ export class DolomiteZap {
           [] as BigNumber[][],
           [] as GenericTraderParam[][],
           [] as BigNumber[],
-          [] as (BigNumber | undefined)[],
+          [] as BigNumber[],
         ],
       )
     }
@@ -480,7 +480,10 @@ export class DolomiteZap {
               : wrapperInfo.readableName,
           });
           executionFees[i] = executionFees[i].plus(outputEstimate.extraData?.executionFee ?? INTEGERS.ZERO);
-          totalAmountOuts[i] = outputEstimate.extraData?.totalAmountOut;
+          if (totalAmountOuts[i].gt(INTEGERS.ZERO) && outputEstimate.extraData?.totalAmountOut?.gt(INTEGERS.ZERO)) {
+            throw new Error(`Invalid total amounts out here, found ${totalAmountOuts[i].toFixed()}`);
+          }
+          totalAmountOuts[i] = outputEstimate.extraData?.totalAmountOut ?? INTEGERS.ZERO;
         }),
       );
     } else {
@@ -502,8 +505,11 @@ export class DolomiteZap {
     });
 
     // Unify the min amount out to be the same for UX's sake
-    const expectedAmountOut = amountsPaths.reduce((max, currentPath) => {
-      const current = currentPath[currentPath.length - 1];
+    const expectedAmountOut = totalAmountOuts.reduce((max, current, i) => {
+      if (current.eq(INTEGERS.ZERO)) {
+        current = amountsPaths[i][amountsPaths[i].length - 1];
+      }
+
       if (current.gt(max)) {
         return current;
       }
@@ -528,7 +534,6 @@ export class DolomiteZap {
         makerAccounts: [],
         originalAmountOutMin: amountOutMin,
         executionFee: executionFees[i].gt(INTEGERS.ZERO) ? executionFees[i] : undefined,
-        totalAmountOut: totalAmountOuts[i],
       };
     });
 
