@@ -289,6 +289,11 @@ export class DolomiteZap {
           marketIdsPaths[i] = [inputMarket.marketId];
           amountsPaths[i] = [amountIn];
 
+          if (actualConfig.disallowAggregator && !inputMarketId.eq(outputMarket.marketId)) {
+            // If the aggregator is disabled, and we cannot connect the input market to the output, don't bother
+            return Promise.resolve(INVALID_ESTIMATION);
+          }
+
           return unwrapperHelper.estimateOutputFunction(
             amountIn,
             inputMarketId,
@@ -414,7 +419,9 @@ export class DolomiteZap {
           // eslint-disable-next-line no-loop-func
           aggregatorOutputOrUndefinedList.forEach((aggregatorOutput, aggregatorIndex) => {
             if (aggregatorIndex === 0) {
-              amountsPaths[c] = amountsPaths[c].concat(aggregatorOutput?.expectedAmountOut ?? INTEGERS.NEGATIVE_ONE);
+              amountsPaths[c] = amountsPaths[c].concat(
+                aggregatorOutput?.expectedAmountOut ?? INVALID_ESTIMATION.amountOut,
+              );
               traderParamsArrays[c] = traderParamsArrays[c].concat({
                 traderType: GenericTraderType.ExternalLiquidity,
                 makerAccountIndex: 0,
@@ -425,7 +432,7 @@ export class DolomiteZap {
             } else {
               marketIdsPaths.push([...marketIdsPaths[c]]);
               amountsPaths.push(
-                [...amountsPaths[c]].concat(aggregatorOutput?.expectedAmountOut ?? INTEGERS.NEGATIVE_ONE),
+                [...amountsPaths[c]].concat(aggregatorOutput?.expectedAmountOut ?? INVALID_ESTIMATION.amountOut),
               );
               traderParamsArrays.push(
                 [...traderParamsArrays[c]].concat({
@@ -522,7 +529,7 @@ export class DolomiteZap {
       .integerValue(BigNumber.ROUND_DOWN);
 
     const result = marketIdsPaths.map<ZapOutputParam>((_, i) => {
-      if (!amountsPaths[i][amountsPaths[i].length - 1].eq(INVALID_ESTIMATION.amountOut)) {
+      if (!amountsPaths[i].some(amount => amount.eq(INVALID_ESTIMATION.amountOut))) {
         amountsPaths[i][amountsPaths[i].length - 1] = minAmountOut;
       }
       return {

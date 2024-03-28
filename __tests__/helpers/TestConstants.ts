@@ -297,7 +297,7 @@ export const GM_ARB_MARKET: ApiMarket = getApiMarket(
   Network.ARBITRUM_ONE,
   GM_ARB_MARKET_ID,
   'dGM',
-  'Dolomite Isolation: GM: ARB',
+  'Dolomite Isolation: GMX Market',
   Deployments.GmxV2ARBIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
   18,
 );
@@ -307,7 +307,7 @@ export const GM_BTC_MARKET: ApiMarket = getApiMarket(
   Network.ARBITRUM_ONE,
   GM_BTC_MARKET_ID,
   'dGM',
-  'Dolomite Isolation: GM: BTC',
+  'Dolomite Isolation: GMX Market',
   Deployments.GmxV2BTCIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
   18,
 );
@@ -317,7 +317,7 @@ export const GM_ETH_MARKET: ApiMarket = getApiMarket(
   Network.ARBITRUM_ONE,
   GM_ETH_MARKET_ID,
   'dGM',
-  'Dolomite Isolation: GM: ETH',
+  'Dolomite Isolation: GMX Market',
   Deployments.GmxV2ETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
   18,
 );
@@ -327,7 +327,7 @@ export const GM_LINK_MARKET: ApiMarket = getApiMarket(
   Network.ARBITRUM_ONE,
   GM_LINK_MARKET_ID,
   'dGM',
-  'Dolomite Isolation: GM: LINK',
+  'Dolomite Isolation: GMX Market',
   Deployments.GmxV2LINKIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
   18,
 );
