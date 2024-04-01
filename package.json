@@ -1,6 +1,6 @@
 {
   "name": "@dolomite-exchange/zap-sdk",
-  "version": "0.2.36",
+  "version": "0.2.37",
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
