@@ -27,7 +27,7 @@ interface SignedPriceData {
 
 const abiCoder = ethers.utils.defaultAbiCoder;
 
-const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(2_000_000);
+const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(2_500_000);
 
 const DEPOSIT_GAS_LIMIT_KEY = keccak256(
   abiCoder.encode(
