@@ -126,7 +126,11 @@ export class GmxV2GmEstimator {
     return axios.get('https://arbitrum-api.gmxinfra2.io/prices/tickers')
       .then(res => res.data)
       .then(data => (data as any[]).reduce((memo, priceData) => {
-        memo[ethers.utils.getAddress(priceData.tokenAddress)] = priceData;
+        const tokenAddress = ethers.utils.getAddress(priceData.tokenAddress);
+        memo[tokenAddress] = {
+          ...priceData,
+          tokenAddress,
+        };
         return memo;
       }, {}));
   }
