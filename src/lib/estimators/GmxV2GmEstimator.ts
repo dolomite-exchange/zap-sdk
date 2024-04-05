@@ -21,8 +21,8 @@ import MarketPricesStruct = GmxMarket.MarketPricesStruct;
 
 interface SignedPriceData {
   tokenAddress: string;
-  minPriceFull: string;
-  maxPriceFull: string;
+  minPrice: string;
+  maxPrice: string;
 }
 
 const abiCoder = ethers.utils.defaultAbiCoder;
@@ -108,24 +108,24 @@ export class GmxV2GmEstimator {
   ): MarketPricesStruct {
     return {
       indexTokenPrice: {
-        min: pricesMap[indexToken].minPriceFull,
-        max: pricesMap[indexToken].maxPriceFull,
+        min: pricesMap[indexToken].minPrice,
+        max: pricesMap[indexToken].maxPrice,
       },
       longTokenPrice: {
-        min: pricesMap[longToken].minPriceFull,
-        max: pricesMap[longToken].maxPriceFull,
+        min: pricesMap[longToken].minPrice,
+        max: pricesMap[longToken].maxPrice,
       },
       shortTokenPrice: {
-        min: pricesMap[shortToken].minPriceFull,
-        max: pricesMap[shortToken].maxPriceFull,
+        min: pricesMap[shortToken].minPrice,
+        max: pricesMap[shortToken].maxPrice,
       },
     };
   }
 
   private static async getTokenPrices(): Promise<Record<Address, SignedPriceData>> {
-    return axios.get('https://arbitrum-api.gmxinfra.io/signed_prices/latest')
+    return axios.get('https://arbitrum-api.gmxinfra2.io/prices/tickers')
       .then(res => res.data)
-      .then(data => (data.signedPrices as SignedPriceData[]).reduce((memo, priceData) => {
+      .then(data => (data as any[]).reduce((memo, priceData) => {
         memo[ethers.utils.getAddress(priceData.tokenAddress)] = priceData;
         return memo;
       }, {}));

@@ -18,7 +18,6 @@ import {
 } from '../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
-const subAccountNumber = new BigNumber('123');
 const GM_POOL_ASSETS_LENGTH = 2;
 
 describe('GmxV2Zap', () => {
@@ -203,7 +202,7 @@ describe('GmxV2Zap', () => {
       it('should work when wrapping GM', async () => {
         for (let i = 0; i < markets.length; i += 1) {
           const market = markets[i];
-          const amountIn = new BigNumber('1000000000'); // 100 USDC
+          const amountIn = new BigNumber('100000000'); // 100 USDC
           const minAmountOut = new BigNumber('50000000000000000000'); // 50 GM
           const outputParams = await zap.getSwapExactTokensForTokensParams(
             USDC_MARKET,
@@ -211,7 +210,6 @@ describe('GmxV2Zap', () => {
             market,
             minAmountOut,
             txOrigin,
-            { subAccountNumber },
           );
 
           expect(outputParams.length).toBe(zap.validAggregators.length * GM_POOL_ASSETS_LENGTH);
@@ -231,7 +229,7 @@ describe('GmxV2Zap', () => {
           expect(outputParam0.traderParams[1].makerAccountIndex).toEqual(0);
           expect(outputParam0.traderParams[1].trader)
             .toEqual(market.isolationModeWrapperInfo?.wrapperAddress);
-          expect(outputParam0.traderParams[1].tradeData.length).toEqual(130);
+          expect(outputParam0.traderParams[1].tradeData.length).toEqual(2);
 
           expect(outputParam0.makerAccounts.length).toEqual(0);
           expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))
@@ -253,7 +251,7 @@ describe('GmxV2Zap', () => {
           expect(outputParam1.traderParams[1].makerAccountIndex).toEqual(0);
           expect(outputParam1.traderParams[1].trader)
             .toEqual(market.isolationModeWrapperInfo?.wrapperAddress);
-          expect(outputParam1.traderParams[1].tradeData.length).toEqual(130);
+          expect(outputParam1.traderParams[1].tradeData.length).toEqual(2);
 
           expect(outputParam1.makerAccounts.length).toEqual(0);
           expect(outputParam1.expectedAmountOut.gt(outputParam1.amountWeisPath[outputParam1.amountWeisPath.length - 1]))
