@@ -3,6 +3,7 @@ import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/
 import BigNumber from 'bignumber.js';
 import { ApiMarket, MarketId, Network } from '../../src';
 import {
+  EZ_ETH_MAP,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP, WE_ETH_MAP,
 } from '../../src/lib/Constants';
@@ -362,6 +363,40 @@ export const PT_WE_ETH_APR_2024_MARKET: ApiMarket = {
     wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapper,
     inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_WE_ETH_APR_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
+};
+
+const EZ_ETH_MARKET_ID = new BigNumber(37);
+export const EZ_ETH_MARKET: ApiMarket = {
+  marketId: EZ_ETH_MARKET_ID,
+  symbol: 'ezETH',
+  name: 'Renzo Restaked ETH',
+  tokenAddress: EZ_ETH_MAP[Network.ARBITRUM_ONE]!,
+  decimals: 18,
+  isolationModeUnwrapperInfo: undefined,
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: undefined,
+  liquidityTokenWrapperInfo: undefined,
+};
+
+const PT_EZ_ETH_JUN_2024_MARKET_ID = new BigNumber(38);
+export const PT_EZ_ETH_JUN_2024_MARKET: ApiMarket = {
+  marketId: PT_EZ_ETH_JUN_2024_MARKET_ID,
+  symbol: 'dPT-ezETH-JUN2024',
+  name: 'Dolomite Isolation: PT ezETH JUN2024',
+  tokenAddress: Deployments.PendlePtEzETHJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_EZ_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_EZ_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_EZ_ETH_JUN_2024_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_EZ_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_EZ_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_EZ_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
 };

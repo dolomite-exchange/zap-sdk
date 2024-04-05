@@ -192,6 +192,18 @@ const PENDLE_PT_WE_ETH_APR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
   [Network.ARBITRUM_ONE]: new BigNumber(36),
 };
 
+const EZ_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(37),
+};
+
+const PENDLE_PT_EZ_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(38),
+};
+
 // =========================
 // ======= Addresses =======
 // =========================
@@ -233,6 +245,12 @@ export const ARBITRUM_GAS_INFO_MAP: Record<Network, Address | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x000000000000000000000000000000000000006C',
+};
+
+export const EZ_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: '0x2416092f143378750bb29b79eD961ab195CcEea5',
 };
 
 export const GMX_V2_DATA_STORE_MAP: Record<Network, Address | undefined> = {
@@ -437,6 +455,15 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperReadableName: 'PT-weETH Isolation Mode Wrapper',
       isAsync: false,
     },
+    [PENDLE_PT_EZ_ETH_JUN_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.PendlePtEzETHJun2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtEzETHJun2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [EZ_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [EZ_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      unwrapperReadableName: 'PT-ezETH Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-ezETH Isolation Mode Wrapper',
+      isAsync: false,
+    },
   },
 };
 
@@ -469,6 +496,7 @@ export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> =
   [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address,
 };
 
+const PT_EZ_ETH_JUN_2024_MARKET_ARBITRUM = '0x5E03C94Fc5Fb2E21882000A96Df0b63d2c4312e2';
 const PT_GLP_MAR_2024_MARKET_ARBITRUM = '0x7D49E5Adc0EAAD9C027857767638613253eF125f';
 const PT_R_ETH_2025_MARKET_ARBITRUM = '0x14FbC760eFaF36781cB0eb3Cb255aD976117B9Bd';
 const PT_WST_ETH_2024_MARKET_ARBITRUM = '0xFd8AeE8FCC10aac1897F8D5271d112810C79e022';
@@ -503,6 +531,10 @@ const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
     [Deployments.PendlePtWeETHApr2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WE_ETH_APR_2024_MARKET_ARBITRUM,
       transformerTokenAddress: WE_ETH_MAP[Network.ARBITRUM_ONE]!,
+    },
+    [Deployments.PendlePtEzETHJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      marketTokenAddress: PT_EZ_ETH_JUN_2024_MARKET_ARBITRUM,
+      transformerTokenAddress: EZ_ETH_MAP[Network.ARBITRUM_ONE]!,
     },
   },
 };

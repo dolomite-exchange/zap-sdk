@@ -97,22 +97,5 @@ describe('GmxV2GmEstimator', () => {
         marketAmountOutFromUsdc.amountOut.toString(),
       );
     });
-
-    it('should fail if sub account number is not included', async () => {
-      const ethAmountIn = new BigNumber(parseEther('0.1').toString()); // 0.1 ETH
-      const newConfig = {
-        ...config,
-        subAccountNumber: undefined,
-      };
-      await expect(
-        estimator.getWrappedAmount(
-          gmEthIsolationModeAddress,
-          ethAmountIn,
-          WETH_MARKET.marketId,
-          marketsMap,
-          newConfig,
-        ),
-      ).rejects.toThrow('Missing subAccountNumber on zapConfig');
-    });
   });
 });

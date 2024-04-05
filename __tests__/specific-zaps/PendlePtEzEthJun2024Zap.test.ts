@@ -3,17 +3,17 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../src';
 import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../src/lib/Constants';
+import sleep from '../helpers/sleep';
 import {
-  PT_WE_ETH_APR_2024_MARKET,
+  EZ_ETH_MARKET,
+  PT_EZ_ETH_JUN_2024_MARKET,
   SLEEP_DURATION_BETWEEN_TESTS,
   USDC_MARKET,
-  WE_ETH_MARKET
 } from '../helpers/TestConstants';
-import sleep from '../helpers/sleep';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
-describe('PendlePtWeEthApr2024Zap', () => {
+describe('PendlePtEzEthJun2024Zap', () => {
   const network = Network.ARBITRUM_ONE;
   const subgraphUrl = process.env.SUBGRAPH_URL;
   if (!subgraphUrl) {
@@ -27,7 +27,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
     web3Provider,
     cacheSeconds: NO_CACHE,
   });
-  zap.setMarketsToAdd([PT_WE_ETH_APR_2024_MARKET, WE_ETH_MARKET]);
+  zap.setMarketsToAdd([PT_EZ_ETH_JUN_2024_MARKET, EZ_ETH_MARKET]);
 
   beforeEach(async () => {
     // Sleep so Paraswap does not rate limit
@@ -35,12 +35,12 @@ describe('PendlePtWeEthApr2024Zap', () => {
   });
 
   describe('#getSwapExactTokensForTokensData', () => {
-    describe('Pendle PT-weETH', () => {
-      it('should work when unwrapping PT-weETH', async () => {
+    describe('Pendle PT-ezETH', () => {
+      it('should work when unwrapping PT-ezETH', async () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 PT
         const minAmountOut = new BigNumber('100000000000'); // 100,000 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
-          PT_WE_ETH_APR_2024_MARKET,
+          PT_EZ_ETH_JUN_2024_MARKET,
           amountIn,
           USDC_MARKET,
           minAmountOut,
@@ -49,7 +49,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
 
         expect(outputParams.length).toBe(zap.validAggregators.length);
 
-        const ptWeEthMarketId = PT_WE_ETH_APR_2024_MARKET.marketId;
+        const ptWeEthMarketId = PT_EZ_ETH_JUN_2024_MARKET.marketId;
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
         expect(outputParam.marketIdsPath[0]).toEqual(ptWeEthMarketId);
@@ -66,7 +66,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtWeETHApr2024IsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.PendlePtEzETHJun2024IsolationModeUnwrapperTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -78,26 +78,26 @@ describe('PendlePtWeEthApr2024Zap', () => {
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
-      it('should work when wrapping PT-weETH', async () => {
+      it('should work when wrapping PT-ezETH', async () => {
         const amountIn = new BigNumber('10000000000'); // 10,000 USDC
         const minAmountOut = new BigNumber('500000000000000000'); // 0.50 PT
         const outputParams = await zap.getSwapExactTokensForTokensParams(
           USDC_MARKET,
           amountIn,
-          PT_WE_ETH_APR_2024_MARKET,
+          PT_EZ_ETH_JUN_2024_MARKET,
           minAmountOut,
           txOrigin,
         );
 
         expect(outputParams.length).toBe(zap.validAggregators.length);
 
-        const ptREthMarketId = PT_WE_ETH_APR_2024_MARKET.marketId;
+        const { marketId } = PT_EZ_ETH_JUN_2024_MARKET;
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
         expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
         expect(outputParam.marketIdsPath[1])
-          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][ptREthMarketId.toFixed()]!.wrapperMarketIds[0]);
-        expect(outputParam.marketIdsPath[2]).toEqual(ptREthMarketId);
+          .toEqual(ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][marketId.toFixed()]!.wrapperMarketIds[0]);
+        expect(outputParam.marketIdsPath[2]).toEqual(marketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(3);
         expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
@@ -111,7 +111,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[1].trader)
-          .toEqual(Deployments.PendlePtWeETHApr2024IsolationModeWrapperTraderV2[network].address);
+          .toEqual(Deployments.PendlePtEzETHJun2024IsolationModeWrapperTraderV2[network].address);
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);

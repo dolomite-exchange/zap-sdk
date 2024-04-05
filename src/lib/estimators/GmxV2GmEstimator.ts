@@ -11,7 +11,7 @@ import { GmxMarket, GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
   ADDRESS_ZERO,
-  ARBITRUM_GAS_INFO_MAP,
+  ARBITRUM_GAS_INFO_MAP, BYTES_EMPTY,
   GM_MARKETS_MAP,
   GMX_V2_DATA_STORE_MAP,
   GMX_V2_READER_MAP,
@@ -230,9 +230,6 @@ export class GmxV2GmEstimator {
     marketsMap: Record<string, ApiMarket>,
     config: ZapConfig,
   ): Promise<EstimateOutputResult> {
-    if (!config.subAccountNumber) {
-      return Promise.reject(new Error('Missing subAccountNumber on zapConfig'));
-    }
     const tokenToSignedPriceMap = await GmxV2GmEstimator.getTokenPrices();
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
@@ -271,7 +268,7 @@ export class GmxV2GmEstimator {
 
     return {
       amountOut: new BigNumber(amountOut.toString()),
-      tradeData: abiCoder.encode(['uint256', 'uint256'], [config.subAccountNumber.toFixed(), executionFee.toFixed()]),
+      tradeData: BYTES_EMPTY,
       extraData: {
         executionFee,
       },
