@@ -68,7 +68,6 @@ export interface EstimateOutputResult {
   tradeData: string;
   extraData?: {
     executionFee: Integer;
-    totalAmountOut?: Integer;
   };
 }
 

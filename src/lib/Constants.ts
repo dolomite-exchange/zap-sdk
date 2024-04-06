@@ -506,6 +506,8 @@ const PT_WE_ETH_APR_2024_MARKET_ARBITRUM = '0xE11f9786B06438456b044B3E21712228AD
 interface PendleMarketProps {
   marketTokenAddress: string;
   transformerTokenAddress: string;
+  ytTokenAddress: string;
+  maturityTimestamp: number;
 }
 
 const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | undefined>> = {
@@ -515,26 +517,38 @@ const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
     [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
       transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
+      ytTokenAddress: '0x56051f8e46b67b4d286454995dbc6f5f3c433e34',
+      maturityTimestamp: 1711584000, // 28-MAR-2024
     },
     [Deployments.PendlePtREthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_R_ETH_2025_MARKET_ARBITRUM,
       transformerTokenAddress: R_ETH_MAP[Network.ARBITRUM_ONE]!,
+      maturityTimestamp: 1750896000, // 28-JUN-2025
+      ytTokenAddress: '0xe822ae44eb2466b4e263b1cbc94b4833ddef9700',
     },
     [Deployments.PendlePtWstEthJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WST_ETH_2024_MARKET_ARBITRUM,
       transformerTokenAddress: WST_ETH_MAP[Network.ARBITRUM_ONE]!,
+      ytTokenAddress: '0x0052b6096f8c1dcbefb9ba381eb6b67479b5c56b',
+      maturityTimestamp: 1719446400, // 27-JUN-2024
     },
     [Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WST_ETH_2025_MARKET_ARBITRUM,
       transformerTokenAddress: WST_ETH_MAP[Network.ARBITRUM_ONE]!,
+      ytTokenAddress: '0xc8d9369809e48d03ff7b69d7979b174e2d34874c',
+      maturityTimestamp: 1750896000, // 28-JUN-2025
     },
     [Deployments.PendlePtWeETHApr2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WE_ETH_APR_2024_MARKET_ARBITRUM,
       transformerTokenAddress: WE_ETH_MAP[Network.ARBITRUM_ONE]!,
+      ytTokenAddress: '0xf28db483773e3616da91fdfa7b5d4090ac40cc59',
+      maturityTimestamp: 1714003200, // 25-APR-2024
     },
     [Deployments.PendlePtEzETHJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_EZ_ETH_JUN_2024_MARKET_ARBITRUM,
       transformerTokenAddress: EZ_ETH_MAP[Network.ARBITRUM_ONE]!,
+      ytTokenAddress: '0x05735b65686635f5c87aa9d2dae494fb2e838f38',
+      maturityTimestamp: 1719446400, // 27-JUN-2024
     },
   },
 };
@@ -546,6 +560,8 @@ const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
     [Deployments.PendleYtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
       transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
+      ytTokenAddress: '',
+      maturityTimestamp: 1711584000, // 28-MAR-2024
     },
   },
 };
@@ -592,6 +608,13 @@ export function getPendlePtMarketForIsolationModeToken(
   return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.marketTokenAddress;
 }
 
+export function getPendleYtTokenForIsolationModeToken(
+  network: Network,
+  isolationModeTokenPtToken: Address,
+): Address | undefined {
+  return PENDLE_PT_MARKET_MAP[network]?.[isolationModeTokenPtToken]?.ytTokenAddress;
+}
+
 export function getPendleYtMarketForIsolationModeToken(
   network: Network,
   isolationModeToken: Address,
@@ -604,6 +627,13 @@ export function getPendlePtTransformerTokenForIsolationModeToken(
   isolationModeToken: Address,
 ): Address | undefined {
   return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.transformerTokenAddress;
+}
+
+export function getPendlePtMaturityTimestampForIsolationModeToken(
+  network: Network,
+  isolationModeToken: Address,
+): number | undefined {
+  return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.maturityTimestamp;
 }
 
 export function getPendleYtTransformerTokenForIsolationModeToken(

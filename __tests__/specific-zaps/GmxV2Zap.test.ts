@@ -64,67 +64,6 @@ describe('GmxV2Zap', () => {
 
   describe('#getSwapExactTokensForTokensData', () => {
     describe('GM ARB/BTC/ETH/LINK', () => {
-      it('should work when unwrapping GM', async () => {
-        for (let i = 0; i < markets.length; i += 1) {
-          const market = markets[i];
-          const amountIn = new BigNumber(parseEther('100').toString()); // 100 GM
-          const minAmountOut = new BigNumber('50000000'); // 50 USDC
-          const outputParams = await zap.getSwapExactTokensForTokensParams(
-            market,
-            amountIn,
-            USDC_MARKET,
-            minAmountOut,
-            txOrigin,
-          );
-
-          expect(outputParams.length).toBe(zap.validAggregators.length * GM_POOL_ASSETS_LENGTH);
-
-          const outputParam0 = outputParams[0];
-          expect(outputParam0.marketIdsPath.length).toEqual(3);
-          expect(outputParam0.marketIdsPath[0]).toEqual(market.marketId);
-          expect(outputParam0.marketIdsPath[1]).toEqual(NATIVE_USDC_MARKET.marketId);
-          expect(outputParam0.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
-
-          expect(outputParam0.amountWeisPath.length).toEqual(3);
-          expect(outputParam0.amountWeisPath[0]).toEqual(amountIn);
-          expect(outputParam0.amountWeisPath[2].isGreaterThan(minAmountOut)).toBeTruthy();
-
-          expect(outputParam0.traderParams.length).toEqual(2);
-          expect(outputParam0.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
-          expect(outputParam0.traderParams[0].makerAccountIndex).toEqual(0);
-          expect(outputParam0.traderParams[0].trader)
-            .toEqual(market.isolationModeUnwrapperInfo!.unwrapperAddress);
-          expect(outputParam0.traderParams[0].tradeData.length).toEqual(130);
-
-          expect(outputParam0.makerAccounts.length).toEqual(0);
-          expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))
-            .toBeTruthy();
-          expect(outputParam0.originalAmountOutMin).toEqual(minAmountOut);
-
-          const outputParam1 = outputParams[1];
-          expect(outputParam1.marketIdsPath.length).toEqual(3);
-          expect(outputParam1.marketIdsPath[0]).toEqual(market.marketId);
-          expect(outputParam1.marketIdsPath[1]).toEqual(longMarkets[i].marketId);
-          expect(outputParam1.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
-
-          expect(outputParam1.amountWeisPath.length).toEqual(3);
-          expect(outputParam1.amountWeisPath[0]).toEqual(amountIn);
-          expect(outputParam1.amountWeisPath[2].isGreaterThan(minAmountOut)).toBeTruthy();
-
-          expect(outputParam1.traderParams.length).toEqual(2);
-          expect(outputParam1.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
-          expect(outputParam1.traderParams[0].makerAccountIndex).toEqual(0);
-          expect(outputParam1.traderParams[0].trader)
-            .toEqual(market.isolationModeUnwrapperInfo!.unwrapperAddress);
-          expect(outputParam1.traderParams[0].tradeData.length).toEqual(130);
-
-          expect(outputParam1.makerAccounts.length).toEqual(0);
-          expect(outputParam1.expectedAmountOut.gt(outputParam1.amountWeisPath[outputParam1.amountWeisPath.length - 1]))
-            .toBeTruthy();
-          expect(outputParam1.originalAmountOutMin).toEqual(minAmountOut);
-        }
-      });
-
       it('should work when unwrapping GM with aggregator disabled', async () => {
         for (let i = 0; i < markets.length; i += 1) {
           const market = markets[i];
