@@ -123,7 +123,7 @@ export class GmxV2GmEstimator {
   }
 
   private static async getTokenPrices(): Promise<Record<Address, SignedPriceData>> {
-    return axios.get('https://arbitrum-api.gmxinfra2.io/prices/tickers')
+    return axios.get('https://arbitrum-api.gmxinfra.io/prices/tickers')
       .then(res => res.data)
       .then(data => (data as any[]).reduce((memo, priceData) => {
         const tokenAddress = ethers.utils.getAddress(priceData.tokenAddress);
@@ -247,13 +247,27 @@ export class GmxV2GmEstimator {
       return Promise.reject(new Error(`Invalid inputToken, found: ${inputToken.symbol} / ${inputToken.tokenAddress}`));
     }
 
+    // 000000000000000000000000fd70de6b91282d8017aa4e741e9ae325cab992d8
+    // 000000000000000000000000c25cef6061cf5de5eb761b50e4743c1f5d7e5407
+    // 000000000000000000000000912ce59144191c1204e64559fe8253a0e49e6548
+    // 000000000000000000000000912ce59144191c1204e64559fe8253a0e49e6548
+    // 000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e5831
+    // 0000000000000000000000000000000000000000000000000000014e6b81de30
+    // 0000000000000000000000000000000000000000000000000000014e7a2a0110
+    // 0000000000000000000000000000000000000000000000000000014e6b81de30
+    // 0000000000000000000000000000000000000000000000000000014e7a2a0110
+    // 00000000000000000000000000000000000000000000d3c046bd140220cc0000
+    // 00000000000000000000000000000000000000000000d3c47ff50039337b0000
+    // 0000000000000000000000000000000000000000000000000000000000000000
+    // 00000000000000000000000000000000000000000000000000000000000f4240
+    // 0000000000000000000000000000000000000000000000000000000000000000
     const amountOut = await this.gmxV2Reader!.getDepositAmountOut(
       this.gmxV2DataStore!.address,
       {
+        marketToken,
         indexToken,
         longToken,
         shortToken,
-        marketToken,
       },
       GmxV2GmEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken),
       inputToken.tokenAddress === longToken ? amountIn.toFixed() : '0',
