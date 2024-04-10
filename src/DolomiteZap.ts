@@ -274,7 +274,6 @@ export class DolomiteZap {
     let amountsPaths: BigNumber[][] = [];
     let traderParamsArrays: GenericTraderParam[][] = [];
     let executionFees: BigNumber[] = [];
-    let totalAmountOuts: BigNumber[] = [];
     let effectiveInputMarketIds = [inputMarket.marketId];
     let effectiveOutputMarketIds = [outputMarket.marketId];
 
@@ -325,14 +324,12 @@ export class DolomiteZap {
           },
         ];
         executionFees[i] = extraData?.executionFee ?? INTEGERS.ZERO;
-        totalAmountOuts[i] = extraData?.totalAmountOut ?? INTEGERS.ZERO;
       });
     } else {
       marketIdsPaths[0] = [inputMarket.marketId];
       amountsPaths[0] = [amountIn];
       traderParamsArrays[0] = [];
       executionFees[0] = INTEGERS.ZERO;
-      totalAmountOuts[0] = INTEGERS.ZERO;
     }
 
     const isIsolationModeWrapper = outputMarket.isolationModeWrapperInfo;
@@ -346,23 +343,17 @@ export class DolomiteZap {
         amountsPaths,
         traderParamsArrays,
         executionFees,
-        totalAmountOuts,
       ] = effectiveOutputMarketIds.reduce(
         (acc, outputMarketId) => {
           marketIdsPaths.forEach((path, i) => {
             if (!outputMarketId.eq(path[path.length - 1])) {
-              acc[0].push(path.concat(outputMarketId));
-              acc[1].push([...amountsPaths[i]]);
-              acc[2].push([...traderParamsArrays[i]]);
-              acc[3].push(...executionFees);
-              acc[4].push(...totalAmountOuts);
+              acc[0].push([...path, outputMarketId]);
             } else {
-              acc[0].push(path);
-              acc[1].push([...amountsPaths[i]]);
-              acc[2].push([...traderParamsArrays[i]]);
-              acc[3].push(...executionFees);
-              acc[4].push(...totalAmountOuts);
+              acc[0].push([...path]);
             }
+            acc[1].push([...amountsPaths[i]]);
+            acc[2].push([...traderParamsArrays[i]]);
+            acc[3].push(...executionFees);
           });
           return acc;
         },
@@ -370,7 +361,6 @@ export class DolomiteZap {
           [] as MarketId[][],
           [] as BigNumber[][],
           [] as GenericTraderParam[][],
-          [] as BigNumber[],
           [] as BigNumber[],
         ],
       )
@@ -390,9 +380,9 @@ export class DolomiteZap {
     for (let i = 0; i < effectiveInputMarketIds.length; i += 1) {
       const effectiveInputMarketId = effectiveInputMarketIds[i];
       for (let j = 0; j < effectiveOutputMarketIds.length; j += 1) {
-        const c = i * effectiveOutputMarketIds.length + j;
         const effectiveOutputMarketId = effectiveOutputMarketIds[j];
         if (!effectiveInputMarketId.eq(effectiveOutputMarketId)) {
+          const c = i * effectiveOutputMarketIds.length + j;
           const effectiveInputMarket = marketsMap[effectiveInputMarketId.toFixed()];
           const effectiveOutputMarket = marketsMap[effectiveOutputMarketId.toFixed()];
           const aggregatorOutputOrUndefinedList = await Promise.all(
@@ -432,10 +422,11 @@ export class DolomiteZap {
             } else {
               marketIdsPaths.push([...marketIdsPaths[c]]);
               amountsPaths.push(
-                [...amountsPaths[c]].concat(aggregatorOutput?.expectedAmountOut ?? INVALID_ESTIMATION.amountOut),
+                amountsPaths[c].slice(0, -1)
+                  .concat(aggregatorOutput?.expectedAmountOut ?? INVALID_ESTIMATION.amountOut),
               );
               traderParamsArrays.push(
-                [...traderParamsArrays[c]].concat({
+                traderParamsArrays[c].slice(0, -1).concat({
                   traderType: GenericTraderType.ExternalLiquidity,
                   makerAccountIndex: 0,
                   trader: aggregatorOutput?.traderAddress ?? ADDRESS_ZERO,
@@ -444,7 +435,6 @@ export class DolomiteZap {
                 }),
               );
               executionFees.push(executionFees[c]);
-              totalAmountOuts.push(totalAmountOuts[c]);
             }
           });
         }
@@ -487,10 +477,6 @@ export class DolomiteZap {
               : wrapperInfo.readableName,
           });
           executionFees[i] = executionFees[i].plus(outputEstimate.extraData?.executionFee ?? INTEGERS.ZERO);
-          if (totalAmountOuts[i].gt(INTEGERS.ZERO) && outputEstimate.extraData?.totalAmountOut?.gt(INTEGERS.ZERO)) {
-            throw new Error(`Invalid total amounts out here, found ${totalAmountOuts[i].toFixed()}`);
-          }
-          totalAmountOuts[i] = outputEstimate.extraData?.totalAmountOut ?? INTEGERS.ZERO;
         }),
       );
     } else {
@@ -512,11 +498,8 @@ export class DolomiteZap {
     });
 
     // Unify the min amount out to be the same for UX's sake
-    const expectedAmountOut = totalAmountOuts.reduce((max, current, i) => {
-      if (current.eq(INTEGERS.ZERO)) {
-        current = amountsPaths[i][amountsPaths[i].length - 1];
-      }
-
+    const expectedAmountOut = amountsPaths.reduce((max, amountsPath) => {
+      const current = amountsPath[amountsPath.length - 1];
       if (current.gt(max)) {
         return current;
       }
@@ -529,13 +512,14 @@ export class DolomiteZap {
       .integerValue(BigNumber.ROUND_DOWN);
 
     const result = marketIdsPaths.map<ZapOutputParam>((_, i) => {
+      const expectedAmountOutBeforeOverwrite = amountsPaths[i][amountsPaths[i].length - 1];
       if (!amountsPaths[i].some(amount => amount.eq(INVALID_ESTIMATION.amountOut))) {
         amountsPaths[i][amountsPaths[i].length - 1] = minAmountOut;
       }
       return {
         marketIdsPath: marketIdsPaths[i],
         tokensPath: tokensPaths[i],
-        expectedAmountOut,
+        expectedAmountOut: expectedAmountOutBeforeOverwrite,
         amountWeisPath: amountsPaths[i],
         traderParams: traderParamsArrays[i],
         makerAccounts: [],
@@ -544,7 +528,10 @@ export class DolomiteZap {
       };
     });
 
-    const zaps = result.filter(p => !zapOutputParamIsInvalid(p));
+    const zaps = result
+      .filter(p => !zapOutputParamIsInvalid(p))
+      .sort((a, b) => (a.expectedAmountOut.gt(b.expectedAmountOut) ? -1 : 1));
+
     if (actualConfig.filterOutZapsWithInsufficientOutput) {
       return zaps.filter(zap => zap.expectedAmountOut.gte(amountOutMin));
     } else {

@@ -7,7 +7,7 @@ import {
   PT_WE_ETH_APR_2024_MARKET,
   SLEEP_DURATION_BETWEEN_TESTS,
   USDC_MARKET,
-  WE_ETH_MARKET
+  WE_ETH_MARKET,
 } from '../helpers/TestConstants';
 import sleep from '../helpers/sleep';
 
@@ -26,6 +26,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
     subgraphUrl,
     web3Provider,
     cacheSeconds: NO_CACHE,
+    usePendleV3: true,
   });
   zap.setMarketsToAdd([PT_WE_ETH_APR_2024_MARKET, WE_ETH_MARKET]);
 

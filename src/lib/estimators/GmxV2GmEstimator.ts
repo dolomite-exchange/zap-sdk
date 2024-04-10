@@ -207,22 +207,17 @@ export class GmxV2GmEstimator {
       totalWithdrawalGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
     );
 
-    // Only apply the slippage to the primary amount out if it's for liquidations
-    const amountOutWithSlippage = new BigNumber(amountOut.toString())
-      .multipliedBy(1 - (config.isLiquidation ? 0.05 : 0))
-      .integerValue(BigNumber.ROUND_DOWN)
     const otherAmountOutWithSlippage = new BigNumber(otherAmountOut.toString())
-      .multipliedBy(1 - (config.isLiquidation ? 0.05 : config.slippageTolerance))
+      .multipliedBy(1 - config.slippageTolerance)
       .integerValue(BigNumber.ROUND_DOWN);
     return {
-      amountOut: amountOutWithSlippage,
+      amountOut: new BigNumber(amountOut.add(otherAmountOut).toString()),
       tradeData: abiCoder.encode(
         ['tuple(uint256 value)', 'uint256'],
         [{ value: weight }, otherAmountOutWithSlippage.toFixed()],
       ),
       extraData: {
         executionFee,
-        totalAmountOut: new BigNumber(amountOut.add(otherAmountOut).toString()),
       },
     };
   }

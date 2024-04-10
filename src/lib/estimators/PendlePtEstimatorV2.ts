@@ -3,7 +3,10 @@ import { Router as PendleStaticRouter } from '@pendle/sdk-v2/dist/entities/Route
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
-import { getPendlePtMarketForIsolationModeToken } from '../Constants';
+import {
+  getPendlePtMarketForIsolationModeToken,
+  getPendlePtMaturityTimestampForIsolationModeToken
+} from '../Constants';
 
 export class PendlePtEstimatorV2 {
   private readonly pendleRouter?: PendleRouter;
@@ -26,6 +29,10 @@ export class PendlePtEstimatorV2 {
     amountInPt: Integer,
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
+    if (this.isMature(isolationModeToken)) {
+      return Promise.reject(new Error('MATURED'));
+    }
+
     const [, , , tokenOutput] = await this.pendleRouter!.swapExactPtForToken(
       getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       amountInPt.toFixed(),
@@ -63,6 +70,10 @@ export class PendlePtEstimatorV2 {
     inputAmount: Integer,
     inputToken: Address,
   ): Promise<EstimateOutputResult> {
+    if (this.isMature(isolationModeToken)) {
+      return Promise.reject(new Error('MATURED'));
+    }
+
     const [, , , approxParams, tokenInput] = await this.pendleRouter!.swapExactTokenForPt(
       getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken) as any,
       inputToken as any,
@@ -101,5 +112,10 @@ export class PendlePtEstimatorV2 {
 
     const amountOut = new BigNumber(approxParams.guessOffchain.toString());
     return { tradeData, amountOut };
+  }
+
+  private isMature(isolationModeToken: Address): boolean {
+    const maturityTimestamp = getPendlePtMaturityTimestampForIsolationModeToken(this.network, isolationModeToken);
+    return (maturityTimestamp ?? 0) < Math.floor(Date.now() / 1000);
   }
 }
