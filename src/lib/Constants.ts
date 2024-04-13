@@ -324,8 +324,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_PT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtGLP2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtGLPMar2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtGLPMar2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'PT-GLP Isolation Mode Unwrapper',
@@ -333,8 +333,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_YT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendleYtGLP2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendleYtGLP2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendleYtGLPMar2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendleYtGLPMar2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'YT-GLP Isolation Mode Unwrapper',
@@ -514,7 +514,7 @@ const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
   [Network.POLYGON_ZKEVM]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
-    [Deployments.PendlePtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+    [Deployments.PendlePtGLPMar2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
       transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x56051f8e46b67b4d286454995dbc6f5f3c433e34',
@@ -557,7 +557,7 @@ const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
   [Network.POLYGON_ZKEVM]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
-    [Deployments.PendleYtGLP2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+    [Deployments.PendleYtGLPMar2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
       transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '',
@@ -647,12 +647,12 @@ export function isPendlePtGlpAsset(
   network: Network,
   isolationModeToken: Address,
 ): boolean {
-  return Deployments.PendlePtGLP2024IsolationModeVaultFactory[network]?.address === isolationModeToken;
+  return Deployments.PendlePtGLPMar2024IsolationModeVaultFactory[network]?.address === isolationModeToken;
 }
 
 export function isPendleYtGlpAsset(
   network: Network,
   isolationModeToken: Address,
 ): boolean {
-  return Deployments.PendleYtGLP2024IsolationModeVaultFactory[network]?.address === isolationModeToken;
+  return Deployments.PendleYtGLPMar2024IsolationModeVaultFactory[network]?.address === isolationModeToken;
 }

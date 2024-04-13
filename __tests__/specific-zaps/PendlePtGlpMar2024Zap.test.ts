@@ -77,7 +77,7 @@ describe('PendlePtGlpMar2024Zap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtGLP2024IsolationModeUnwrapperTraderV4[network].address);
+          .toEqual(Deployments.PendlePtGLPMar2024IsolationModeUnwrapperTraderV4[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
