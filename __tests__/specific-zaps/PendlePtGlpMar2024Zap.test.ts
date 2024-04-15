@@ -29,27 +29,12 @@ describe('PendlePtGlpMar2024Zap', () => {
 
   describe('#getSwapExactTokensForTokensData', () => {
     describe('Pendle PT-GLP', () => {
-      it('should work when unwrapping (matured) PT-GLP', async () => {
-        const amountIn = new BigNumber('100000000000000000000'); // 100 PT
-        const minAmountOut = new BigNumber('50000000'); // 50 USDC
-        const outputParams = await zap.getSwapExactTokensForTokensParams(
-          PT_GLP_MARKET,
-          amountIn,
-          USDC_MARKET,
-          minAmountOut,
-          txOrigin,
-        );
-
-        expect(outputParams.length).toBe(0);
-      });
-
       it('should work when unwrapping PT-GLP with V3', async () => {
         const zapWithV3 = new DolomiteZap({
           network,
           subgraphUrl,
           web3Provider,
           cacheSeconds: NO_CACHE,
-          usePendleV3: true,
         });
 
         const amountIn = new BigNumber('100000000000000000000'); // 100 PT
@@ -77,7 +62,7 @@ describe('PendlePtGlpMar2024Zap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtGLPMar2024IsolationModeUnwrapperTraderV4[network].address);
+          .toEqual(Deployments.PendlePtGLPMar2024IsolationModeUnwrapperTraderV5[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);
@@ -106,7 +91,6 @@ describe('PendlePtGlpMar2024Zap', () => {
           subgraphUrl,
           web3Provider,
           cacheSeconds: NO_CACHE,
-          usePendleV3: true,
         });
 
         const amountIn = new BigNumber('100000000'); // 100 USDC

@@ -26,7 +26,6 @@ describe('PendlePtWeEthApr2024Zap', () => {
     subgraphUrl,
     web3Provider,
     cacheSeconds: NO_CACHE,
-    usePendleV3: true,
   });
   zap.setMarketsToAdd([PT_WE_ETH_APR_2024_MARKET, WE_ETH_MARKET]);
 

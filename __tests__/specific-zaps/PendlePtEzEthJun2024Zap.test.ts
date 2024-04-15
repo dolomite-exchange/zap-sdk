@@ -66,7 +66,7 @@ describe('PendlePtEzEthJun2024Zap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtEzETHJun2024IsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.PendlePtEzETHJun2024IsolationModeUnwrapperTraderV3[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -111,7 +111,7 @@ describe('PendlePtEzEthJun2024Zap', () => {
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[1].trader)
-          .toEqual(Deployments.PendlePtEzETHJun2024IsolationModeWrapperTraderV2[network].address);
+          .toEqual(Deployments.PendlePtEzETHJun2024IsolationModeWrapperTraderV3[network].address);
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);

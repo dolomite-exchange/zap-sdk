@@ -10,7 +10,7 @@ describe('DolomiteClient', () => {
     throw new Error('SUBGRAPH_URL env var not set')
   }
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
-  const dolomite = new DolomiteClient(networkId, subgraphUrl, web3Provider, false, new BigNumber(1));
+  const dolomite = new DolomiteClient(networkId, subgraphUrl, web3Provider, new BigNumber(1));
 
   describe('#getDolomiteMarkets', () => {
     it('should work for specific block number', async () => {

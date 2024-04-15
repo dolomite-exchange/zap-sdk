@@ -5,7 +5,8 @@ import { ApiMarket, MarketId, Network } from '../../src';
 import {
   EZ_ETH_MAP,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
-  LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP, WE_ETH_MAP,
+  LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
+  WE_ETH_MAP,
 } from '../../src/lib/Constants';
 import { toChecksumOpt } from '../../src/lib/Utils';
 
@@ -71,23 +72,23 @@ export const WBTC_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
-const GLP_MARKET_ID = new BigNumber(6);
-export const GLP_MARKET: ApiMarket = {
-  marketId: GLP_MARKET_ID,
+const ISOLATED_GLP_MARKET_ID = new BigNumber(6);
+export const ISOLATED_GLP_MARKET: ApiMarket = {
+  marketId: ISOLATED_GLP_MARKET_ID,
   symbol: 'dfsGLP',
   name: 'Dolomite: Fee + Staked GLP',
   tokenAddress: toChecksumOpt('0x34DF4E8062A8C8Ae97E3382B452bd7BF60542698')!,
   decimals: 18,
   isolationModeUnwrapperInfo: {
-    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
-    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][ISOLATED_GLP_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][ISOLATED_GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][ISOLATED_GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
-    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
-    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][ISOLATED_GLP_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][ISOLATED_GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][ISOLATED_GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
 };
@@ -399,6 +400,27 @@ export const PT_EZ_ETH_JUN_2024_MARKET: ApiMarket = {
     readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_EZ_ETH_JUN_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
+};
+
+const GLP_MARKET_ID = new BigNumber(40);
+export const GLP_MARKET: ApiMarket = {
+  marketId: GLP_MARKET_ID,
+  symbol: 'sGLP',
+  name: 'GLP',
+  tokenAddress: toChecksumOpt('0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf')!,
+  decimals: 18,
+  isolationModeUnwrapperInfo: undefined,
+  liquidityTokenUnwrapperInfo: {
+    unwrapperAddress: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketIds: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
+    readableName: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  isolationModeWrapperInfo: undefined,
+  liquidityTokenWrapperInfo: {
+    wrapperAddress: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketIds: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
+    readableName: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
 };
 
 function getApiMarket(

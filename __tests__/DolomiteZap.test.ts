@@ -14,7 +14,7 @@ import { ADDRESS_ZERO, BYTES_EMPTY } from '../src/lib/Constants';
 import sleep from './helpers/sleep';
 import {
   ARB_MARKET,
-  GLP_MARKET,
+  ISOLATED_GLP_MARKET,
   GM_ARB_MARKET,
   J_USDC_MARKET,
   MAGIC_GLP_MARKET,
@@ -23,7 +23,7 @@ import {
   setUnwrapperMarketIdByMarketId,
   SLEEP_DURATION_BETWEEN_TESTS,
   USDC_MARKET,
-  WETH_MARKET,
+  WETH_MARKET, GLP_MARKET,
 } from './helpers/TestConstants';
 import { TestDolomiteZap } from './helpers/TestDolomiteZap';
 
@@ -50,12 +50,13 @@ describe('DolomiteZap', () => {
   ];
 
   beforeAll(async () => {
+    zap.setMarketsToAdd([GLP_MARKET]);
     expect(validAggregatorsLength).toBe(2);
   });
 
   beforeEach(async () => {
     // Sleep so Paraswap does not rate limit
-    setUnwrapperMarketIdByMarketId(GLP_MARKET.marketId, USDC_MARKET.marketId, network);
+    setUnwrapperMarketIdByMarketId(ISOLATED_GLP_MARKET.marketId, USDC_MARKET.marketId, network);
     await sleep(SLEEP_DURATION_BETWEEN_TESTS);
   });
 
@@ -66,7 +67,6 @@ describe('DolomiteZap', () => {
       const defaultSlippageTolerance = 0.1;
       const defaultBlockTag = 123123123;
       const useProxyServer = true;
-      const usePendleV3 = true;
       const gasMultiplier = new BigNumber(2.5);
       const testZap = new DolomiteZap({
         network,
@@ -81,7 +81,6 @@ describe('DolomiteZap', () => {
           odosReferralCode: new BigNumber(21231),
         },
         useProxyServer,
-        usePendleV3,
         gasMultiplier,
       });
       expect(testZap.subgraphUrl).toBe(subgraphUrl);
@@ -278,7 +277,7 @@ describe('DolomiteZap', () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
         const minAmountOut = new BigNumber('1000000'); // 1 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
-          GLP_MARKET,
+          ISOLATED_GLP_MARKET,
           amountIn,
           USDC_MARKET,
           minAmountOut,
@@ -289,7 +288,7 @@ describe('DolomiteZap', () => {
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(2);
-        expect(outputParam.marketIdsPath[0]).toEqual(GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[0]).toEqual(ISOLATED_GLP_MARKET.marketId);
         expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(2);
@@ -315,7 +314,7 @@ describe('DolomiteZap', () => {
         const outputParams = await zap.getSwapExactTokensForTokensParams(
           USDC_MARKET,
           amountIn,
-          GLP_MARKET,
+          ISOLATED_GLP_MARKET,
           minAmountOut,
           txOrigin,
         );
@@ -325,7 +324,7 @@ describe('DolomiteZap', () => {
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(2);
         expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
-        expect(outputParam.marketIdsPath[1]).toEqual(GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[1]).toEqual(ISOLATED_GLP_MARKET.marketId);
 
         expect(outputParam.amountWeisPath.length).toEqual(2);
         expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
@@ -348,7 +347,7 @@ describe('DolomiteZap', () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
         const minAmountOut = new BigNumber('1000000000000000000'); // 1 ARB
         const outputParams = await zap.getSwapExactTokensForTokensParams(
-          GLP_MARKET,
+          ISOLATED_GLP_MARKET,
           amountIn,
           ARB_MARKET,
           minAmountOut,
@@ -359,7 +358,7 @@ describe('DolomiteZap', () => {
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
-        expect(outputParam.marketIdsPath[0]).toEqual(GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[0]).toEqual(ISOLATED_GLP_MARKET.marketId);
         expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
         expect(outputParam.marketIdsPath[2]).toEqual(ARB_MARKET.marketId);
 
@@ -393,7 +392,7 @@ describe('DolomiteZap', () => {
         const outputParams = await zap.getSwapExactTokensForTokensParams(
           ARB_MARKET,
           amountIn,
-          GLP_MARKET,
+          ISOLATED_GLP_MARKET,
           minAmountOut,
           txOrigin,
         );
@@ -404,7 +403,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.marketIdsPath.length).toEqual(3);
         expect(outputParam.marketIdsPath[0]).toEqual(ARB_MARKET.marketId);
         expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
-        expect(outputParam.marketIdsPath[2]).toEqual(GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[2]).toEqual(ISOLATED_GLP_MARKET.marketId);
 
         const _50_USDC = new BigNumber('50000000');
         expect(outputParam.amountWeisPath.length).toEqual(3);
@@ -434,7 +433,7 @@ describe('DolomiteZap', () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
         const minAmountOut = new BigNumber('50000000000000000000'); // 50 plvGLP
         const outputParams = await zap.getSwapExactTokensForTokensParams(
-          GLP_MARKET,
+          ISOLATED_GLP_MARKET,
           amountIn,
           PLV_GLP_MARKET,
           minAmountOut,
@@ -445,7 +444,7 @@ describe('DolomiteZap', () => {
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
-        expect(outputParam.marketIdsPath[0]).toEqual(GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[0]).toEqual(ISOLATED_GLP_MARKET.marketId);
         expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
         expect(outputParam.marketIdsPath[2]).toEqual(PLV_GLP_MARKET.marketId);
 
@@ -478,7 +477,7 @@ describe('DolomiteZap', () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
         const minAmountOut = new BigNumber('50000000000000000000'); // 50 mGLP
         const outputParams = await zap.getSwapExactTokensForTokensParams(
-          GLP_MARKET,
+          ISOLATED_GLP_MARKET,
           amountIn,
           MAGIC_GLP_MARKET,
           minAmountOut,
@@ -489,7 +488,7 @@ describe('DolomiteZap', () => {
 
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
-        expect(outputParam.marketIdsPath[0]).toEqual(GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[0]).toEqual(ISOLATED_GLP_MARKET.marketId);
         expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
         expect(outputParam.marketIdsPath[2]).toEqual(MAGIC_GLP_MARKET.marketId);
 
@@ -521,13 +520,13 @@ describe('DolomiteZap', () => {
       it(
         'should work when there is an Isolation Mode token to be unwrapped into a wrapper and uses an aggregator',
         async () => {
-          setUnwrapperMarketIdByMarketId(GLP_MARKET.marketId, WETH_MARKET.marketId, network);
+          setUnwrapperMarketIdByMarketId(ISOLATED_GLP_MARKET.marketId, WETH_MARKET.marketId, network);
           await zap.forceRefreshCache();
 
           const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
           const minAmountOut = new BigNumber('50000000000000000000'); // 50 mGLP
           const outputParams = await zap.getSwapExactTokensForTokensParams(
-            GLP_MARKET,
+            ISOLATED_GLP_MARKET,
             amountIn,
             MAGIC_GLP_MARKET,
             minAmountOut,
@@ -538,7 +537,7 @@ describe('DolomiteZap', () => {
 
           const outputParam = outputParams[0];
           expect(outputParam.marketIdsPath.length).toEqual(4);
-          expect(outputParam.marketIdsPath[0]).toEqual(GLP_MARKET.marketId);
+          expect(outputParam.marketIdsPath[0]).toEqual(ISOLATED_GLP_MARKET.marketId);
           expect(outputParam.marketIdsPath[1]).toEqual(WETH_MARKET.marketId);
           expect(outputParam.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
           expect(outputParam.marketIdsPath[3]).toEqual(MAGIC_GLP_MARKET.marketId);
@@ -579,13 +578,13 @@ describe('DolomiteZap', () => {
       it(
         'should work when there is an Isolation Mode token to be unwrapped into a Liquidity Token & uses an aggregator',
         async () => {
-          setUnwrapperMarketIdByMarketId(GLP_MARKET.marketId, WETH_MARKET.marketId, network);
+          setUnwrapperMarketIdByMarketId(ISOLATED_GLP_MARKET.marketId, WETH_MARKET.marketId, network);
           await zap.forceRefreshCache();
 
           const amountIn = new BigNumber('100000000000000000000'); // 100 GLP
           const minAmountOut = new BigNumber('50000000000000000000'); // 50 mGLP
           const outputParams = await zap.getSwapExactTokensForTokensParams(
-            GLP_MARKET,
+            ISOLATED_GLP_MARKET,
             amountIn,
             MAGIC_GLP_MARKET,
             minAmountOut,
@@ -596,7 +595,7 @@ describe('DolomiteZap', () => {
 
           const outputParam = outputParams[0];
           expect(outputParam.marketIdsPath.length).toEqual(4);
-          expect(outputParam.marketIdsPath[0]).toEqual(GLP_MARKET.marketId);
+          expect(outputParam.marketIdsPath[0]).toEqual(ISOLATED_GLP_MARKET.marketId);
           expect(outputParam.marketIdsPath[1]).toEqual(WETH_MARKET.marketId);
           expect(outputParam.marketIdsPath[2]).toEqual(USDC_MARKET.marketId);
           expect(outputParam.marketIdsPath[3]).toEqual(MAGIC_GLP_MARKET.marketId);
@@ -733,6 +732,41 @@ describe('DolomiteZap', () => {
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
+      it.only('should work when GLP to be unwrapped and no aggregator', async () => {
+        const amountIn = new BigNumber('1000000000000000000'); // 100 GLP
+        const minAmountOut = new BigNumber('1000000'); // 1 USDC
+        const outputParams = await zap.getSwapExactTokensForTokensParams(
+          GLP_MARKET,
+          amountIn,
+          USDC_MARKET,
+          minAmountOut,
+          txOrigin,
+        );
+
+        expect(outputParams.length).toBe(1);
+
+        const outputParam = outputParams[0];
+        expect(outputParam.marketIdsPath.length).toEqual(2);
+        expect(outputParam.marketIdsPath[0]).toEqual(GLP_MARKET.marketId);
+        expect(outputParam.marketIdsPath[1]).toEqual(USDC_MARKET.marketId);
+
+        expect(outputParam.amountWeisPath.length).toEqual(2);
+        expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
+        expect(outputParam.amountWeisPath[1].isGreaterThan(minAmountOut)).toBeTruthy();
+
+        expect(outputParam.traderParams.length).toEqual(1);
+        expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
+        expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
+        expect(outputParam.traderParams[0].trader)
+          .toEqual(Deployments.GLPUnwrapperTraderV2[network].address);
+        expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
+
+        expect(outputParam.makerAccounts.length).toEqual(0);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
+      });
+
       it('should work when there is an Liquidity Token to be wrapped and no aggregator', async () => {
         const amountIn = new BigNumber('100000000'); // 100 USDC
         const minAmountOut = new BigNumber('50000000000000000000'); // 50 mGLP
@@ -760,6 +794,41 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
           .toEqual(Deployments.MagicGLPWrapperTraderV2[network].address);
+        expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
+
+        expect(outputParam.makerAccounts.length).toEqual(0);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
+      });
+
+      it.only('should work when GLP to be wrapped and no aggregator', async () => {
+        const amountIn = new BigNumber('100000000'); // 100 USDC
+        const minAmountOut = new BigNumber('50000000000000000000'); // 50 GLP
+        const outputParams = await zap.getSwapExactTokensForTokensParams(
+          USDC_MARKET,
+          amountIn,
+          GLP_MARKET,
+          minAmountOut,
+          txOrigin,
+        );
+
+        expect(outputParams.length).toBe(1);
+
+        const outputParam = outputParams[0];
+        expect(outputParam.marketIdsPath.length).toEqual(2);
+        expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);
+        expect(outputParam.marketIdsPath[1]).toEqual(GLP_MARKET.marketId);
+
+        expect(outputParam.amountWeisPath.length).toEqual(2);
+        expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
+        expect(outputParam.amountWeisPath[1].isGreaterThan(minAmountOut)).toBeTruthy();
+
+        expect(outputParam.traderParams.length).toEqual(1);
+        expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.ExternalLiquidity);
+        expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
+        expect(outputParam.traderParams[0].trader)
+          .toEqual(Deployments.GLPWrapperTraderV2[network].address);
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);

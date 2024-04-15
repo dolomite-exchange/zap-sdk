@@ -21,11 +21,10 @@ export default class DolomiteClient {
     private readonly network: Network,
     private _subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
-    usePendleV3: boolean,
     gasMultiplier: BigNumber,
   ) {
     this.marketsToAdd = [];
-    this.standardEstimator = new StandardEstimator(this.network, web3Provider, usePendleV3, gasMultiplier);
+    this.standardEstimator = new StandardEstimator(this.network, web3Provider, gasMultiplier);
   }
 
   public set subgraphUrl(subgraphUrl: string) {

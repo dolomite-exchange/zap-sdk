@@ -91,10 +91,6 @@ export interface DolomiteZapConfig {
    */
   useProxyServer?: boolean;
   /**
-   * True to use the Pendle V3 router, false to use V2. Defaults to `false`.
-   */
-  usePendleV3?: boolean;
-  /**
    * The multiplier to apply to any gas prices being used for estimating execution fees for intent-driven calls (like
    * GMX V2).
    */
@@ -124,7 +120,6 @@ export class DolomiteZap {
         referralAddress: undefined,
       },
       useProxyServer = true,
-      usePendleV3 = false,
       gasMultiplier = new BigNumber('1'),
     }: DolomiteZapConfig,
   ) {
@@ -135,7 +130,7 @@ export class DolomiteZap {
     this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
 
-    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, usePendleV3, gasMultiplier);
+    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, gasMultiplier);
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
 

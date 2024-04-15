@@ -60,7 +60,7 @@ const WBTC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(4),
 };
 
-const GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+const ISOLATED_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(6),
@@ -204,6 +204,12 @@ const PENDLE_PT_EZ_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
   [Network.ARBITRUM_ONE]: new BigNumber(38),
 };
 
+const GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(40),
+};
+
 // =========================
 // ======= Addresses =======
 // =========================
@@ -294,7 +300,7 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
   [Network.POLYGON_ZKEVM]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
-    [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+    [ISOLATED_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.GLPIsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.GLPIsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
@@ -324,8 +330,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_PT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtGLPMar2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtGLPMar2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtGLPMar2024IsolationModeUnwrapperTraderV5[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtGLPMar2024IsolationModeWrapperTraderV5[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'PT-GLP Isolation Mode Unwrapper',
@@ -342,8 +348,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_PT_RETH_JUN_2025_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtREthJun2025IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtREthJun2025IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtREthJun2025IsolationModeUnwrapperTraderV5[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtREthJun2025IsolationModeWrapperTraderV5[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [R_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [R_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-rETH Isolation Mode Unwrapper',
@@ -351,8 +357,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_PT_WST_ETH_JUN_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtWstEthJun2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtWstEthJun2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtWstEthJun2024IsolationModeUnwrapperTraderV5[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtWstEthJun2024IsolationModeWrapperTraderV5[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-wstETH Isolation Mode Unwrapper',
@@ -360,8 +366,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_PT_WST_ETH_JUN_2025_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtWstEthJun2025IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtWstEthJun2025IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtWstEthJun2025IsolationModeUnwrapperTraderV5[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtWstEthJun2025IsolationModeWrapperTraderV5[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-wstETH Isolation Mode Unwrapper',
@@ -447,8 +453,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: true,
     },
     [PENDLE_PT_WE_ETH_APR_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtWeETHApr2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtWeETHApr2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtWeETHApr2024IsolationModeUnwrapperTraderV3[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtWeETHApr2024IsolationModeWrapperTraderV3[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-weETH Isolation Mode Unwrapper',
@@ -456,8 +462,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_PT_EZ_ETH_JUN_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtEzETHJun2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtEzETHJun2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtEzETHJun2024IsolationModeUnwrapperTraderV3[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtEzETHJun2024IsolationModeWrapperTraderV3[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [EZ_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [EZ_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-ezETH Isolation Mode Unwrapper',
@@ -475,6 +481,15 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<st
     [MAGIC_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.MagicGLPUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.MagicGLPWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      unwrapperReadableName: 'magicGLP Unwrapper',
+      wrapperReadableName: 'magicGLP Wrapper',
+      isAsync: false,
+    },
+    [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.GLPUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GLPWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'magicGLP Unwrapper',
@@ -598,7 +613,7 @@ export function getGmxV2IsolationModeAsset(network: Network, tokenAddress: Addre
 export function getGlpIsolationModeMarketId(
   network: Network,
 ): MarketId | undefined {
-  return GLP_MARKET_ID_MAP[network];
+  return ISOLATED_GLP_MARKET_ID_MAP[network];
 }
 
 export function getPendlePtMarketForIsolationModeToken(
