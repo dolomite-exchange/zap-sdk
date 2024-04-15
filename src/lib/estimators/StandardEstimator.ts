@@ -4,15 +4,11 @@ import IDolomiteMarginExchangeWrapper from '../../abis/IDolomiteMarginExchangeWr
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
   BYTES_EMPTY,
-  getGlpIsolationModeMarketId,
   getPendlePtTransformerTokenForIsolationModeToken,
   getPendleYtTransformerTokenForIsolationModeToken,
   isGmxV2IsolationModeAsset,
-  ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   isPendlePtAsset,
-  isPendlePtGlpAsset,
   isPendleYtAsset,
-  isPendleYtGlpAsset,
   isSimpleIsolationModeAsset,
 } from '../Constants';
 import { GmxV2GmEstimator } from './GmxV2GmEstimator';
@@ -55,19 +51,6 @@ export class StandardEstimator {
         getPendlePtTransformerTokenForIsolationModeToken(this.network, isolationModeTokenAddress)!,
       );
 
-      if (isPendlePtGlpAsset(this.network, isolationModeTokenAddress)) {
-        const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
-        const glpResult = await this.getUnwrappedAmount(
-          marketsMap[glpMarketId.toFixed()].tokenAddress,
-          ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
-          result.amountOut,
-          marketsMap[glpMarketId.toFixed()].isolationModeUnwrapperInfo!.outputMarketIds[0],
-          config,
-          marketsMap,
-        );
-        return { tradeData: result.tradeData, amountOut: glpResult.amountOut };
-      }
-
       return { tradeData: result.tradeData, amountOut: result.amountOut };
     } else if (isPendleYtAsset(this.network, isolationModeTokenAddress)) {
       const result = await this.pendleYtEstimatorV3.getUnwrappedAmount(
@@ -76,19 +59,6 @@ export class StandardEstimator {
         amountIn,
         getPendleYtTransformerTokenForIsolationModeToken(this.network, isolationModeTokenAddress)!,
       );
-
-      if (isPendleYtGlpAsset(this.network, isolationModeTokenAddress)) {
-        const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
-        const glpResult = await this.getUnwrappedAmount(
-          marketsMap[glpMarketId.toFixed()].tokenAddress,
-          ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.unwrapper,
-          result.amountOut,
-          marketsMap[glpMarketId.toFixed()].isolationModeUnwrapperInfo!.outputMarketIds[0],
-          config,
-          marketsMap,
-        );
-        return { tradeData: result.tradeData, amountOut: glpResult.amountOut };
-      }
 
       return { tradeData: result.tradeData, amountOut: result.amountOut };
     } else if (isSimpleIsolationModeAsset(this.network, isolationModeTokenAddress)) {
@@ -127,46 +97,18 @@ export class StandardEstimator {
     const inputMarket = marketsMap[inputMarketId.toFixed()];
 
     if (isPendlePtAsset(this.network, isolationModeTokenAddress)) {
-      let newAmountIn = amountIn;
-      if (isPendlePtGlpAsset(this.network, isolationModeTokenAddress)) {
-        const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
-        const estimateOutputResult = await this.getWrappedAmount(
-          marketsMap[glpMarketId.toFixed()].tokenAddress,
-          ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.wrapper,
-          amountIn,
-          inputMarketId,
-          config,
-          marketsMap,
-        );
-        newAmountIn = estimateOutputResult.amountOut;
-      }
-
       const result = await this.pendlePtEstimatorV3.getWrappedAmount(
         isolationModeTokenAddress,
         wrapperAddress,
-        newAmountIn,
+        amountIn,
         getPendlePtTransformerTokenForIsolationModeToken(this.network, isolationModeTokenAddress)!,
       );
       return { tradeData: result.tradeData, amountOut: result.amountOut };
     } else if (isPendleYtAsset(this.network, isolationModeTokenAddress)) {
-      let newAmountIn = amountIn;
-      if (isPendleYtGlpAsset(this.network, isolationModeTokenAddress)) {
-        const glpMarketId = getGlpIsolationModeMarketId(this.network)!;
-        const estimateOutputResult = await this.getWrappedAmount(
-          marketsMap[glpMarketId.toFixed()].tokenAddress,
-          ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][glpMarketId.toFixed()]!.wrapper,
-          amountIn,
-          inputMarketId,
-          config,
-          marketsMap,
-        );
-        newAmountIn = estimateOutputResult.amountOut;
-      }
-
       return this.pendleYtEstimatorV3.getWrappedAmount(
         isolationModeTokenAddress,
         wrapperAddress,
-        newAmountIn,
+        amountIn,
         getPendleYtTransformerTokenForIsolationModeToken(this.network, isolationModeTokenAddress)!,
       );
     } else if (isSimpleIsolationModeAsset(this.network, isolationModeTokenAddress)) {

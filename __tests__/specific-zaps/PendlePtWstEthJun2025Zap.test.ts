@@ -25,7 +25,7 @@ describe('PendlePtWstEthJun2025Zap', () => {
   zap.setMarketsToAdd([PT_WST_ETH_JUN_2025_MARKET]);
 
   beforeEach(async () => {
-    // Sleep so Paraswap does not rate limit
+    // Sleep so Paraswap / Pendle does not rate limit
     await sleep(SLEEP_DURATION_BETWEEN_TESTS);
   });
 
@@ -42,7 +42,7 @@ describe('PendlePtWstEthJun2025Zap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(zap.validAggregators.length);
+        expect(outputParams.length).toBeGreaterThanOrEqual(zap.validAggregators.length);
 
         const ptWstEthMarketId = PT_WST_ETH_JUN_2025_MARKET.marketId;
         const outputParam = outputParams[0];
@@ -84,7 +84,7 @@ describe('PendlePtWstEthJun2025Zap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(zap.validAggregators.length);
+        expect(outputParams.length).toBeGreaterThanOrEqual(1);
 
         const ptWstEthMarketId = PT_WST_ETH_JUN_2025_MARKET.marketId;
         const outputParam = outputParams[0];

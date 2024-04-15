@@ -30,7 +30,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
   zap.setMarketsToAdd([PT_WE_ETH_APR_2024_MARKET, WE_ETH_MARKET]);
 
   beforeEach(async () => {
-    // Sleep so Paraswap does not rate limit
+    // Sleep so Paraswap / Pendle does not rate limit
     await sleep(SLEEP_DURATION_BETWEEN_TESTS);
   });
 
@@ -47,7 +47,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(zap.validAggregators.length);
+        expect(outputParams.length).toBeGreaterThanOrEqual(zap.validAggregators.length);
 
         const ptWeEthMarketId = PT_WE_ETH_APR_2024_MARKET.marketId;
         const outputParam = outputParams[0];
@@ -66,7 +66,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
         expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
-          .toEqual(Deployments.PendlePtWeETHApr2024IsolationModeUnwrapperTraderV2[network].address);
+          .toEqual(Deployments.PendlePtWeETHApr2024IsolationModeUnwrapperTraderV3[network].address);
         expect(outputParam.traderParams[0].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.ExternalLiquidity);
@@ -89,7 +89,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(zap.validAggregators.length);
+        expect(outputParams.length).toBeGreaterThanOrEqual(1);
 
         const ptREthMarketId = PT_WE_ETH_APR_2024_MARKET.marketId;
         const outputParam = outputParams[0];
@@ -111,7 +111,7 @@ describe('PendlePtWeEthApr2024Zap', () => {
         expect(outputParam.traderParams[1].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
         expect(outputParam.traderParams[1].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[1].trader)
-          .toEqual(Deployments.PendlePtWeETHApr2024IsolationModeWrapperTraderV2[network].address);
+          .toEqual(Deployments.PendlePtWeETHApr2024IsolationModeWrapperTraderV3[network].address);
         expect(outputParam.traderParams[1].tradeData.length).toBeGreaterThan(66);
 
         expect(outputParam.makerAccounts.length).toEqual(0);

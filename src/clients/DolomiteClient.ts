@@ -251,13 +251,13 @@ export default class DolomiteClient {
 
         if (!unwrapperAddress || typeof outputMarketIds === 'undefined' || !unwrapperReadableName) {
           Logger.warn({
-            message: 'Isolation Mode token cannot find unwrapper info!',
+            message: 'Liquidity token cannot find unwrapper info!',
             marketId: market.token.marketId,
           });
           return undefined;
         } else if (!wrapperAddress || typeof inputMarketIds === 'undefined' || !wrapperReadableName) {
           Logger.warn({
-            message: 'Isolation Mode token cannot find wrapper info!',
+            message: 'Liquidity token cannot find wrapper info!',
             marketId: market.token.marketId,
           });
           return undefined;

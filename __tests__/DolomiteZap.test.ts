@@ -732,7 +732,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
-      it.only('should work when GLP to be unwrapped and no aggregator', async () => {
+      it('should work when GLP to be unwrapped and no aggregator', async () => {
         const amountIn = new BigNumber('1000000000000000000'); // 100 GLP
         const minAmountOut = new BigNumber('1000000'); // 1 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
@@ -802,7 +802,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
       });
 
-      it.only('should work when GLP to be wrapped and no aggregator', async () => {
+      it('should work when GLP to be wrapped and no aggregator', async () => {
         const amountIn = new BigNumber('100000000'); // 100 USDC
         const minAmountOut = new BigNumber('50000000000000000000'); // 50 GLP
         const outputParams = await zap.getSwapExactTokensForTokensParams(

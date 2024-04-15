@@ -46,7 +46,6 @@ export class PendlePtEstimatorV3 {
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
     if (this.isMature(isolationModeToken)) {
-      console.log('Using redemption!');
       return this.redeemPtToToken(isolationModeToken, unwrapper, amountInPt, tokenOut);
     } else {
       return this.swapPtToToken(isolationModeToken, unwrapper, amountInPt, tokenOut)

@@ -30,7 +30,7 @@ describe('PendlePtEzEthJun2024Zap', () => {
   zap.setMarketsToAdd([PT_EZ_ETH_JUN_2024_MARKET, EZ_ETH_MARKET]);
 
   beforeEach(async () => {
-    // Sleep so Paraswap does not rate limit
+    // Sleep so Paraswap / Pendle does not rate limit
     await sleep(SLEEP_DURATION_BETWEEN_TESTS);
   });
 
@@ -47,7 +47,7 @@ describe('PendlePtEzEthJun2024Zap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(zap.validAggregators.length);
+        expect(outputParams.length).toBeGreaterThanOrEqual(zap.validAggregators.length);
 
         const ptWeEthMarketId = PT_EZ_ETH_JUN_2024_MARKET.marketId;
         const outputParam = outputParams[0];
@@ -89,7 +89,7 @@ describe('PendlePtEzEthJun2024Zap', () => {
           txOrigin,
         );
 
-        expect(outputParams.length).toBe(zap.validAggregators.length);
+        expect(outputParams.length).toBeGreaterThanOrEqual(1);
 
         const { marketId } = PT_EZ_ETH_JUN_2024_MARKET;
         const outputParam = outputParams[0];

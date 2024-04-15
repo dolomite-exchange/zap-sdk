@@ -10,7 +10,7 @@ import {
 } from '../../src/lib/Constants';
 import { toChecksumOpt } from '../../src/lib/Utils';
 
-export const SLEEP_DURATION_BETWEEN_TESTS = 1_000;
+export const SLEEP_DURATION_BETWEEN_TESTS = 6_000;
 
 export const WETH_MARKET: ApiMarket = {
   marketId: new BigNumber(0),

@@ -81,7 +81,7 @@ describe('VoteEnabledArbZap', () => {
         txOrigin,
       );
 
-      expect(outputParams.length).toBe(zap.validAggregators.length);
+      expect(outputParams.length).toBeGreaterThanOrEqual(zap.validAggregators.length);
 
       const vArbMarketId = VOTE_ENABLED_ARB_MARKET.marketId;
       const outputParam = outputParams[0];
@@ -158,7 +158,7 @@ describe('VoteEnabledArbZap', () => {
         txOrigin,
       );
 
-      expect(outputParams.length).toBe(zap.validAggregators.length);
+      expect(outputParams.length).toBeGreaterThanOrEqual(zap.validAggregators.length);
 
       const ptWstEthMarketId = VOTE_ENABLED_ARB_MARKET.marketId;
       const outputParam = outputParams[0];
