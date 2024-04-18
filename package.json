@@ -27,7 +27,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "dependencies": {
-    "@dolomite-exchange/modules-deployments": "^0.0.9-c",
+    "@dolomite-exchange/modules-deployments": "^0.0.10",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.1",
     "dotenv-flow": "^0.4.0",
