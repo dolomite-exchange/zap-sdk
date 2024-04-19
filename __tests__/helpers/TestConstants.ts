@@ -168,23 +168,23 @@ export const J_USDC_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
-const PT_GLP_MARKET_ID = new BigNumber(11);
-export const PT_GLP_MARKET: ApiMarket = {
-  marketId: PT_GLP_MARKET_ID,
+const PT_GLP_MAR_2024_MARKET_ID = new BigNumber(11);
+export const PT_GLP_MAR_2024_MARKET: ApiMarket = {
+  marketId: PT_GLP_MAR_2024_MARKET_ID,
   symbol: 'dPT-GLP-28MAR2024',
   name: 'Dolomite Isolation: PT GLP 28MAR2024',
   tokenAddress: toChecksumOpt('0x7b07E78561a3C2C1Eade652A2a92Da150743F4D7')!,
   decimals: 18,
   isolationModeUnwrapperInfo: {
-    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.unwrapper,
-    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.unwrapperMarketIds,
-    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.unwrapperReadableName,
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MAR_2024_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MAR_2024_MARKET_ID.toFixed()]!.unwrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MAR_2024_MARKET_ID.toFixed()]!.unwrapperReadableName,
   },
   liquidityTokenUnwrapperInfo: undefined,
   isolationModeWrapperInfo: {
-    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.wrapper,
-    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
-    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MAR_2024_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MAR_2024_MARKET_ID.toFixed()]!.wrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_MAR_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
   liquidityTokenWrapperInfo: undefined,
 };
@@ -421,6 +421,27 @@ export const GLP_MARKET: ApiMarket = {
     inputMarketIds: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][GLP_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
+};
+
+const PT_GLP_SEP_2024_MARKET_ID = new BigNumber(41);
+export const PT_GLP_SEP_2024_MARKET: ApiMarket = {
+  marketId: PT_GLP_SEP_2024_MARKET_ID,
+  symbol: 'dPT-GLP-26SEP2024',
+  name: 'Dolomite Isolation: PT GLP 26SEP2024',
+  tokenAddress: toChecksumOpt('0x0C4D46076af67F8ba1cC3C01f7e873BD91EA41ab')!,
+  decimals: 18,
+  isolationModeUnwrapperInfo: {
+    unwrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_SEP_2024_MARKET_ID.toFixed()]!.unwrapper,
+    outputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_SEP_2024_MARKET_ID.toFixed()]!.unwrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_SEP_2024_MARKET_ID.toFixed()]!.unwrapperReadableName,
+  },
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: {
+    wrapperAddress: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_SEP_2024_MARKET_ID.toFixed()]!.wrapper,
+    inputMarketIds: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_SEP_2024_MARKET_ID.toFixed()]!.wrapperMarketIds,
+    readableName: ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[Network.ARBITRUM_ONE][PT_GLP_SEP_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
+  },
+  liquidityTokenWrapperInfo: undefined,
 };
 
 function getApiMarket(

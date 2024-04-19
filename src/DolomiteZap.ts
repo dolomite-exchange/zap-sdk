@@ -58,15 +58,15 @@ export interface DolomiteZapConfig {
   /**
    * The network on which this instance of the Dolomite Zap is running.
    */
-  network: Network,
+  network: Network;
   /**
    * The URL of the subgraph to use for fetching market data.
    */
-  subgraphUrl: string,
+  subgraphUrl: string;
   /**
    * The web3 provider to use for fetching on-chain data.
    */
-  web3Provider: ethers.providers.Provider,
+  web3Provider: ethers.providers.Provider;
   /**
    * The number of seconds to cache market data for. Defaults to 1 hour (3600s).
    */
@@ -169,6 +169,36 @@ export class DolomiteZap {
 
   public get defaultIsLiquidation(): boolean {
     return this._defaultIsLiquidation;
+  }
+
+  private static copyForWrapper(
+    effectiveOutputMarketIds: BigNumber[],
+    marketIdsPaths: Integer[][],
+    amountsPaths: Integer[][],
+    traderParamsArrays: GenericTraderParam[][],
+    executionFees: BigNumber[],
+  ): [MarketId[][], BigNumber[][], GenericTraderParam[][], BigNumber[]] {
+    return effectiveOutputMarketIds.reduce(
+      (acc, outputMarketId) => {
+        marketIdsPaths.forEach((path, i) => {
+          if (!outputMarketId.eq(path[path.length - 1])) {
+            acc[0].push([...path, outputMarketId]);
+          } else {
+            acc[0].push([...path]);
+          }
+          acc[1].push([...amountsPaths[i]]);
+          acc[2].push([...traderParamsArrays[i]]);
+          acc[3].push(...executionFees);
+        });
+        return acc;
+      },
+      [
+        [] as MarketId[][],
+        [] as BigNumber[][],
+        [] as GenericTraderParam[][],
+        [] as BigNumber[],
+      ],
+    )
   }
 
   public async forceRefreshCache(): Promise<void> {
@@ -300,6 +330,7 @@ export class DolomiteZap {
     amountsPaths = wrapperUsage.amountsPaths;
     traderParamsArrays = wrapperUsage.traderParamsArrays;
     executionFees = wrapperUsage.executionFees;
+    const { outputMarkets } = wrapperUsage;
 
     if (
       effectiveInputMarketIds.length !== marketIdsPaths.length
@@ -380,7 +411,7 @@ export class DolomiteZap {
       wrapperInfos,
       wrapperHelpers,
       isIsolationModeWrappers,
-      outputMarket,
+      outputMarkets,
       marketIdsPaths,
       amountsPaths,
       traderParamsArrays,
@@ -707,7 +738,7 @@ export class DolomiteZap {
 
   private calculateWrapperUsages(
     outputMarket: ApiMarket,
-    effectiveOutputMarketIds: Integer[],
+    effectiveOutputMarketIds: Integer[], // sGLP first --> USDC.e second
     marketIdsPaths: Integer[][],
     amountsPaths: Integer[][],
     traderParamsArrays: GenericTraderParam[][],
@@ -719,61 +750,49 @@ export class DolomiteZap {
     const isIsolationModeWrapper = !!outputMarket.isolationModeWrapperInfo;
     const wrapperInfo = outputMarket.isolationModeWrapperInfo ?? outputMarket.liquidityTokenWrapperInfo;
     const wrapperHelper = outputHelper.isolationModeWrapperHelper ?? outputHelper.liquidityTokenWrapperHelper;
+
+    const isIsolationModeWrappers = wrapperInfo ? [!!outputMarket.isolationModeWrapperInfo] : [];
+    const wrapperInfos = wrapperInfo ? [wrapperInfo] : [];
+    const wrapperHelpers = wrapperHelper ? [wrapperHelper] : [];
+
     if (wrapperInfo) {
       // We can't get the amount yet until we know if we need to use an aggregator in the middle
       effectiveOutputMarketIds = wrapperInfo.inputMarketIds;
-      [
+
+      if (effectiveOutputMarketIds.length === 1) {
+        const converter = this.getLiquidityTokenConverterByMarketId(effectiveOutputMarketIds[0]);
+        if (converter) {
+          const innerUsage = this.calculateWrapperUsages(
+            marketsMap[effectiveOutputMarketIds[0].toFixed()],
+            effectiveOutputMarketIds, // USDC.e (2) first
+            marketIdsPaths,
+            amountsPaths,
+            traderParamsArrays,
+            executionFees,
+            marketsMap,
+            marketHelpers,
+          );
+          return {
+            effectiveOutputMarketIds: innerUsage.effectiveOutputMarketIds,
+            marketIdsPaths: innerUsage.marketIdsPaths,
+            amountsPaths: innerUsage.amountsPaths,
+            traderParamsArrays: innerUsage.traderParamsArrays,
+            executionFees: innerUsage.executionFees,
+            isIsolationModeWrappers: [...innerUsage.isIsolationModeWrappers, isIsolationModeWrapper],
+            wrapperInfos: [...innerUsage.wrapperInfos, ...(wrapperInfo ? [wrapperInfo] : [])],
+            wrapperHelpers: [...innerUsage.wrapperHelpers, ...(wrapperHelper ? [wrapperHelper] : [])],
+            outputMarkets: [...innerUsage.outputMarkets, outputMarket],
+          };
+        }
+      }
+
+      [marketIdsPaths, amountsPaths, traderParamsArrays, executionFees] = DolomiteZap.copyForWrapper(
+        effectiveOutputMarketIds,
         marketIdsPaths,
         amountsPaths,
         traderParamsArrays,
         executionFees,
-      ] = effectiveOutputMarketIds.reduce(
-        (acc, outputMarketId) => {
-          marketIdsPaths.forEach((path, i) => {
-            if (!outputMarketId.eq(path[path.length - 1])) {
-              acc[0].push([...path, outputMarketId]);
-            } else {
-              acc[0].push([...path]);
-            }
-            acc[1].push([...amountsPaths[i]]);
-            acc[2].push([...traderParamsArrays[i]]);
-            acc[3].push(...executionFees);
-          });
-          return acc;
-        },
-        [
-          [] as MarketId[][],
-          [] as BigNumber[][],
-          [] as GenericTraderParam[][],
-          [] as BigNumber[],
-        ],
-      )
-    }
-
-    if (effectiveOutputMarketIds.length === 1) {
-      const converter = this.getLiquidityTokenConverterByMarketId(effectiveOutputMarketIds[0]);
-      if (converter) {
-        const innerUsage = this.calculateWrapperUsages(
-          marketsMap[effectiveOutputMarketIds[0].toFixed()],
-          effectiveOutputMarketIds,
-          marketIdsPaths,
-          amountsPaths,
-          traderParamsArrays,
-          executionFees,
-          marketsMap,
-          marketHelpers,
-        );
-        return {
-          effectiveOutputMarketIds: innerUsage.effectiveOutputMarketIds,
-          marketIdsPaths: innerUsage.marketIdsPaths,
-          amountsPaths: innerUsage.amountsPaths,
-          traderParamsArrays: innerUsage.traderParamsArrays,
-          executionFees: innerUsage.executionFees,
-          isIsolationModeWrappers: [...innerUsage.isIsolationModeWrappers, isIsolationModeWrapper],
-          wrapperInfos: [...innerUsage.wrapperInfos, ...(wrapperInfo ? [wrapperInfo] : [])],
-          wrapperHelpers: [...innerUsage.wrapperHelpers, ...(wrapperHelper ? [wrapperHelper] : [])],
-        };
-      }
+      );
     }
 
     return {
@@ -782,9 +801,10 @@ export class DolomiteZap {
       amountsPaths,
       traderParamsArrays,
       executionFees,
-      isIsolationModeWrappers: [isIsolationModeWrapper],
-      wrapperInfos: wrapperInfo ? [wrapperInfo] : [],
-      wrapperHelpers: wrapperHelper ? [wrapperHelper] : [],
+      isIsolationModeWrappers,
+      wrapperInfos,
+      wrapperHelpers,
+      outputMarkets: [outputMarket],
     };
   }
 
@@ -792,14 +812,18 @@ export class DolomiteZap {
     wrapperInfos: ApiWrapperInfo[],
     wrapperHelpers: ApiWrapperHelper[],
     isIsolationModeWrappers: boolean[],
-    outputMarket: ApiMarket,
+    outputMarkets: ApiMarket[],
     marketIdsPaths: Integer[][],
     amountsPaths: Integer[][],
     traderParamsArrays: GenericTraderParam[][],
     executionFees: Integer[],
     actualConfig: ZapConfig,
   ): Promise<void> {
-    if (wrapperInfos.length > 0 && wrapperInfos.length === wrapperHelpers.length) {
+    if (
+      wrapperInfos.length > 0
+      && wrapperInfos.length === wrapperHelpers.length
+      && outputMarkets.length === wrapperHelpers.length
+    ) {
       for (let i = 0; i < wrapperInfos.length; i += 1) {
         // Append the amounts and trader params for the wrapper
         const wrapperInfo = wrapperInfos[i];
@@ -824,7 +848,7 @@ export class DolomiteZap {
             });
           }
 
-          marketIdsPath.push(outputMarket.marketId);
+          marketIdsPath.push(outputMarkets[i].marketId);
           amountsPath.push(outputEstimate.amountOut);
           traderParamsArrays[j].push({
             traderType: isIsolationModeWrappers[i]
@@ -841,9 +865,13 @@ export class DolomiteZap {
         }
       }
     } else {
+      if (outputMarkets.length !== 1) {
+        throw new Error('Invalid output markets length!');
+      }
+
       marketIdsPaths.forEach(marketIdsPath => {
-        if (!marketIdsPath[marketIdsPath.length - 1].eq(outputMarket.marketId)) {
-          marketIdsPath.push(outputMarket.marketId);
+        if (!marketIdsPath[marketIdsPath.length - 1].eq(outputMarkets[0].marketId)) {
+          marketIdsPath.push(outputMarkets[0].marketId);
         }
       });
     }
@@ -887,13 +915,17 @@ export class DolomiteZap {
   }
 }
 
+/**
+ * Used internally to make data passing cleaner
+ */
 interface CalculatedWrapperUsage {
-  effectiveOutputMarketIds: Integer[],
-  marketIdsPaths: Integer[][],
-  amountsPaths: Integer[][],
-  traderParamsArrays: GenericTraderParam[][],
-  executionFees: Integer[],
-  isIsolationModeWrappers: boolean[],
-  wrapperInfos: ApiWrapperInfo[],
-  wrapperHelpers: ApiWrapperHelper[],
+  effectiveOutputMarketIds: Integer[];
+  marketIdsPaths: Integer[][];
+  amountsPaths: Integer[][];
+  traderParamsArrays: GenericTraderParam[][];
+  executionFees: Integer[];
+  isIsolationModeWrappers: boolean[];
+  wrapperInfos: ApiWrapperInfo[];
+  wrapperHelpers: ApiWrapperHelper[];
+  outputMarkets: ApiMarket[];
 }

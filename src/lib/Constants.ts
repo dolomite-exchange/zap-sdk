@@ -90,7 +90,7 @@ const JONES_USDC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(10),
 };
 
-const PENDLE_PT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+const PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(11),
@@ -108,7 +108,7 @@ const R_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(15),
 };
 
-const PENDLE_YT_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+const PENDLE_YT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(16),
@@ -341,7 +341,7 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperReadableName: 'jUSDC Isolation Mode Wrapper',
       isAsync: false,
     },
-    [PENDLE_PT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+    [PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PendlePtGLPMar2024IsolationModeUnwrapperTraderV5[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendlePtGLPMar2024IsolationModeWrapperTraderV5[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
@@ -350,7 +350,7 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperReadableName: 'PT-GLP Isolation Mode Wrapper',
       isAsync: false,
     },
-    [PENDLE_YT_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+    [PENDLE_YT_GLP_MAR_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
       unwrapper: Deployments.PendleYtGLPMar2024IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.PendleYtGLPMar2024IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
@@ -492,8 +492,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_PT_GLP_SEP_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtGLPSep2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtGLPSep2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtGLPSep2024IsolationModeUnwrapperTraderV3[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtGLPSep2024IsolationModeWrapperTraderV3[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-GLP Isolation Mode Unwrapper',
@@ -501,8 +501,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
     [PENDLE_PT_WE_ETH_JUN_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.PendlePtWeETHJun2024IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtWeETHJun2024IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.PendlePtWeETHJun2024IsolationModeUnwrapperTraderV3[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.PendlePtWeETHJun2024IsolationModeWrapperTraderV3[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [WE_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'PT-weETH Isolation Mode Unwrapper',
@@ -531,8 +531,8 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<st
       wrapper: Deployments.GLPWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
-      unwrapperReadableName: 'magicGLP Unwrapper',
-      wrapperReadableName: 'magicGLP Wrapper',
+      unwrapperReadableName: 'GLP Unwrapper',
+      wrapperReadableName: 'GLP Wrapper',
       isAsync: false,
     },
   },
