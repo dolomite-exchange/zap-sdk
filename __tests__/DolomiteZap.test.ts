@@ -656,7 +656,7 @@ describe('DolomiteZap', () => {
         expect(outputParamForLiquidation.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParamForLiquidation.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParamForLiquidation.traderParams[0].trader)
-          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV4ForLiquidation[network].address);
+          .toEqual(Deployments.JonesUSDCV1IsolationModeUnwrapperTraderV4ForLiquidation[network].address);
         expect(outputParamForLiquidation.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParamForLiquidation.makerAccounts.length).toEqual(0);
@@ -685,7 +685,7 @@ describe('DolomiteZap', () => {
         expect(outputParamForZap.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeUnwrapper);
         expect(outputParamForZap.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParamForZap.traderParams[0].trader)
-          .toEqual(Deployments.JonesUSDCIsolationModeUnwrapperTraderV4[network].address);
+          .toEqual(Deployments.JonesUSDCV1IsolationModeUnwrapperTraderV4[network].address);
         expect(outputParamForZap.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParamForZap.makerAccounts.length).toEqual(0);
