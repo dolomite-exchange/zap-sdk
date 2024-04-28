@@ -37,187 +37,249 @@ export const BYTES_EMPTY = '0x';
 // TOKENS
 
 const WETH_MARKET_ID_MAP: Record<Network, MarketId> = {
+  [Network.X_LAYER]: new BigNumber(0),
   [Network.POLYGON_ZKEVM]: new BigNumber(0),
+  [Network.MANTLE]: new BigNumber(0),
   [Network.BASE]: new BigNumber(0),
   [Network.ARBITRUM_ONE]: new BigNumber(0),
 };
 
 const USDC_MARKET_ID_MAP: Record<Network, MarketId> = {
+  [Network.X_LAYER]: new BigNumber(2),
   [Network.POLYGON_ZKEVM]: new BigNumber(2),
+  [Network.MANTLE]: new BigNumber(2),
   [Network.BASE]: new BigNumber(2),
   [Network.ARBITRUM_ONE]: new BigNumber(2),
 };
 
 const LINK_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: new BigNumber(3),
+  [Network.MANTLE]: undefined,
   [Network.BASE]: new BigNumber(3),
   [Network.ARBITRUM_ONE]: new BigNumber(3),
 };
 
 const WBTC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: new BigNumber(4),
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(4),
 };
 
 const ISOLATED_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(6),
 };
 
 const ARB_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(7),
 };
 
 const MAGIC_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(8),
 };
 
 const PLV_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(9),
 };
 
 const JONES_USDC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(10),
 };
 
 const PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(11),
 };
 
 const WST_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(14),
 };
 
 const R_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(15),
 };
 
 const PENDLE_YT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(16),
 };
 
 const NATIVE_USDC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(17),
 };
 
 const PENDLE_PT_RETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(22),
 };
 
 const PENDLE_PT_WST_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(23),
 };
 
 const PENDLE_PT_WST_ETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(24),
 };
 
 const ARB_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(28),
 };
 
 const GMX_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(29),
 };
 
 const GMX_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(30),
 };
 
 const GM_ARB_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(31),
 };
 
 const GM_BTC_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(32),
 };
 
 const GM_ETH_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(33),
 };
 
 const GM_LINK_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(34),
 };
 
 const WE_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(35),
 };
 
 const PENDLE_PT_WE_ETH_APR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(36),
 };
 
 const EZ_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(37),
 };
 
 const PENDLE_PT_EZ_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(38),
 };
 
 const GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(40),
 };
 
 const PENDLE_PT_GLP_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(41),
 };
 
 const PENDLE_PT_WE_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: new BigNumber(42),
 };
@@ -227,7 +289,9 @@ const PENDLE_PT_WE_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
 // =========================
 
 export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined> | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: {
     [Deployments.GmxV2ARBIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
@@ -260,56 +324,74 @@ export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefine
 // OTHER ADDRESSES
 
 export const ARBITRUM_GAS_INFO_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x000000000000000000000000000000000000006C',
 };
 
 export const EZ_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x2416092f143378750bb29b79eD961ab195CcEea5',
 };
 
 export const GMX_V2_DATA_STORE_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8',
 };
 
 export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x60a0fF4cDaF0f6D496d71e0bC0fFa86FE8E6B23c',
 };
 
 const S_GLP_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf',
 };
 
 const R_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
 };
 
 export const WE_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe',
 };
 
 const WST_ETH_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: '0x5979D7b546E38E414F7E9822514be443A4800529',
 };
 
 // eslint-disable-next-line max-len
 export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<string, ApiMarketConverter | undefined>> = {
+  [Network.X_LAYER]: {},
   [Network.POLYGON_ZKEVM]: {},
+  [Network.MANTLE]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [ISOLATED_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -514,7 +596,9 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
 
 // eslint-disable-next-line max-len
 export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<string, ApiMarketConverter | undefined>> = {
+  [Network.X_LAYER]: {},
   [Network.POLYGON_ZKEVM]: {},
+  [Network.MANTLE]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [MAGIC_GLP_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -539,13 +623,17 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<st
 };
 
 export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
   [Network.ARBITRUM_ONE]: Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address,
 };
 
 export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
+  [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: Deployments.ParaswapAggregatorTraderV2[Network.POLYGON_ZKEVM].address,
+  [Network.MANTLE]: undefined,
   [Network.BASE]: Deployments.ParaswapAggregatorTraderV2[Network.BASE].address,
   [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address,
 };
@@ -567,7 +655,9 @@ interface PendleMarketProps {
 }
 
 const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | undefined>> = {
+  [Network.X_LAYER]: {},
   [Network.POLYGON_ZKEVM]: {},
+  [Network.MANTLE]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [Deployments.PendlePtGLPMar2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
@@ -622,7 +712,9 @@ const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
 };
 
 const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | undefined>> = {
+  [Network.X_LAYER]: {},
   [Network.POLYGON_ZKEVM]: {},
+  [Network.MANTLE]: {},
   [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [Deployments.PendleYtGLPMar2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
@@ -635,8 +727,10 @@ const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
 };
 
 const SIMPLE_ISOLATION_MODE_MAP: Record<Network, Record<string, boolean | undefined>> = {
-  [Network.BASE]: {},
+  [Network.X_LAYER]: {},
   [Network.POLYGON_ZKEVM]: {},
+  [Network.MANTLE]: {},
+  [Network.BASE]: {},
   [Network.ARBITRUM_ONE]: {
     [Deployments.ARBIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: true,
     [Deployments.GMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: true,
