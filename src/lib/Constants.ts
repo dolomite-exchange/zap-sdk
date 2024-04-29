@@ -417,8 +417,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       unwrapperForLiquidation:
       Deployments.JonesUSDCV2IsolationModeUnwrapperTraderV2ForLiquidation[Network.ARBITRUM_ONE].address,
       wrapper: Deployments.JonesUSDCV2IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
-      unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
-      wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      unwrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'jUSDC Isolation Mode Unwrapper',
       wrapperReadableName: 'jUSDC Isolation Mode Wrapper',
       isAsync: false,
