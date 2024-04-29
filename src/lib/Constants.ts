@@ -100,12 +100,12 @@ const PLV_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(9),
 };
 
-const JONES_USDC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+const JONES_USDC_V2_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.X_LAYER]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
-  [Network.ARBITRUM_ONE]: new BigNumber(10),
+  [Network.ARBITRUM_ONE]: new BigNumber(43),
 };
 
 const PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
@@ -412,11 +412,11 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperReadableName: 'plvGLP Isolation Mode Wrapper',
       isAsync: false,
     },
-    [JONES_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
-      unwrapper: Deployments.JonesUSDCV1IsolationModeUnwrapperTraderV4[Network.ARBITRUM_ONE].address,
+    [JONES_USDC_V2_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      unwrapper: Deployments.JonesUSDCV2IsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperForLiquidation:
-      Deployments.JonesUSDCV1IsolationModeUnwrapperTraderV4ForLiquidation[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.JonesUSDCV1IsolationModeWrapperTraderV4[Network.ARBITRUM_ONE].address,
+      Deployments.JonesUSDCV2IsolationModeUnwrapperTraderV2ForLiquidation[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.JonesUSDCV2IsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       wrapperMarketIds: [USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       unwrapperReadableName: 'jUSDC Isolation Mode Unwrapper',
