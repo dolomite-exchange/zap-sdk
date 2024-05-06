@@ -147,7 +147,7 @@ export const PLV_GLP_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
-const J_USDC_MARKET_ID = new BigNumber(10);
+const J_USDC_MARKET_ID = new BigNumber(43);
 export const J_USDC_MARKET: ApiMarket = {
   marketId: J_USDC_MARKET_ID,
   symbol: 'djUSDC',
@@ -443,6 +443,26 @@ export const PT_GLP_SEP_2024_MARKET: ApiMarket = {
   },
   liquidityTokenWrapperInfo: undefined,
 };
+
+const GM_BTC_SINGLE_SIDED_MARKET_ID = new BigNumber(44);
+export const GM_BTC_SINGLE_SIDED_MARKET: ApiMarket = getApiMarket(
+  Network.ARBITRUM_ONE,
+  GM_BTC_SINGLE_SIDED_MARKET_ID,
+  'dGM',
+  'Dolomite Isolation: GMX Market',
+  Deployments.GmxV2SingleSidedBTCIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  18,
+);
+
+const GM_ETH_SINGLE_SIDED_MARKET_ID = new BigNumber(45);
+export const GM_ETH_SINGLE_SIDED_MARKET: ApiMarket = getApiMarket(
+  Network.ARBITRUM_ONE,
+  GM_ETH_SINGLE_SIDED_MARKET_ID,
+  'dGM',
+  'Dolomite Isolation: GMX Market',
+  Deployments.GmxV2SingleSidedETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  18,
+);
 
 function getApiMarket(
   network: Network,

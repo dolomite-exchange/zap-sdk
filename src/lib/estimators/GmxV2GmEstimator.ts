@@ -11,7 +11,8 @@ import { GmxMarket, GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
   ADDRESS_ZERO,
-  ARBITRUM_GAS_INFO_MAP, BYTES_EMPTY,
+  ARBITRUM_GAS_INFO_MAP,
+  BYTES_EMPTY,
   GM_MARKETS_MAP,
   GMX_V2_DATA_STORE_MAP,
   GMX_V2_READER_MAP,
@@ -159,7 +160,7 @@ export class GmxV2GmEstimator {
     const outputToken = marketsMap[outputMarketId.toFixed()];
 
     const gmMarket = GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
-    const indexToken = marketsMap[gmMarket.indexTokenId.toFixed()].tokenAddress;
+    const indexToken = gmMarket.indexTokenAddress;
     const longToken = marketsMap[gmMarket.longTokenId.toFixed()].tokenAddress;
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
@@ -189,14 +190,16 @@ export class GmxV2GmEstimator {
 
     const amountOut = outputToken.tokenAddress === longToken ? longAmountOut : shortAmountOut;
 
-    const [otherAmountOut] = await this.gmxV2Reader!.getSwapAmountOut(
-      this.gmxV2DataStore!.address,
-      gmMarketProps,
-      pricesStruct,
-      outputToken.tokenAddress === longToken ? shortToken : longToken,
-      outputToken.tokenAddress === longToken ? shortAmountOut : longAmountOut,
-      ADDRESS_ZERO,
-    );
+    const [otherAmountOut] = longToken === shortToken
+      ? [shortAmountOut]
+      : await this.gmxV2Reader!.getSwapAmountOut(
+        this.gmxV2DataStore!.address,
+        gmMarketProps,
+        pricesStruct,
+        outputToken.tokenAddress === longToken ? shortToken : longToken,
+        outputToken.tokenAddress === longToken ? shortAmountOut : longAmountOut,
+        ADDRESS_ZERO,
+      );
 
     const [limits, gasPriceWei] = await Promise.all([
       this.getWithdrawalGasLimits(),
@@ -233,7 +236,7 @@ export class GmxV2GmEstimator {
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
     const gmMarket = GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
-    const indexToken = marketsMap[gmMarket.indexTokenId.toFixed()].tokenAddress;
+    const indexToken = gmMarket.indexTokenAddress;
     const longToken = marketsMap[gmMarket.longTokenId.toFixed()].tokenAddress;
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
@@ -252,7 +255,7 @@ export class GmxV2GmEstimator {
       },
       GmxV2GmEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken),
       inputToken.tokenAddress === longToken ? amountIn.toFixed() : '0',
-      inputToken.tokenAddress === shortToken ? amountIn.toFixed() : '0',
+      inputToken.tokenAddress === shortToken && longToken !== shortToken ? amountIn.toFixed() : '0',
       ADDRESS_ZERO,
     );
 

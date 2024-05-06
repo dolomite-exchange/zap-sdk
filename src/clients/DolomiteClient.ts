@@ -2,6 +2,7 @@ import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { ApiMarket, ApiMarketHelper, ApiUnwrapperInfo, ApiWrapperInfo, BlockTag, Network } from '../lib/ApiTypes';
+import { isTokenIgnored } from '../lib/Constants';
 import { StandardEstimator } from '../lib/estimators/StandardEstimator';
 import { GraphqlMarketResult } from '../lib/graphql-types';
 import GraphqlPageable from '../lib/GraphqlPageable';
@@ -200,6 +201,9 @@ export default class DolomiteClient {
     }
 
     const marketPromises: Promise<ApiMarket | undefined>[] = result.data.marketRiskInfos.map(async (market) => {
+      if (isTokenIgnored(this.network, market.token)) {
+        return undefined;
+      }
       const isolationModeClient = new IsolationModeClient(this.network);
       let isolationModeUnwrapperInfo: ApiUnwrapperInfo | undefined;
       let isolationModeWrapperInfo: ApiWrapperInfo | undefined;
@@ -217,13 +221,15 @@ export default class DolomiteClient {
         const wrapperReadableName = isolationModeClient.getIsolationModeWrapperReadableNameByMarketId(market.token);
 
         if (!unwrapperAddress || typeof outputMarketIds === 'undefined' || !unwrapperReadableName) {
-          Logger.warn({
+          Logger.info({
+            at: 'DolomiteClient#getDolomiteMarketsWithPaging',
             message: 'Isolation Mode token cannot find unwrapper info!',
             marketId: market.token.marketId,
           });
           return undefined;
         } else if (!wrapperAddress || typeof inputMarketIds === 'undefined' || !wrapperReadableName) {
-          Logger.warn({
+          Logger.info({
+            at: 'DolomiteClient#getDolomiteMarketsWithPaging',
             message: 'Isolation Mode token cannot find wrapper info!',
             marketId: market.token.marketId,
           });
@@ -250,13 +256,15 @@ export default class DolomiteClient {
         const wrapperReadableName = isolationModeClient.getLiquidityTokenWrapperReadableNameByToken(market.token);
 
         if (!unwrapperAddress || typeof outputMarketIds === 'undefined' || !unwrapperReadableName) {
-          Logger.warn({
+          Logger.info({
+            at: 'DolomiteClient#getDolomiteMarketsWithPaging',
             message: 'Liquidity token cannot find unwrapper info!',
             marketId: market.token.marketId,
           });
           return undefined;
         } else if (!wrapperAddress || typeof inputMarketIds === 'undefined' || !wrapperReadableName) {
-          Logger.warn({
+          Logger.info({
+            at: 'DolomiteClient#getDolomiteMarketsWithPaging',
             message: 'Liquidity token cannot find wrapper info!',
             marketId: market.token.marketId,
           });
