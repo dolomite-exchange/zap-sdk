@@ -210,16 +210,12 @@ export class DolomiteZap {
   }
 
   public getAsyncAssetOutputMarketsByMarketId(marketId: MarketId): MarketId[] | undefined {
-    const cachedMarkets = this.marketsCache.get(marketsKey);
-    if (!cachedMarkets) {
+    const converter = this.getIsolationModeConverterByMarketId(marketId);
+    if (!converter) {
       return undefined;
     }
 
-    const market = cachedMarkets[marketId.toFixed()];
-    if (!market) {
-      return undefined;
-    }
-    const gmMarket = getGmxV2IsolationModeAsset(this.network, market.tokenAddress);
+    const gmMarket = getGmxV2IsolationModeAsset(this.network, converter.tokenAddress);
     if (!gmMarket) {
       return undefined;
     }
