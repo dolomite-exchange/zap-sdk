@@ -210,9 +210,11 @@ export class GmxV2GmEstimator {
       totalWithdrawalGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
     );
 
-    const otherAmountOutWithSlippage = new BigNumber(otherAmountOut.toString())
-      .multipliedBy(1 - config.slippageTolerance)
-      .integerValue(BigNumber.ROUND_DOWN);
+    const otherAmountOutWithSlippage = config.isLiquidation
+      ? new BigNumber(1)
+      : new BigNumber(otherAmountOut.toString())
+        .multipliedBy(1 - config.slippageTolerance)
+        .integerValue(BigNumber.ROUND_DOWN);
     return {
       amountOut: new BigNumber(amountOut.add(otherAmountOut).toString()),
       tradeData: abiCoder.encode(
