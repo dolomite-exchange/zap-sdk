@@ -118,6 +118,14 @@ const PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.X_LAYER]: undefined,
 };
 
+const UNI_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(12),
+  [Network.BASE]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 const WST_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(14),
   [Network.BASE]: undefined,
@@ -302,6 +310,14 @@ const GM_ETH_SINGLE_SIDED_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | und
   [Network.X_LAYER]: undefined,
 };
 
+const GM_UNI_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(47),
+  [Network.BASE]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 // =========================
 // ======= Addresses =======
 // =========================
@@ -335,6 +351,12 @@ export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefine
       longTokenId: LINK_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0x7f1fa204bb700853D36994DA19F830b6Ad18455C',
+    },
+    [Deployments.GmxV2UNIIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0',
+      longTokenId: UNI_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0xc7Abb2C5f3BF3CEB389dF0Eecd6120D451170B50',
     },
     // ==================================================
     // ============= Single Sided GM tokens =============
@@ -645,6 +667,16 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapper: Deployments.GmxV2SingleSidedETHAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       wrapperMarketIds: [WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
+      unwrapperReadableName: 'GM Intent Unwrapper',
+      wrapperReadableName: 'GM Intent Wrapper',
+      isAsync: true,
+    },
+    [GM_UNI_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      tokenAddress: Deployments.GmxV2UNIIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.GmxV2UNIAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2UNIAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, UNI_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, UNI_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: 'GM Intent Unwrapper',
       wrapperReadableName: 'GM Intent Wrapper',
       isAsync: true,
