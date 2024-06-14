@@ -4,18 +4,18 @@ import { parseEther } from 'ethers/lib/utils';
 import { DolomiteZap, GenericTraderType, INTEGERS, Network } from '../../../src';
 import sleep from '../../helpers/sleep';
 import {
+  SLEEP_DURATION_BETWEEN_TESTS,
+
+
+} from '../../helpers/TestConstants';
+import {
   ARB_MARKET,
   GM_ARB_MARKET,
   GM_BTC_MARKET,
   GM_ETH_MARKET,
-  GM_LINK_MARKET,
-  LINK_MARKET,
-  NATIVE_USDC_MARKET,
-  SLEEP_DURATION_BETWEEN_TESTS,
-  USDC_MARKET,
-  WBTC_MARKET,
-  WETH_MARKET,
-} from '../../helpers/TestConstants';
+  GM_LINK_MARKET, LINK_MARKET, NATIVE_USDC_MARKET, USDC_MARKET,
+  ArbitrumOneConstants, WETH_MARKET,
+} from '../../helpers/ArbitrumOneConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 const GM_POOL_ASSETS_LENGTH = 2;
@@ -42,7 +42,7 @@ describe('GmxV2Zap', () => {
   ];
   const longMarkets = [
     ARB_MARKET,
-    WBTC_MARKET,
+    ArbitrumOneConstants,
     WETH_MARKET,
     LINK_MARKET,
   ];

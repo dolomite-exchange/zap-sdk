@@ -2,7 +2,7 @@ import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deplo
 import BigNumber from 'bignumber.js';
 import { ApiMarket, Network, ZapConfig } from '../../src';
 import OdosAggregator from '../../src/clients/OdosAggregator';
-import { USDC_MARKET, WETH_MARKET } from '../helpers/TestConstants';
+import { USDC_MARKET, WETH_MARKET } from '../helpers/ArbitrumOneConstants';
 
 const referralCode = new BigNumber('1064756710');
 

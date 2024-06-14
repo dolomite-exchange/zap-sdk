@@ -3,8 +3,9 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../../src';
 import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/Constants';
-import { PT_R_ETH_JUN_2025_MARKET, SLEEP_DURATION_BETWEEN_TESTS, USDC_MARKET } from '../../helpers/TestConstants';
+import { SLEEP_DURATION_BETWEEN_TESTS } from '../../helpers/TestConstants';
 import sleep from '../../helpers/sleep';
+import { PT_R_ETH_JUN_2025_MARKET, USDC_MARKET } from '../../helpers/ArbitrumOneConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 

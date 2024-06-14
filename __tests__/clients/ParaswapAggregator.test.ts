@@ -2,7 +2,7 @@ import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deplo
 import BigNumber from 'bignumber.js';
 import { ApiMarket, Network, ZapConfig } from '../../src';
 import ParaswapAggregator from '../../src/clients/ParaswapAggregator';
-import { USDC_MARKET, WETH_MARKET } from '../helpers/TestConstants';
+import { USDC_MARKET, WETH_MARKET } from '../helpers/ArbitrumOneConstants';
 
 const partnerAddress = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 

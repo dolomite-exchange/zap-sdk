@@ -4,12 +4,11 @@ import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../../src';
 import { BYTES_EMPTY, ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/Constants';
 import {
-  VOTE_ENABLED_ARB_MARKET,
   SLEEP_DURATION_BETWEEN_TESTS,
-  USDC_MARKET,
-  ARB_MARKET,
+
 } from '../../helpers/TestConstants';
 import sleep from '../../helpers/sleep';
+import { ARB_MARKET, USDC_MARKET, VOTE_ENABLED_ARB_MARKET } from '../../helpers/ArbitrumOneConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 

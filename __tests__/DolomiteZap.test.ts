@@ -13,19 +13,19 @@ import {
 import { ADDRESS_ZERO, BYTES_EMPTY } from '../src/lib/Constants';
 import sleep from './helpers/sleep';
 import {
-  ARB_MARKET,
-  ISOLATED_GLP_MARKET,
-  GM_ARB_MARKET,
-  J_USDC_MARKET,
-  MAGIC_GLP_MARKET,
-  NATIVE_USDC_MARKET,
-  PLV_GLP_MARKET,
   setUnwrapperMarketIdByMarketId,
   SLEEP_DURATION_BETWEEN_TESTS,
-  USDC_MARKET,
-  WETH_MARKET, GLP_MARKET,
+
 } from './helpers/TestConstants';
 import { TestDolomiteZap } from './helpers/TestDolomiteZap';
+import {
+  ARB_MARKET,
+  GLP_MARKET,
+  GM_ARB_MARKET, ISOLATED_GLP_MARKET,
+  J_USDC_MARKET,
+  MAGIC_GLP_MARKET, NATIVE_USDC_MARKET,
+  PLV_GLP_MARKET, USDC_MARKET, WETH_MARKET,
+} from './helpers/ArbitrumOneConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 

@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import { ApiMarket, Network, ZapConfig } from '../../../src';
 import { GmxV2GmEstimator } from '../../../src/lib/estimators/GmxV2GmEstimator';
-import { NATIVE_USDC_MARKET, WETH_MARKET } from '../../helpers/TestConstants';
+import { NATIVE_USDC_MARKET, WETH_MARKET } from '../../helpers/ArbitrumOneConstants';
 
 describe('GmxV2GmEstimator', () => {
   const network = Network.ARBITRUM_ONE;
