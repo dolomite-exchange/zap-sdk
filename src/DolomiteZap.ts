@@ -31,7 +31,7 @@ import {
   ADDRESS_ZERO,
   ApiMarketConverter,
   BYTES_EMPTY,
-  getGmxV2IsolationModeAsset,
+  getGmxV2IsolationModeAsset, getPendlePtMarketForIsolationModeToken,
   INTEGERS,
   INVALID_NAME,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
@@ -221,6 +221,10 @@ export class DolomiteZap {
     }
 
     return [gmMarket.longTokenId, gmMarket.shortTokenId];
+  }
+
+  public getPendleMarketByIsolationModeAddress(isolationModeAddress: Address): Address | undefined {
+    return getPendlePtMarketForIsolationModeToken(this.network, isolationModeAddress);
   }
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {
