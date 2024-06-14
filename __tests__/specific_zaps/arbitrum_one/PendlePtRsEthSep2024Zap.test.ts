@@ -1,14 +1,14 @@
 import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { DolomiteZap, GenericTraderType, Network } from '../../src';
-import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../src/lib/Constants';
-import { PT_R_ETH_JUN_2025_MARKET, SLEEP_DURATION_BETWEEN_TESTS, USDC_MARKET } from '../helpers/TestConstants';
-import sleep from '../helpers/sleep';
+import { DolomiteZap, GenericTraderType, Network } from '../../../src';
+import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/Constants';
+import { PT_RS_ETH_SEP_2024_MARKET, SLEEP_DURATION_BETWEEN_TESTS, USDC_MARKET } from '../../helpers/TestConstants';
+import sleep from '../../helpers/sleep';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
-describe('PendlePtREthJun2025Zap', () => {
+describe('PendlePtRsEthSep2024Zap', () => {
   const network = Network.ARBITRUM_ONE;
   const subgraphUrl = process.env.SUBGRAPH_URL;
   if (!subgraphUrl) {
@@ -22,7 +22,7 @@ describe('PendlePtREthJun2025Zap', () => {
     web3Provider,
     cacheSeconds: NO_CACHE,
   });
-  zap.setMarketsToAdd([PT_R_ETH_JUN_2025_MARKET]);
+  zap.setMarketsToAdd([PT_RS_ETH_SEP_2024_MARKET]);
 
   beforeEach(async () => {
     // Sleep so Paraswap / Pendle does not rate limit
@@ -35,7 +35,7 @@ describe('PendlePtREthJun2025Zap', () => {
         const amountIn = new BigNumber('100000000000000000000'); // 100 PT
         const minAmountOut = new BigNumber('100000000000'); // 100,000 USDC
         const outputParams = await zap.getSwapExactTokensForTokensParams(
-          PT_R_ETH_JUN_2025_MARKET,
+          PT_RS_ETH_SEP_2024_MARKET,
           amountIn,
           USDC_MARKET,
           minAmountOut,
@@ -44,7 +44,7 @@ describe('PendlePtREthJun2025Zap', () => {
 
         expect(outputParams.length).toBeGreaterThanOrEqual(zap.validAggregators.length);
 
-        const ptREthMarketId = PT_R_ETH_JUN_2025_MARKET.marketId;
+        const ptREthMarketId = PT_RS_ETH_SEP_2024_MARKET.marketId;
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
         expect(outputParam.marketIdsPath[0]).toEqual(ptREthMarketId);
@@ -79,14 +79,14 @@ describe('PendlePtREthJun2025Zap', () => {
         const outputParams = await zap.getSwapExactTokensForTokensParams(
           USDC_MARKET,
           amountIn,
-          PT_R_ETH_JUN_2025_MARKET,
+          PT_RS_ETH_SEP_2024_MARKET,
           minAmountOut,
           txOrigin,
         );
 
         expect(outputParams.length).toBeGreaterThanOrEqual(zap.validAggregators.length);
 
-        const ptREthMarketId = PT_R_ETH_JUN_2025_MARKET.marketId;
+        const ptREthMarketId = PT_RS_ETH_SEP_2024_MARKET.marketId;
         const outputParam = outputParams[0];
         expect(outputParam.marketIdsPath.length).toEqual(3);
         expect(outputParam.marketIdsPath[0]).toEqual(USDC_MARKET.marketId);

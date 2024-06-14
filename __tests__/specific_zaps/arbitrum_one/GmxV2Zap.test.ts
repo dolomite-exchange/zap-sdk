@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
-import { DolomiteZap, GenericTraderType, INTEGERS, Network } from '../../src';
-import sleep from '../helpers/sleep';
+import { DolomiteZap, GenericTraderType, INTEGERS, Network } from '../../../src';
+import sleep from '../../helpers/sleep';
 import {
   ARB_MARKET,
   GM_ARB_MARKET,
@@ -15,7 +15,7 @@ import {
   USDC_MARKET,
   WBTC_MARKET,
   WETH_MARKET,
-} from '../helpers/TestConstants';
+} from '../../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 const GM_POOL_ASSETS_LENGTH = 2;

@@ -1,15 +1,15 @@
 import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { DolomiteZap, GenericTraderType, Network } from '../../src';
-import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../src/lib/Constants';
-import sleep from '../helpers/sleep';
+import { DolomiteZap, GenericTraderType, Network } from '../../../src';
+import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/Constants';
+import sleep from '../../helpers/sleep';
 import {
   EZ_ETH_MARKET,
   PT_EZ_ETH_JUN_2024_MARKET,
   SLEEP_DURATION_BETWEEN_TESTS,
   USDC_MARKET,
-} from '../helpers/TestConstants';
+} from '../../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 

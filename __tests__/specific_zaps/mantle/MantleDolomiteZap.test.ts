@@ -1,10 +1,10 @@
 import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { ApiMarket, DolomiteZap, GenericTraderType, Network } from '../../src';
-import { toChecksumOpt } from '../../src/lib/Utils';
-import sleep from '../helpers/sleep';
-import { SLEEP_DURATION_BETWEEN_TESTS } from '../helpers/TestConstants';
+import { ApiMarket, DolomiteZap, GenericTraderType, Network } from '../../../src';
+import { toChecksumOpt } from '../../../src/lib/Utils';
+import sleep from '../../helpers/sleep';
+import { SLEEP_DURATION_BETWEEN_TESTS } from '../../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
