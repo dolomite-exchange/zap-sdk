@@ -2,12 +2,14 @@ import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deplo
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../../src';
-import sleep from '../../helpers/sleep';
 import {
-  SLEEP_DURATION_BETWEEN_TESTS,
-
-} from '../../helpers/TestConstants';
-import { GLP_MARKET, NATIVE_USDC_MARKET, PT_GLP_MAR_2024_MARKET, USDC_MARKET } from '../../helpers/ArbitrumOneConstants';
+  GLP_MARKET,
+  NATIVE_USDC_MARKET,
+  PT_GLP_MAR_2024_MARKET,
+  USDC_MARKET,
+} from '../../helpers/ArbitrumOneConstants';
+import sleep from '../../helpers/sleep';
+import { SLEEP_DURATION_BETWEEN_TESTS } from '../../helpers/TestConstants';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
