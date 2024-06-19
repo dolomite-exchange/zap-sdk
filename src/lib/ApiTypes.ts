@@ -77,6 +77,7 @@ export interface ApiUnwrapperHelper {
   estimateOutputFunction: (
     amountIn: Integer,
     outputMarketId: MarketId,
+    txOrigin: Address,
     config: ZapConfig,
   ) => Promise<EstimateOutputResult>;
 }
@@ -85,6 +86,7 @@ export interface ApiWrapperHelper {
   estimateOutputFunction: (
     amountIn: Integer,
     inputMarketId: MarketId,
+    txOrigin: Address,
     config: ZapConfig,
   ) => Promise<EstimateOutputResult>;
 }

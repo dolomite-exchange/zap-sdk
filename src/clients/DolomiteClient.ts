@@ -80,12 +80,14 @@ export default class DolomiteClient {
           estimateOutputFunction: async (
             amountIn,
             outputMarketId,
+            txOrigin,
             config,
           ) => this.standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
             config.isLiquidation ? unwrapperForLiquidationAddress : isolationModeUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
+            txOrigin,
             config,
             marketsMap,
           ),
@@ -99,12 +101,14 @@ export default class DolomiteClient {
           estimateOutputFunction: async (
             amountIn,
             outputMarketId,
+            txOrigin,
             config,
           ) => this.standardEstimator.getUnwrappedAmount(
             market.tokenAddress,
             config.isLiquidation ? unwrapperForLiquidationAddress : liquidityTokenUnwrapper.unwrapperAddress,
             amountIn,
             outputMarketId,
+            txOrigin,
             config,
             marketsMap,
           ),
@@ -116,12 +120,14 @@ export default class DolomiteClient {
           estimateOutputFunction: async (
             amountIn,
             inputMarketId,
+            txOrigin,
             config,
           ) => this.standardEstimator.getWrappedAmount(
             market.tokenAddress,
             isolationModeWrapper.wrapperAddress,
             amountIn,
             inputMarketId,
+            txOrigin,
             config,
             marketsMap,
           ),
@@ -133,12 +139,14 @@ export default class DolomiteClient {
           estimateOutputFunction: async (
             amountIn,
             inputMarketId,
+            txOrigin,
             config,
           ) => this.standardEstimator.getWrappedAmount(
             market.tokenAddress,
             liquidityTokenWrapper.wrapperAddress,
             amountIn,
             inputMarketId,
+            txOrigin,
             config,
             marketsMap,
           ),

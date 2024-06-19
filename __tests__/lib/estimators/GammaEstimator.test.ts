@@ -6,6 +6,7 @@ import { WETH_MARKET, NATIVE_USDC_MARKET } from '../../helpers/ArbitrumOneConsta
 import { GAMMA_POOLS_MAP } from '../../../src/lib/Constants';
 
 const TEST_ADDRESS = '0x1234567890000000000000000000000000000000'
+const TEST_USER_ADDRESS = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
 
 describe('GammaEstimator', () => {
   const network = Network.ARBITRUM_ONE;
@@ -51,6 +52,7 @@ describe('GammaEstimator', () => {
         new BigNumber('10000000000000'), // .00001 LP
         NATIVE_USDC_MARKET.marketId,
         marketsMap,
+        TEST_USER_ADDRESS,
         config
       );
       const wethAmount = await estimator.getUnwrappedAmount(
@@ -58,6 +60,7 @@ describe('GammaEstimator', () => {
         new BigNumber('10000000000000'), // .00001 LP
         WETH_MARKET.marketId,
         marketsMap,
+        TEST_USER_ADDRESS,
         config
       );
 
@@ -79,6 +82,7 @@ describe('GammaEstimator', () => {
         new BigNumber('100000000000000000'), // .1 WETH
         WETH_MARKET.marketId,
         marketsMap,
+        TEST_USER_ADDRESS,
         config
       );
       const usdcAmount = await estimator.getWrappedAmount(
@@ -86,6 +90,7 @@ describe('GammaEstimator', () => {
         new BigNumber('100000000'), // 100 USDC
         NATIVE_USDC_MARKET.marketId,
         marketsMap,
+        TEST_USER_ADDRESS,
         config
       );
 

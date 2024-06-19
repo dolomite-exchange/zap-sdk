@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { Address, ApiMarket, EstimateOutputResult, Integer, Network, ZapConfig } from "../ApiTypes";
 import AggregatorClient from "../../clients/AggregatorClient";
-import { ADDRESS_ZERO, INTEGERS, getGammaPool } from "../Constants";
+import { INTEGERS, getGammaPool } from "../Constants";
 import { IDeltaPair } from "../../abis/types/IDeltaPair";
 import IDeltaPairAbi from "../../abis/IDeltaPair.json";
 import IERC20Abi from "../../abis/IERC20.json";
@@ -13,15 +13,14 @@ export class GammaEstimator {
     public readonly network: Network,
     public readonly web3Provider: ethers.providers.Provider,
     public readonly aggregator: AggregatorClient
-  ) {
-    // @todo Should take in a list of aggregators
-  }
+  ) {}
 
   public async getUnwrappedAmount(
     isolationModeTokenAddress: Address,
     amountIn: Integer,
     outputMarketId: Integer,
     marketsMap: Record<string, ApiMarket>,
+    txOrigin: Address,
     config: ZapConfig
   ): Promise<EstimateOutputResult> {
     // Get necessary contracts
@@ -43,6 +42,7 @@ export class GammaEstimator {
     ) as IERC20;
 
     // Calculate amounts and input/output token
+    // @todo use multicall. Arbitrum mulitcall has special one
     const totalSupply = new BigNumber((await deltaPair.totalSupply()).toString());
     const token0Bal = new BigNumber((await token0.balanceOf(deltaPair.address)).toString());
     const token1Bal = new BigNumber((await token1.balanceOf(deltaPair.address)).toString());
@@ -54,8 +54,8 @@ export class GammaEstimator {
       inputToken = marketsMap[gammaPool!.token0MarketId];
     }
 
-    const token0Amount = amountIn.times(token0Bal).div(totalSupply).integerValue(BigNumber.ROUND_FLOOR);
-    const token1Amount = amountIn.times(token1Bal).div(totalSupply).integerValue(BigNumber.ROUND_FLOOR);
+    const token0Amount = amountIn.times(token0Bal).dividedToIntegerBy(totalSupply);
+    const token1Amount = amountIn.times(token1Bal).dividedToIntegerBy(totalSupply);
     const swapAmount = outputToken.tokenAddress === gammaPool!.token0Address ? token1Amount : token0Amount;
     const keepAmount = outputToken.tokenAddress === gammaPool!.token0Address ? token0Amount : token1Amount;
 
@@ -65,7 +65,7 @@ export class GammaEstimator {
       swapAmount,
       outputToken,
       INTEGERS.ONE,
-      ADDRESS_ZERO, // @todo fix to tx origin
+      txOrigin,
       config
     );
     return { tradeData: aggregatorOutput!.tradeData, amountOut: aggregatorOutput!.expectedAmountOut.plus(keepAmount) }
@@ -76,6 +76,7 @@ export class GammaEstimator {
     amountIn: Integer,
     inputMarketId: Integer,
     marketsMap: Record<string, ApiMarket>,
+    txOrigin: Address,
     config: ZapConfig
   ): Promise<EstimateOutputResult> {
     const gammaPool = getGammaPool(this.network, isolationModeTokenAddress);
@@ -101,7 +102,7 @@ export class GammaEstimator {
       tradeAmount,
       outputToken,
       INTEGERS.ONE,
-      ADDRESS_ZERO, // @todo fix to tx origin
+      txOrigin,
       config
     );
 

@@ -311,6 +311,7 @@ export class DolomiteZap {
       amountsPaths,
       traderParamsArrays,
       executionFees,
+      txOrigin,
       actualConfig,
       marketsMap,
       marketHelpersMap,
@@ -417,6 +418,7 @@ export class DolomiteZap {
       amountsPaths,
       traderParamsArrays,
       executionFees,
+      txOrigin,
       actualConfig,
     );
 
@@ -651,6 +653,7 @@ export class DolomiteZap {
     amountsPaths: Integer[][],
     traderParamsArrays: GenericTraderParam[][],
     executionFees: Integer[],
+    txOrigin: Address,
     actualConfig: ZapConfig,
     marketsMap: Record<string, ApiMarket>,
     marketHelpersMap: Record<string, ApiMarketHelper>,
@@ -680,6 +683,7 @@ export class DolomiteZap {
           return unwrapperHelper.estimateOutputFunction(
             amountIn,
             inputMarketId,
+            txOrigin,
             actualConfig,
           ).catch(e => {
             Logger.error({
@@ -727,6 +731,7 @@ export class DolomiteZap {
           amountsPaths,
           traderParamsArrays,
           executionFees,
+          txOrigin,
           actualConfig,
           marketsMap,
           marketHelpersMap,
@@ -818,6 +823,7 @@ export class DolomiteZap {
     amountsPaths: Integer[][],
     traderParamsArrays: GenericTraderParam[][],
     executionFees: Integer[],
+    txOrigin: Address,
     actualConfig: ZapConfig,
   ): Promise<void> {
     if (
@@ -839,6 +845,7 @@ export class DolomiteZap {
             outputEstimate = await wrapperHelper.estimateOutputFunction(
               amountsPath[amountsPath.length - 1],
               marketIdsPath[marketIdsPath.length - 1],
+              txOrigin,
               actualConfig,
             ).catch(e => {
               Logger.error({

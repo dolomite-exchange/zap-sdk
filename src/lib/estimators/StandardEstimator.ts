@@ -44,6 +44,7 @@ export class StandardEstimator {
     unwrapperAddress: Address,
     amountIn: Integer,
     outputMarketId: MarketId,
+    txOrigin: Address,
     config: ZapConfig,
     marketsMap: Record<string, ApiMarket>,
   ): Promise<EstimateOutputResult> {
@@ -83,6 +84,7 @@ export class StandardEstimator {
         amountIn,
         outputMarketId,
         marketsMap,
+        txOrigin,
         config,
       );
     } else {
@@ -105,6 +107,7 @@ export class StandardEstimator {
     wrapperAddress: Address,
     amountIn: Integer,
     inputMarketId: MarketId,
+    txOrigin: Address,
     config: ZapConfig,
     marketsMap: Record<string, ApiMarket>,
   ): Promise<EstimateOutputResult> {
@@ -141,6 +144,7 @@ export class StandardEstimator {
         amountIn,
         inputMarketId,
         marketsMap,
+        txOrigin,
         config,
       );
     } else {
