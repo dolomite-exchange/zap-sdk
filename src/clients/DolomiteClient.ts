@@ -9,6 +9,7 @@ import GraphqlPageable from '../lib/GraphqlPageable';
 import Logger from '../lib/Logger';
 import { toChecksumOpt } from '../lib/Utils';
 import IsolationModeClient from './IsolationModeClient';
+import AggregatorClient from './AggregatorClient';
 
 const defaultAxiosConfig = {
   headers: { 'Accept-Encoding': 'gzip,deflate,compress' },
@@ -23,9 +24,10 @@ export default class DolomiteClient {
     private _subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
     gasMultiplier: BigNumber,
+    validAggregators: AggregatorClient[],
   ) {
     this.marketsToAdd = [];
-    this.standardEstimator = new StandardEstimator(this.network, web3Provider, gasMultiplier);
+    this.standardEstimator = new StandardEstimator(this.network, web3Provider, validAggregators, gasMultiplier);
   }
 
   public set subgraphUrl(subgraphUrl: string) {

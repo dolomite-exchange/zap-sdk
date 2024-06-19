@@ -23,6 +23,14 @@ export const INTEGERS = {
   TEN: new BigNumber(10),
 };
 
+export interface GammaPool {
+  token0Address: string;
+  token0MarketId: string;
+  token1Address: string;
+  token1MarketId: string;
+  cfmm: string;
+}
+
 export interface GmMarket {
   indexTokenAddress: string;
   shortTokenId: MarketId;
@@ -377,6 +385,14 @@ const PENDLE_PT_RS_ETH_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
 // =========================
 // ======= Addresses =======
 // =========================
+
+export const GAMMA_POOLS_MAP: Record<Network, Record<Address, GammaPool | undefined> | undefined> = {
+  [Network.X_LAYER]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: {}
+};
 
 export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined> | undefined> = {
   [Network.X_LAYER]: undefined,
@@ -987,12 +1003,20 @@ export function isPendleYtAsset(network: Network, tokenAddress: Address): boolea
   return !!PENDLE_YT_MARKET_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
+export function isGammaIsolationModeAsset(network: Network, tokenAddress: Address): boolean {
+  return !!GAMMA_POOLS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
 export function isGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): boolean {
   return !!GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
 export function getGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): GmMarket | undefined {
   return GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
+export function getGammaPool(network: Network, isolationModeToken: Address): GammaPool | undefined {
+  return GAMMA_POOLS_MAP[network]?.[isolationModeToken];
 }
 
 export function getPendlePtMarketForIsolationModeToken(

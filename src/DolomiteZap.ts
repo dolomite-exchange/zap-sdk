@@ -132,12 +132,13 @@ export class DolomiteZap {
     this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
 
-    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, gasMultiplier);
+    this.validAggregators = this.getAllAggregators(network, referralInfo, useProxyServer)
+      .filter(aggregator => aggregator.isValidForNetwork());
+
+    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, gasMultiplier, this.validAggregators);
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
 
-    this.validAggregators = this.getAllAggregators(network, referralInfo, useProxyServer)
-      .filter(aggregator => aggregator.isValidForNetwork());
   }
 
   private _subgraphUrl: string;
