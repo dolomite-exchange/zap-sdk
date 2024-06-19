@@ -31,6 +31,7 @@ import {
   ADDRESS_ZERO,
   ApiMarketConverter,
   BYTES_EMPTY,
+  GAMMA_POOLS_MAP,
   getGmxV2IsolationModeAsset, getPendlePtMarketForIsolationModeToken,
   INTEGERS,
   INVALID_NAME,
@@ -53,6 +54,13 @@ const INVALID_ESTIMATION = {
   tradeData: BYTES_EMPTY,
   extraData: undefined,
 };
+
+export enum IsolationType {
+  None = 'None',
+  Gamma = 'Gamma',
+  Gmx = 'Gmx',
+  Pendle = 'Pendle',
+}
 
 export interface DolomiteZapConfig {
   /**
@@ -236,8 +244,25 @@ export class DolomiteZap {
     this._defaultBlockTag = blockTag;
   }
 
-  public setMarketsToAdd(marketsToAdd: ApiMarket[]): void {
+  public setMarketsToAdd(marketsToAdd: ApiMarket[], converters?: ApiMarketConverter[], isolationType?: IsolationType[], isolationTypeInfo?: any[]): void {
     this.client.setMarketsToAdd(marketsToAdd);
+
+    if (converters) {
+      if (converters.length !== marketsToAdd.length) {
+        throw new Error(`Invalid converters length, must eq ${marketsToAdd.length}`);
+      }
+
+      marketsToAdd.forEach((market, i) => {
+        ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][market.marketId.toFixed()] = converters[i]
+
+        // @follow-up Not sure if this will quite work well
+        if (isolationType && isolationTypeInfo) {
+          if (isolationType[i] === IsolationType.Gamma) {
+            GAMMA_POOLS_MAP[this.network]![market.tokenAddress] = isolationTypeInfo![i];
+          }
+        }
+      })
+    }
   }
 
   public getIsolationModeConverterByMarketId(marketId: MarketId): ApiMarketConverter | undefined {

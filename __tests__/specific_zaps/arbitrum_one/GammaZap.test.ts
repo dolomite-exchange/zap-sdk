@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
 import BigNumber from 'bignumber.js';
 import { ApiMarket, DolomiteZap, GenericTraderType, Network } from "../../../src";
-import { ApiMarketConverter, GAMMA_POOLS_MAP, ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from "../../../src/lib/Constants";
+import { ApiMarketConverter, ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from "../../../src/lib/Constants";
 import { NATIVE_USDC_MARKET, WETH_MARKET } from "../../helpers/ArbitrumOneConstants";
-import { getApiMarket } from "../../helpers/TestConstants";
 import { parseEther } from "ethers/lib/utils";
+import { IsolationType } from "../../../src/DolomiteZap";
 
 const TEST_ADDRESS = '0x1234567890000000000000000000000000000000'
 const TEST_ADDRESS_UNWRAPPER =  '0x1234567890000000000000000000000000000001'
@@ -39,15 +39,27 @@ describe('GammaZap', () => {
   };
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][gammaMarketId.toFixed()] = GAMMA_MARKET_CONVERTER;
 
-  const GAMMA_MARKET: ApiMarket = getApiMarket(
-    Network.ARBITRUM_ONE,
-    gammaMarketId,
-    'dGamma',
-    'Dolomite Isolation: Gamma WETH/USDC Market',
-    TEST_ADDRESS,
-    18
-  );
-  GAMMA_POOLS_MAP[network]![TEST_ADDRESS] = {
+  const GAMMA_MARKET: ApiMarket = {
+    marketId: gammaMarketId,
+    symbol: 'gammaWETH/USDC',
+    name: 'GAMMA WETH/USDC Market',
+    tokenAddress: TEST_ADDRESS,
+    decimals: 18,
+    isolationModeUnwrapperInfo: {
+      unwrapperAddress: TEST_ADDRESS_UNWRAPPER,
+      outputMarketIds: [WETH_MARKET.marketId, NATIVE_USDC_MARKET.marketId],
+      readableName: 'Gamma WETH/USDC Isolation Mode Unwrapper'
+    },
+    liquidityTokenUnwrapperInfo: undefined,
+    isolationModeWrapperInfo: {
+      wrapperAddress: TEST_ADDRESS_WRAPPER,
+      inputMarketIds: [WETH_MARKET.marketId, NATIVE_USDC_MARKET.marketId],
+      readableName: 'Gamma WETH/USDC Isolation Mode Wrapper'
+    },
+    liquidityTokenWrapperInfo: undefined
+  };
+
+  const GAMMA_POOL = {
     // WETH - USDC pool
     token0Address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',  
     token0MarketId: '0',
@@ -57,7 +69,7 @@ describe('GammaZap', () => {
   };
 
   beforeAll(async () => {
-    zap.setMarketsToAdd([GAMMA_MARKET]);
+    zap.setMarketsToAdd([GAMMA_MARKET], [GAMMA_MARKET_CONVERTER], [IsolationType.Gamma], [GAMMA_POOL]);
   });
 
   describe('#getSwapExactTokensForTokensData', () => {
