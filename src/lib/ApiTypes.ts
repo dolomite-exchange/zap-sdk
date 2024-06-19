@@ -65,6 +65,18 @@ export interface ApiMarketHelper {
   liquidityTokenWrapperHelper: ApiWrapperHelper | undefined;
 }
 
+export interface ApiMarketConverter {
+  tokenAddress: Address;
+  unwrapper: Address;
+  unwrapperForLiquidation?: Address;
+  wrapper: Address;
+  unwrapperMarketIds: MarketId[];
+  wrapperMarketIds: MarketId[];
+  unwrapperReadableName: string;
+  wrapperReadableName: string;
+  isAsync: boolean;
+}
+
 export interface EstimateOutputResult {
   amountOut: Integer;
   tradeData: string;

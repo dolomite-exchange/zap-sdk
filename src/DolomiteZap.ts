@@ -10,6 +10,7 @@ import {
   ApiAsyncActionType,
   ApiAsyncTradeType,
   ApiMarket,
+  ApiMarketConverter,
   ApiMarketHelper,
   ApiOraclePrice,
   ApiToken,
@@ -29,7 +30,6 @@ import {
 } from './lib/ApiTypes';
 import {
   ADDRESS_ZERO,
-  ApiMarketConverter,
   BYTES_EMPTY,
   GAMMA_POOLS_MAP,
   getGmxV2IsolationModeAsset, getPendlePtMarketForIsolationModeToken,

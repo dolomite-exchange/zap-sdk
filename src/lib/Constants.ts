@@ -1,20 +1,8 @@
 import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Address, MarketId, Network } from './ApiTypes';
+import { Address, ApiMarketConverter, MarketId, Network } from './ApiTypes';
 import { GraphqlToken } from './graphql-types';
-
-export interface ApiMarketConverter {
-  tokenAddress: Address;
-  unwrapper: Address;
-  unwrapperForLiquidation?: Address;
-  wrapper: Address;
-  unwrapperMarketIds: MarketId[];
-  wrapperMarketIds: MarketId[];
-  unwrapperReadableName: string;
-  wrapperReadableName: string;
-  isAsync: boolean;
-}
 
 export const INTEGERS = {
   NEGATIVE_ONE: new BigNumber(-1),

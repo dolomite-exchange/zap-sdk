@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import BigNumber from 'bignumber.js';
-import { ApiMarket, DolomiteZap, GenericTraderType, Network } from "../../../src";
-import { ApiMarketConverter, ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from "../../../src/lib/Constants";
+import { ApiMarket, ApiMarketConverter, DolomiteZap, GenericTraderType, Network } from "../../../src";
+import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from "../../../src/lib/Constants";
 import { NATIVE_USDC_MARKET, WETH_MARKET } from "../../helpers/ArbitrumOneConstants";
 import { parseEther } from "ethers/lib/utils";
 import { IsolationType } from "../../../src/DolomiteZap";
