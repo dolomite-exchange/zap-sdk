@@ -11,6 +11,8 @@ export default abstract class AggregatorClient {
 
   public abstract get name(): string;
 
+  public abstract get address(): Address;
+
   public abstract getSwapExactTokensForTokensData(
     inputMarket: ApiMarket | ApiToken,
     inputAmountWei: Integer,

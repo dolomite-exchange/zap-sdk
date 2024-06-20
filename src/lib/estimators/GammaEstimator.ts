@@ -68,7 +68,8 @@ export class GammaEstimator {
       txOrigin,
       config
     );
-    return { tradeData: aggregatorOutput!.tradeData, amountOut: aggregatorOutput!.expectedAmountOut.plus(keepAmount) }
+    return { tradeData: ethers.utils.defaultAbiCoder.encode(
+      ['uint256[]', 'address', 'bytes'], [[1, 1], this.aggregator.address, ethers.utils.defaultAbiCoder.encode(['uint256', 'bytes'], [1, aggregatorOutput!.tradeData])]), amountOut: aggregatorOutput!.expectedAmountOut.plus(keepAmount) }
   }
 
   public async getWrappedAmount(
@@ -118,7 +119,8 @@ export class GammaEstimator {
     const liquidity1 = token1Amount?.times(totalSupply).dividedBy(reserve1).integerValue(BigNumber.ROUND_FLOOR).toNumber();
     const outputAmount = Math.min(liquidity0!, liquidity1!);
 
-    return { tradeData: aggregatorOutput!.tradeData, amountOut: new BigNumber(outputAmount) }
+    return { tradeData: ethers.utils.defaultAbiCoder.encode(
+      ['address', 'bytes'], [this.aggregator.address, ethers.utils.defaultAbiCoder.encode(['uint256', 'bytes'], [1, aggregatorOutput!.tradeData])]), amountOut: new BigNumber(outputAmount) }
 
   }
 }

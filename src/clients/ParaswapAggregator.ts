@@ -24,6 +24,10 @@ export default class ParaswapAggregator extends AggregatorClient {
     return 'Paraswap';
   }
 
+  public get address(): Address {
+    return PARASWAP_TRADER_ADDRESS_MAP[this.network]!;
+  }
+
   public isValidForNetwork(): boolean {
     return !!PARASWAP_TRADER_ADDRESS_MAP[this.network];
   }

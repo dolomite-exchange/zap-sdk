@@ -1,16 +1,22 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Network } from '../../src';
+import { DolomiteZap, Network } from '../../src';
 import DolomiteClient from '../../src/clients/DolomiteClient';
 
 describe('DolomiteClient', () => {
-  const networkId = Network.ARBITRUM_ONE;
+  const network = Network.ARBITRUM_ONE;
   const subgraphUrl = process.env.SUBGRAPH_URL;
   if (!subgraphUrl) {
     throw new Error('SUBGRAPH_URL env var not set')
   }
   const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
-  const dolomite = new DolomiteClient(networkId, subgraphUrl, web3Provider, new BigNumber(1));
+  const zap = new DolomiteZap({
+    network,
+    subgraphUrl,
+    web3Provider,
+    cacheSeconds: -1,
+  });
+  const dolomite = new DolomiteClient(network, subgraphUrl, web3Provider, new BigNumber(1), zap.validAggregators);
 
   describe('#getDolomiteMarkets', () => {
     it('should work for specific block number', async () => {

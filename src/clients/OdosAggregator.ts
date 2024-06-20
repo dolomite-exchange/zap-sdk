@@ -26,6 +26,10 @@ export default class OdosAggregator extends AggregatorClient {
     return 'Odos';
   }
 
+  public get address(): Address {
+    return ODOS_TRADER_ADDRESS_MAP[this.network]!;
+  }
+
   public async getSwapExactTokensForTokensData(
     inputMarket: ApiMarket | ApiToken,
     inputAmountWei: Integer,

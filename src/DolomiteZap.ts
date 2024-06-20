@@ -37,6 +37,7 @@ import {
   INVALID_NAME,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
+  ODOS_TRADER_ADDRESS_MAP,
 } from './lib/Constants';
 import { LocalCache } from './lib/LocalCache';
 import Logger from './lib/Logger';
@@ -60,6 +61,11 @@ export enum IsolationType {
   Gamma = 'Gamma',
   Gmx = 'Gmx',
   Pendle = 'Pendle',
+}
+
+export enum AggregatorType {
+  Odos = 'Odos',
+  Paraswap = 'Paraswap',
 }
 
 export interface DolomiteZapConfig {
@@ -242,6 +248,13 @@ export class DolomiteZap {
 
   public setDefaultBlockTag(blockTag: BlockTag): void {
     this._defaultBlockTag = blockTag;
+  }
+
+  // @follow-up Is it ok to add this?
+  public setAggregator(aggregatorType: AggregatorType, address: Address): void {
+    if (aggregatorType === AggregatorType.Odos) {
+      ODOS_TRADER_ADDRESS_MAP[this.network] = address;
+    }
   }
 
   public setMarketsToAdd(marketsToAdd: ApiMarket[], converters?: ApiMarketConverter[], isolationType?: IsolationType[], isolationTypeInfo?: any[]): void {

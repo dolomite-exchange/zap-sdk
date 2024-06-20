@@ -23,7 +23,7 @@ BigNumber.config({
   DECIMAL_PLACES: 80,
 });
 
-export { DolomiteZap } from './DolomiteZap';
+export { DolomiteZap, IsolationType, AggregatorType } from './DolomiteZap';
 export { BigNumber };
 export * from './lib/ApiTypes';
 export { INTEGERS } from './lib/Constants';

@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import BigNumber from 'bignumber.js';
 import { ApiMarket, ApiMarketConverter, DolomiteZap, GenericTraderType, Network } from "../../../src";
-import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from "../../../src/lib/Constants";
 import { NATIVE_USDC_MARKET, WETH_MARKET } from "../../helpers/ArbitrumOneConstants";
 import { parseEther } from "ethers/lib/utils";
 import { IsolationType } from "../../../src/DolomiteZap";
@@ -37,7 +36,6 @@ describe('GammaZap', () => {
     wrapperReadableName: 'Gamma WETH/USDC Isolation Mode Wrapper',
     isAsync: false
   };
-  ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[network][gammaMarketId.toFixed()] = GAMMA_MARKET_CONVERTER;
 
   const GAMMA_MARKET: ApiMarket = {
     marketId: gammaMarketId,
@@ -138,6 +136,7 @@ describe('GammaZap', () => {
         expect(outputParam0.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam0.traderParams[0].trader)
           .toEqual(TEST_ADDRESS_UNWRAPPER);
+        // @todo add decoding to (address, tradeData) tests
         // expect(outputParam0.traderParams[0].tradeData.length).toEqual(130);
 
         expect(outputParam0.makerAccounts.length).toEqual(0);
