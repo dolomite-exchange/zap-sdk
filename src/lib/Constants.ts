@@ -380,7 +380,7 @@ export const GAMMA_POOLS_MAP: Record<Network, Record<Address, GammaPool | undefi
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
-  [Network.ARBITRUM_ONE]: {}
+  [Network.ARBITRUM_ONE]: {} // @follow-up Can I set this as undefined now and add to it dynamically?
 };
 
 export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined> | undefined> = {

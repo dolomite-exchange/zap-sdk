@@ -19,7 +19,7 @@ describe('GammaEstimator', () => {
     network,
     subgraphUrl,
     web3Provider
-  })
+  });
   const marketsMap: Record<string, ApiMarket> = {
     [WETH_MARKET.marketId.toFixed()]: WETH_MARKET,
     [NATIVE_USDC_MARKET.marketId.toFixed()]: NATIVE_USDC_MARKET,
@@ -42,7 +42,7 @@ describe('GammaEstimator', () => {
     slippageTolerance: 0.003,
     subAccountNumber: new BigNumber('12321'),
     disallowAggregator: false,
-  }
+  };
 
   const estimator = new GammaEstimator(network, web3Provider, zap.validAggregators[0]);
 
@@ -104,5 +104,5 @@ describe('GammaEstimator', () => {
         wethAmount.amountOut.toString(),
       );
     });
-  })
+  });
 });

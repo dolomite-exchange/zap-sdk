@@ -16,7 +16,7 @@ export interface IGammaPoolInterface extends utils.Interface {
   functions: {
     'convertToAssets(uint256)': FunctionFragment;
     'convertToShares(uint256)': FunctionFragment;
-  }
+  };
 
   getFunction(
     nameOrSignatureOrTopic:

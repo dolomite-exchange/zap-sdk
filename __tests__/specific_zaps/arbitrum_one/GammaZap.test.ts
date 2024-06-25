@@ -5,11 +5,12 @@ import { NATIVE_USDC_MARKET, WETH_MARKET } from "../../helpers/ArbitrumOneConsta
 import { parseEther } from "ethers/lib/utils";
 import { IsolationType } from "../../../src/DolomiteZap";
 
-const TEST_ADDRESS = '0x1234567890000000000000000000000000000000'
-const TEST_ADDRESS_UNWRAPPER =  '0x1234567890000000000000000000000000000001'
-const TEST_ADDRESS_WRAPPER =  '0x1234567890000000000000000000000000000002'
+const TEST_ADDRESS = '0x1234567890000000000000000000000000000000';
+const TEST_ADDRESS_UNWRAPPER =  '0x1234567890000000000000000000000000000001';
+const TEST_ADDRESS_WRAPPER =  '0x1234567890000000000000000000000000000002';
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 const gammaMarketId = new BigNumber('60');
+const abiCoder = ethers.utils.defaultAbiCoder;
 
 describe('GammaZap', () => {
   const network = Network.ARBITRUM_ONE;
@@ -30,8 +31,8 @@ describe('GammaZap', () => {
     tokenAddress: TEST_ADDRESS,
     unwrapper: TEST_ADDRESS_UNWRAPPER,
     wrapper: TEST_ADDRESS_WRAPPER,
-    unwrapperMarketIds: [new BigNumber(WETH_MARKET.marketId.toFixed()), new BigNumber(NATIVE_USDC_MARKET.marketId.toFixed())],
-    wrapperMarketIds: [new BigNumber(WETH_MARKET.marketId.toFixed()), new BigNumber(NATIVE_USDC_MARKET.marketId.toFixed())],
+    unwrapperMarketIds: [WETH_MARKET.marketId, NATIVE_USDC_MARKET.marketId],
+    wrapperMarketIds: [WETH_MARKET.marketId, NATIVE_USDC_MARKET.marketId],
     unwrapperReadableName: 'Gamma WETH/USDC Isolation Mode Unwrapper',
     wrapperReadableName: 'Gamma WETH/USDC Isolation Mode Wrapper',
     isAsync: false
@@ -101,7 +102,8 @@ describe('GammaZap', () => {
         expect(outputParam0.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam0.traderParams[0].trader)
           .toEqual(TEST_ADDRESS_UNWRAPPER);
-        // expect(outputParam0.traderParams[0].tradeData.length).toEqual(130);
+        const res = abiCoder.decode(['address', 'bytes'], outputParam0.traderParams[0].tradeData);
+        expect(res[0]).toEqual(zap.validAggregators[0].address);
 
         expect(outputParam0.makerAccounts.length).toEqual(0);
         expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))
@@ -137,8 +139,8 @@ describe('GammaZap', () => {
         expect(outputParam0.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam0.traderParams[0].trader)
           .toEqual(TEST_ADDRESS_UNWRAPPER);
-        // @todo add decoding to (address, tradeData) tests
-        // expect(outputParam0.traderParams[0].tradeData.length).toEqual(130);
+        const res = abiCoder.decode(['address', 'bytes'], outputParam0.traderParams[0].tradeData);
+        expect(res[0]).toEqual(zap.validAggregators[0].address);
 
         expect(outputParam0.makerAccounts.length).toEqual(0);
         expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))
@@ -174,7 +176,8 @@ describe('GammaZap', () => {
         expect(outputParam0.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam0.traderParams[0].trader)
           .toEqual(TEST_ADDRESS_WRAPPER);
-        // expect(outputParam0.traderParams[0].tradeData.length).toEqual(130);
+        const res = abiCoder.decode(['address', 'bytes'], outputParam0.traderParams[0].tradeData);
+        expect(res[0]).toEqual(zap.validAggregators[0].address);
 
         expect(outputParam0.makerAccounts.length).toEqual(0);
         expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))
@@ -210,7 +213,8 @@ describe('GammaZap', () => {
         expect(outputParam0.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam0.traderParams[0].trader)
           .toEqual(TEST_ADDRESS_WRAPPER);
-        // expect(outputParam0.traderParams[0].tradeData.length).toEqual(130);
+        const res = abiCoder.decode(['address', 'bytes'], outputParam0.traderParams[0].tradeData);
+        expect(res[0]).toEqual(zap.validAggregators[0].address);
 
         expect(outputParam0.makerAccounts.length).toEqual(0);
         expect(outputParam0.expectedAmountOut.gt(outputParam0.amountWeisPath[outputParam0.amountWeisPath.length - 1]))

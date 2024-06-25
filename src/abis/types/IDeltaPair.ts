@@ -15,7 +15,7 @@ export interface IDeltaPairInterface extends utils.Interface {
   functions: {
     'totalSupply()': FunctionFragment;
     'getReserves()': FunctionFragment;
-  }
+  };
 
   getFunction(
     nameOrSignatureOrTopic:
