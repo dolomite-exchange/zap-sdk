@@ -4,9 +4,13 @@ import AggregatorClient from "../../clients/AggregatorClient";
 import { INTEGERS, getGammaPool } from "../Constants";
 import { IDeltaPair } from "../../abis/types/IDeltaPair";
 import IDeltaPairAbi from "../../abis/IDeltaPair.json";
+import IGammaPoolAbi from "../../abis/IGammaPool.json";
 import IERC20Abi from "../../abis/IERC20.json";
 import { IERC20 } from "../../abis/types/IERC20";
 import BigNumber from "bignumber.js";
+import { IGammaPool } from "../../abis/types/IGammaPool";
+
+const abiCoder = ethers.utils.defaultAbiCoder;
 
 export class GammaEstimator {
   public constructor(
@@ -25,6 +29,11 @@ export class GammaEstimator {
   ): Promise<EstimateOutputResult> {
     // Get necessary contracts
     const gammaPool = getGammaPool(this.network, isolationModeTokenAddress);
+    const gammaPoolContract = new ethers.Contract(
+      gammaPool!.poolAddress,
+      IGammaPoolAbi,
+      this.web3Provider
+    ) as IGammaPool;
     const deltaPair = new ethers.Contract(
       gammaPool!.cfmm,
       IDeltaPairAbi,
@@ -54,8 +63,10 @@ export class GammaEstimator {
       inputToken = marketsMap[gammaPool!.token0MarketId];
     }
 
-    const token0Amount = amountIn.times(token0Bal).dividedToIntegerBy(totalSupply);
-    const token1Amount = amountIn.times(token1Bal).dividedToIntegerBy(totalSupply);
+    const assets = new BigNumber((await gammaPoolContract.convertToAssets(amountIn.toNumber())).toString());
+
+    const token0Amount = assets.times(token0Bal).dividedToIntegerBy(totalSupply);
+    const token1Amount = assets.times(token1Bal).dividedToIntegerBy(totalSupply);
     const swapAmount = outputToken.tokenAddress === gammaPool!.token0Address ? token1Amount : token0Amount;
     const keepAmount = outputToken.tokenAddress === gammaPool!.token0Address ? token0Amount : token1Amount;
 
@@ -68,8 +79,13 @@ export class GammaEstimator {
       txOrigin,
       config
     );
-    return { tradeData: ethers.utils.defaultAbiCoder.encode(
-      ['uint256[]', 'address', 'bytes'], [[1, 1], this.aggregator.address, ethers.utils.defaultAbiCoder.encode(['uint256', 'bytes'], [1, aggregatorOutput!.tradeData])]), amountOut: aggregatorOutput!.expectedAmountOut.plus(keepAmount) }
+    return {
+      tradeData: abiCoder.encode(
+        ['address', 'bytes'],
+        [this.aggregator.address, abiCoder.encode(['uint256', 'bytes'], [1, aggregatorOutput!.tradeData])]
+      ),
+      amountOut: aggregatorOutput!.expectedAmountOut.plus(keepAmount)
+    };
   }
 
   public async getWrappedAmount(
@@ -81,6 +97,11 @@ export class GammaEstimator {
     config: ZapConfig
   ): Promise<EstimateOutputResult> {
     const gammaPool = getGammaPool(this.network, isolationModeTokenAddress);
+    const gammaPoolContract = new ethers.Contract(
+      gammaPool!.poolAddress,
+      IGammaPoolAbi,
+      this.web3Provider
+    ) as IGammaPool;
     const deltaPair = new ethers.Contract(
       gammaPool!.cfmm,
       IDeltaPairAbi,
@@ -119,8 +140,12 @@ export class GammaEstimator {
     const liquidity1 = token1Amount?.times(totalSupply).dividedBy(reserve1).integerValue(BigNumber.ROUND_FLOOR).toNumber();
     const outputAmount = Math.min(liquidity0!, liquidity1!);
 
-    return { tradeData: ethers.utils.defaultAbiCoder.encode(
-      ['address', 'bytes'], [this.aggregator.address, ethers.utils.defaultAbiCoder.encode(['uint256', 'bytes'], [1, aggregatorOutput!.tradeData])]), amountOut: new BigNumber(outputAmount) }
-
+    return {
+      tradeData: abiCoder.encode(
+        ['address', 'bytes'],
+        [this.aggregator.address, abiCoder.encode(['uint256', 'bytes'], [1, aggregatorOutput!.tradeData])]
+      ),
+      amountOut: new BigNumber((await gammaPoolContract.convertToShares(outputAmount)).toString())
+    };
   }
 }

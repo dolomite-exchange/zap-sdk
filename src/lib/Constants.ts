@@ -12,6 +12,7 @@ export const INTEGERS = {
 };
 
 export interface GammaPool {
+  poolAddress: string;
   token0Address: string;
   token0MarketId: string;
   token1Address: string;

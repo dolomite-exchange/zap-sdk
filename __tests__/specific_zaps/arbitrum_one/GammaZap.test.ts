@@ -59,6 +59,7 @@ describe('GammaZap', () => {
 
   const GAMMA_POOL = {
     // WETH - USDC pool
+    poolAddress: '0x04d24DBdd9eA6e8af5B5Eb0126797da27498DF1d',
     token0Address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',  
     token0MarketId: '0',
     token1Address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
