@@ -33,6 +33,14 @@ export const INVALID_NAME = 'INVALID';
 
 export const BYTES_EMPTY = '0x';
 
+export const MULTICALL_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: '0x842eC2c7D803033Edf55E478F461FC547Bc54EB2',
+  [Network.BASE]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 // TOKENS
 
 const WETH_MARKET_ID_MAP: Record<Network, MarketId> = {
@@ -375,12 +383,12 @@ const PENDLE_PT_RS_ETH_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
 // ======= Addresses =======
 // =========================
 
-export const GAMMA_POOLS_MAP: Record<Network, Record<Address, GammaPool | undefined> | undefined> = {
-  [Network.X_LAYER]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
-  [Network.MANTLE]: undefined,
-  [Network.BASE]: undefined,
-  [Network.ARBITRUM_ONE]: {} // @follow-up Can I set this as undefined now and add to it dynamically?
+export const GAMMA_POOLS_MAP: Record<Network, Record<Address, GammaPool>> = {
+  [Network.X_LAYER]: {},
+  [Network.POLYGON_ZKEVM]: {},
+  [Network.MANTLE]: {},
+  [Network.BASE]: {},
+  [Network.ARBITRUM_ONE]: {}
 };
 
 export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined> | undefined> = {
@@ -1004,8 +1012,8 @@ export function getGmxV2IsolationModeAsset(network: Network, tokenAddress: Addre
   return GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
-export function getGammaPool(network: Network, isolationModeToken: Address): GammaPool | undefined {
-  return GAMMA_POOLS_MAP[network]?.[isolationModeToken];
+export function getGammaPool(network: Network, isolationModeToken: Address): GammaPool {
+  return GAMMA_POOLS_MAP[network][isolationModeToken];
 }
 
 export function getPendlePtMarketForIsolationModeToken(

@@ -1,14 +1,16 @@
 import { ethers } from "ethers";
 import { Address, ApiMarket, EstimateOutputResult, Integer, Network, ZapConfig } from "../ApiTypes";
 import AggregatorClient from "../../clients/AggregatorClient";
-import { INTEGERS, getGammaPool } from "../Constants";
+import { INTEGERS, MULTICALL_MAP, getGammaPool } from "../Constants";
 import { IDeltaPair } from "../../abis/types/IDeltaPair";
-import IDeltaPairAbi from "../../abis/IDeltaPair.json";
-import IGammaPoolAbi from "../../abis/IGammaPool.json";
-import IERC20Abi from "../../abis/IERC20.json";
 import { IERC20 } from "../../abis/types/IERC20";
 import BigNumber from "bignumber.js";
 import { IGammaPool } from "../../abis/types/IGammaPool";
+import IDeltaPairAbi from "../../abis/IDeltaPair.json";
+import IGammaPoolAbi from "../../abis/IGammaPool.json";
+import IERC20Abi from "../../abis/IERC20.json";
+import IMulticall2Abi from "../../abis/IMulticall2.json";
+import { IMulticall2 } from "../../abis/types/IMulticall2";
 
 const abiCoder = ethers.utils.defaultAbiCoder;
 
@@ -30,45 +32,69 @@ export class GammaEstimator {
     // Get necessary contracts
     const gammaPool = getGammaPool(this.network, isolationModeTokenAddress);
     const gammaPoolContract = new ethers.Contract(
-      gammaPool!.poolAddress,
+      gammaPool.poolAddress,
       IGammaPoolAbi,
       this.web3Provider
     ) as IGammaPool;
     const deltaPair = new ethers.Contract(
-      gammaPool!.cfmm,
+      gammaPool.cfmm,
       IDeltaPairAbi,
       this.web3Provider
     ) as IDeltaPair;
     const token0 = new ethers.Contract(
-      gammaPool!.token0Address,
+      gammaPool.token0Address,
       IERC20Abi,
       this.web3Provider
     ) as IERC20;
     const token1 = new ethers.Contract(
-      gammaPool!.token1Address,
+      gammaPool.token1Address,
       IERC20Abi,
       this.web3Provider
     ) as IERC20;
+    const multicall = new ethers.Contract(
+      MULTICALL_MAP[this.network]!,
+      IMulticall2Abi,
+      this.web3Provider
+    ) as IMulticall2;
 
     // Calculate amounts and input/output token
-    // @todo use multicall. Arbitrum mulitcall has special one
-    const totalSupply = new BigNumber((await deltaPair.totalSupply()).toString());
-    const token0Bal = new BigNumber((await token0.balanceOf(deltaPair.address)).toString());
-    const token1Bal = new BigNumber((await token1.balanceOf(deltaPair.address)).toString());
+    const calls: IMulticall2.CallStruct[] = [
+      {
+        target: deltaPair.address,
+        callData: (await deltaPair.populateTransaction.totalSupply()).data!,
+      },
+      {
+        target: token0.address,
+        callData: (await token0.populateTransaction.balanceOf(deltaPair.address)).data!,
+      },
+      {
+        target: token1.address,
+        callData: (await token1.populateTransaction.balanceOf(deltaPair.address)).data!,
+      },
+      {
+        target: gammaPoolContract.address,
+        callData: (await gammaPoolContract.populateTransaction.convertToAssets(amountIn.toNumber())).data!,
+      }
+    ];
+    // @follow-up @Corey, do you care tryAggregate vs aggregate? aggregate fails on hardhat network
+    const res = await multicall.callStatic.tryAggregate(true, calls);
+    const totalSupply = new BigNumber(res[0].returnData);
+    const token0Bal = new BigNumber(res[1].returnData);
+    const token1Bal = new BigNumber(res[2].returnData);
+    const assets = new BigNumber(res[3].returnData);
+
     const outputToken = marketsMap[outputMarketId.toFixed()];
     let inputToken: ApiMarket;
-    if (outputToken.tokenAddress === gammaPool!.token0Address) {
-      inputToken = marketsMap[gammaPool!.token1MarketId];
+    if (outputToken.tokenAddress === gammaPool.token0Address) {
+      inputToken = marketsMap[gammaPool.token1MarketId];
     } else {
-      inputToken = marketsMap[gammaPool!.token0MarketId];
+      inputToken = marketsMap[gammaPool.token0MarketId];
     }
-
-    const assets = new BigNumber((await gammaPoolContract.convertToAssets(amountIn.toNumber())).toString());
 
     const token0Amount = assets.times(token0Bal).dividedToIntegerBy(totalSupply);
     const token1Amount = assets.times(token1Bal).dividedToIntegerBy(totalSupply);
-    const swapAmount = outputToken.tokenAddress === gammaPool!.token0Address ? token1Amount : token0Amount;
-    const keepAmount = outputToken.tokenAddress === gammaPool!.token0Address ? token0Amount : token1Amount;
+    const swapAmount = outputToken.tokenAddress === gammaPool.token0Address ? token1Amount : token0Amount;
+    const keepAmount = outputToken.tokenAddress === gammaPool.token0Address ? token0Amount : token1Amount;
 
     // Get aggregator info for unwanted token -> output token
     const aggregatorOutput = await this.aggregator.getSwapExactTokensForTokensData(
@@ -98,25 +124,30 @@ export class GammaEstimator {
   ): Promise<EstimateOutputResult> {
     const gammaPool = getGammaPool(this.network, isolationModeTokenAddress);
     const gammaPoolContract = new ethers.Contract(
-      gammaPool!.poolAddress,
+      gammaPool.poolAddress,
       IGammaPoolAbi,
       this.web3Provider
     ) as IGammaPool;
     const deltaPair = new ethers.Contract(
-      gammaPool!.cfmm,
+      gammaPool.cfmm,
       IDeltaPairAbi,
       this.web3Provider
     ) as IDeltaPair;
+    const multicall = new ethers.Contract(
+      MULTICALL_MAP[this.network]!,
+      IMulticall2Abi,
+      this.web3Provider
+    ) as IMulticall2;
 
     // Calculate aggregator swap
     const tradeAmount = amountIn.div(2).integerValue(BigNumber.ROUND_FLOOR);
     const depositAmount = amountIn.minus(tradeAmount);
     const inputToken = marketsMap[inputMarketId.toFixed()];
     let outputToken: ApiMarket;
-    if (inputToken.tokenAddress === gammaPool!.token0Address) {
-      outputToken = marketsMap[gammaPool!.token1MarketId];
+    if (inputToken.tokenAddress === gammaPool.token0Address) {
+      outputToken = marketsMap[gammaPool.token1MarketId];
     } else {
-      outputToken = marketsMap[gammaPool!.token0MarketId];
+      outputToken = marketsMap[gammaPool.token0MarketId];
     }
 
     const aggregatorOutput = await this.aggregator.getSwapExactTokensForTokensData(
@@ -129,12 +160,24 @@ export class GammaEstimator {
     );
 
     // Calculate expected amount of LP tokens
-    const token0Amount = inputToken.tokenAddress === gammaPool!.token0Address ? depositAmount : aggregatorOutput?.expectedAmountOut;
-    const token1Amount = inputToken.tokenAddress === gammaPool!.token1Address ? depositAmount : aggregatorOutput?.expectedAmountOut;
+    const token0Amount = inputToken.tokenAddress === gammaPool.token0Address ? depositAmount : aggregatorOutput?.expectedAmountOut;
+    const token1Amount = inputToken.tokenAddress === gammaPool.token1Address ? depositAmount : aggregatorOutput?.expectedAmountOut;
 
-    const reserve0 = new BigNumber((await deltaPair.getReserves())[0].toString());
-    const reserve1 = new BigNumber((await deltaPair.getReserves())[1].toString());
-    const totalSupply = new BigNumber((await deltaPair.totalSupply()).toString());
+    const calls: IMulticall2.CallStruct[] = [
+      {
+        target: deltaPair.address,
+        callData: (await deltaPair.populateTransaction.getReserves()).data!,
+      },
+      {
+        target: deltaPair.address,
+        callData: (await deltaPair.populateTransaction.totalSupply()).data!,
+      }
+    ];
+    const res = await multicall.callStatic.tryAggregate(true, calls);
+    const [reserve0, reserve1,] = abiCoder
+      .decode(['uint112', 'uint112', 'uint32'], res[0].returnData)
+      .map((x: any) => new BigNumber(x.toString()));
+    const totalSupply = new BigNumber(res[1].returnData);
 
     const liquidity0 = token0Amount?.times(totalSupply).dividedBy(reserve0).integerValue(BigNumber.ROUND_FLOOR).toNumber();
     const liquidity1 = token1Amount?.times(totalSupply).dividedBy(reserve1).integerValue(BigNumber.ROUND_FLOOR).toNumber();

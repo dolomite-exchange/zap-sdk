@@ -250,7 +250,7 @@ export class DolomiteZap {
     this._defaultBlockTag = blockTag;
   }
 
-  // @follow-up Is it ok to add this?
+  // @follow-up Is it ok to add this function? I'm not sure with security considerations on typescript and zap sdk
   public setAggregator(aggregatorType: AggregatorType, address: Address): void {
     if (aggregatorType === AggregatorType.Odos) {
       ODOS_TRADER_ADDRESS_MAP[this.network] = address;
@@ -268,13 +268,10 @@ export class DolomiteZap {
       marketsToAdd.forEach((market, i) => {
         ISOLATION_MODE_CONVERSION_MARKET_ID_MAP[this.network][market.marketId.toFixed()] = converters[i]
 
-        // @follow-up Not sure if this will quite work well
-        if (isolationType && isolationTypeInfo) {
-          if (isolationType[i] === IsolationType.Gamma) {
-            GAMMA_POOLS_MAP[this.network]![market.tokenAddress] = isolationTypeInfo![i];
-          }
+        if (isolationType![i] === IsolationType.Gamma) {
+          GAMMA_POOLS_MAP[this.network][market.tokenAddress] = isolationTypeInfo![i];
         }
-      })
+      });
     }
   }
 

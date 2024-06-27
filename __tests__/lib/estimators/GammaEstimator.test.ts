@@ -24,7 +24,8 @@ describe('GammaEstimator', () => {
     [WETH_MARKET.marketId.toFixed()]: WETH_MARKET,
     [NATIVE_USDC_MARKET.marketId.toFixed()]: NATIVE_USDC_MARKET,
   };
-  GAMMA_POOLS_MAP[network]![TEST_ADDRESS] = {
+  GAMMA_POOLS_MAP[network] = {};
+  GAMMA_POOLS_MAP[network][TEST_ADDRESS] = {
     // WETH - USDC pool
     poolAddress: '0x04d24DBdd9eA6e8af5B5Eb0126797da27498DF1d',
     token0Address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',  
