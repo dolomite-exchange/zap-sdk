@@ -26,4 +26,4 @@ BigNumber.config({
 export { DolomiteZap } from './DolomiteZap';
 export { BigNumber };
 export * from './lib/ApiTypes';
-export { INTEGERS } from './lib/Constants';
+export { INTEGERS, DOLOMITE_API_SERVER_URL } from './lib/Constants';

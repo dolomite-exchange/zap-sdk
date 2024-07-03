@@ -1,11 +1,11 @@
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
-import { ODOS_TRADER_ADDRESS_MAP } from '../lib/Constants';
+import { DOLOMITE_API_SERVER_URL, ODOS_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 
-const PROXY_API_URL = 'https://proxy.dolomite.io/aggregator/odos';
+const PROXY_API_URL = `${DOLOMITE_API_SERVER_URL}/aggregator/odos`;
 const API_URL = 'https://api.odos.xyz';
 
 export default class OdosAggregator extends AggregatorClient {

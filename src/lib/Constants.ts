@@ -36,6 +36,8 @@ export const INVALID_NAME = 'INVALID';
 
 export const BYTES_EMPTY = '0x';
 
+export const DOLOMITE_API_SERVER_URL = 'https://api.dolomite.io';
+
 // TOKENS
 
 const WETH_MARKET_ID_MAP: Record<Network, MarketId> = {

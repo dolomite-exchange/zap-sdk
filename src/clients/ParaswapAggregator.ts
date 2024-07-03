@@ -6,7 +6,6 @@ import { PARASWAP_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 
-// const PROXY_API_URL = 'https://proxy.dolomite.io/aggregator/paraswap';
 const API_URL = 'https://apiv5.paraswap.io';
 
 export default class ParaswapAggregator extends AggregatorClient {
