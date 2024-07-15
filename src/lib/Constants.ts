@@ -465,7 +465,7 @@ export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.MANTLE]: undefined,
   [Network.BASE]: undefined,
-  [Network.ARBITRUM_ONE]: '0xdA5A70c885187DaA71E7553ca9F728464af8d2ad',
+  [Network.ARBITRUM_ONE]: '0x5Ca84c34a381434786738735265b9f3FD814b824',
 };
 
 const S_GLP_MAP: Record<Network, Address | undefined> = {
