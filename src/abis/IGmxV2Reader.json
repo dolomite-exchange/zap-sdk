@@ -2720,6 +2720,16 @@
         "internalType": "address",
         "name": "_uiFeeReceiver",
         "type": "address"
+      },
+      {
+        "internalType": "enum IGmxReader.SwapPricingType",
+        "name": "_swapPricingType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "includeVirtualInventoryImpact",
+        "type": "bool"
       }
     ],
     "name": "getDepositAmountOut",
@@ -3451,6 +3461,11 @@
         "internalType": "address",
         "name": "_uiFeeReceiver",
         "type": "address"
+      },
+      {
+        "internalType": "enum IGmxReader.SwapPricingType",
+        "name": "_swapPricingType",
+        "type": "uint8"
       }
     ],
     "name": "getWithdrawalAmountOut",

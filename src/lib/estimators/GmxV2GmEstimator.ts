@@ -20,6 +20,12 @@ import {
 import { LocalCache } from '../LocalCache';
 import MarketPricesStruct = GmxMarket.MarketPricesStruct;
 
+enum SwapPricingType {
+  TwoStep,
+  Shift,
+  Atomic
+}
+
 interface SignedPriceData {
   tokenAddress: string;
   minPrice: string;
@@ -178,6 +184,7 @@ export class GmxV2GmEstimator {
       pricesStruct,
       amountIn.toFixed(),
       ADDRESS_ZERO,
+      SwapPricingType.TwoStep,
     );
 
     const weight = await this.getWeightForOtherAmount(
@@ -259,6 +266,8 @@ export class GmxV2GmEstimator {
       inputToken.tokenAddress === longToken ? amountIn.toFixed() : '0',
       inputToken.tokenAddress === shortToken && longToken !== shortToken ? amountIn.toFixed() : '0',
       ADDRESS_ZERO,
+      SwapPricingType.TwoStep,
+      true,
     );
 
     const [limits, gasPriceWei] = await Promise.all([
