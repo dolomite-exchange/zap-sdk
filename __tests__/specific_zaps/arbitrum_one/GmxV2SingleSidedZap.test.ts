@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import { DolomiteZap, GenericTraderType, INTEGERS, Network } from '../../../src';
 import {
-  ArbitrumOneConstants,
+  WBTC_MARKET,
   GM_BTC_SINGLE_SIDED_MARKET,
   GM_ETH_SINGLE_SIDED_MARKET,
   WETH_MARKET,
@@ -33,7 +33,7 @@ describe('GmxV2Zap', () => {
     GM_ETH_SINGLE_SIDED_MARKET,
   ];
   const longMarkets = [
-    ArbitrumOneConstants,
+    WBTC_MARKET,
     WETH_MARKET,
   ];
   const inputAmountsForLongToken = [
