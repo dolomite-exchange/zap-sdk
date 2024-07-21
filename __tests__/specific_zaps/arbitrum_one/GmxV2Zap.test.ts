@@ -4,7 +4,7 @@ import { parseEther } from 'ethers/lib/utils';
 import { DolomiteZap, GenericTraderType, INTEGERS, Network } from '../../../src';
 import {
   ARB_MARKET,
-  ArbitrumOneConstants,
+  WBTC_MARKET,
   GM_ARB_MARKET,
   GM_BTC_MARKET,
   GM_ETH_MARKET,
@@ -42,7 +42,7 @@ describe('GmxV2Zap', () => {
   ];
   const longMarkets = [
     ARB_MARKET,
-    ArbitrumOneConstants,
+    WBTC_MARKET,
     WETH_MARKET,
     LINK_MARKET,
   ];

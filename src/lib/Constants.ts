@@ -507,7 +507,7 @@ export const GMX_V2_DATA_STORE_MAP: Record<Network, Address | undefined> = {
 };
 
 export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: '0xdA5A70c885187DaA71E7553ca9F728464af8d2ad',
+  [Network.ARBITRUM_ONE]: '0x5Ca84c34a381434786738735265b9f3FD814b824',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.MANTLE]: undefined,

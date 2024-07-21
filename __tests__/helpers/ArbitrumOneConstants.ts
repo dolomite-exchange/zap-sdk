@@ -61,7 +61,7 @@ export const NATIVE_USDC_MARKET: ApiMarket = {
   liquidityTokenWrapperInfo: undefined,
 };
 
-export const ArbitrumOneConstants: ApiMarket = {
+export const WBTC_MARKET: ApiMarket = {
   marketId: new BigNumber(4),
   symbol: 'WBTC',
   name: 'Wrapped BTC',

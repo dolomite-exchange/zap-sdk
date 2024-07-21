@@ -287,15 +287,14 @@ export declare namespace GmxWithdrawal {
 export interface IGmxV2ReaderInterface extends utils.Interface {
   functions: {
     "getDeposit(address,bytes32)": FunctionFragment;
-    "getDepositAmountOut(address,(address,address,address,address),((uint256,uint256),(uint256,uint256),(uint256,uint256)),uint256,uint256,address)": FunctionFragment;
+    "getDepositAmountOut(address,(address,address,address,address),((uint256,uint256),(uint256,uint256),(uint256,uint256)),uint256,uint256,address,uint8,bool)": FunctionFragment;
     "getMarketTokenPrice(address,(address,address,address,address),(uint256,uint256),(uint256,uint256),(uint256,uint256),bytes32,bool)": FunctionFragment;
     "getPnlToPoolFactor(address,address,((uint256,uint256),(uint256,uint256),(uint256,uint256)),bool,bool)": FunctionFragment;
     "getSwapAmountOut(address,(address,address,address,address),((uint256,uint256),(uint256,uint256),(uint256,uint256)),address,uint256,address)": FunctionFragment;
     "getSwapPriceImpact(address,address,address,address,uint256,(uint256,uint256),(uint256,uint256))": FunctionFragment;
     "getWithdrawal(address,bytes32)": FunctionFragment;
-    "getWithdrawalAmountOut(address,(address,address,address,address),((uint256,uint256),(uint256,uint256),(uint256,uint256)),uint256,address)": FunctionFragment;
+    "getWithdrawalAmountOut(address,(address,address,address,address),((uint256,uint256),(uint256,uint256),(uint256,uint256)),uint256,address,uint8)": FunctionFragment;
   };
-  events: {};
 
   getFunction(
     nameOrSignatureOrTopic:
@@ -313,7 +312,6 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
     functionFragment: "getDeposit",
     values: [string, BytesLike]
   ): string;
-
   encodeFunctionData(
     functionFragment: "getDepositAmountOut",
     values: [
@@ -322,10 +320,11 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
       GmxMarket.MarketPricesStruct,
       BigNumberish,
       BigNumberish,
-      string
+      string,
+      BigNumberish,
+      boolean
     ]
   ): string;
-
   encodeFunctionData(
     functionFragment: "getMarketTokenPrice",
     values: [
@@ -338,12 +337,10 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
       boolean
     ]
   ): string;
-
   encodeFunctionData(
     functionFragment: "getPnlToPoolFactor",
     values: [string, string, GmxMarket.MarketPricesStruct, boolean, boolean]
   ): string;
-
   encodeFunctionData(
     functionFragment: "getSwapAmountOut",
     values: [
@@ -355,7 +352,6 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
       string
     ]
   ): string;
-
   encodeFunctionData(
     functionFragment: "getSwapPriceImpact",
     values: [
@@ -368,12 +364,10 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
       GmxPrice.PricePropsStruct
     ]
   ): string;
-
   encodeFunctionData(
     functionFragment: "getWithdrawal",
     values: [string, BytesLike]
   ): string;
-
   encodeFunctionData(
     functionFragment: "getWithdrawalAmountOut",
     values: [
@@ -381,50 +375,51 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
       GmxMarket.MarketPropsStruct,
       GmxMarket.MarketPricesStruct,
       BigNumberish,
-      string
+      string,
+      BigNumberish
     ]
   ): string;
 
   decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
-
   decodeFunctionResult(
     functionFragment: "getDepositAmountOut",
     data: BytesLike
   ): Result;
-
   decodeFunctionResult(
     functionFragment: "getMarketTokenPrice",
     data: BytesLike
   ): Result;
-
   decodeFunctionResult(
     functionFragment: "getPnlToPoolFactor",
     data: BytesLike
   ): Result;
-
   decodeFunctionResult(
     functionFragment: "getSwapAmountOut",
     data: BytesLike
   ): Result;
-
   decodeFunctionResult(
     functionFragment: "getSwapPriceImpact",
     data: BytesLike
   ): Result;
-
   decodeFunctionResult(
     functionFragment: "getWithdrawal",
     data: BytesLike
   ): Result;
-
   decodeFunctionResult(
     functionFragment: "getWithdrawalAmountOut",
     data: BytesLike
   ): Result;
+
+  events: {};
 }
 
 export interface IGmxV2Reader extends BaseContract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
+
   interface: IGmxV2ReaderInterface;
+
   functions: {
     getDeposit(
       _dataStore: string,
@@ -439,6 +434,8 @@ export interface IGmxV2Reader extends BaseContract {
       _longTokenAmount: BigNumberish,
       _shortTokenAmount: BigNumberish,
       _uiFeeReceiver: string,
+      _swapPricingType: BigNumberish,
+      includeVirtualInventoryImpact: boolean,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
@@ -474,8 +471,8 @@ export interface IGmxV2Reader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, IGmxV2Reader.SwapFeesStructOutput] & {
-      fees: IGmxV2Reader.SwapFeesStructOutput;
-    }
+        fees: IGmxV2Reader.SwapFeesStructOutput;
+      }
     >;
 
     getSwapPriceImpact(
@@ -501,241 +498,10 @@ export interface IGmxV2Reader extends BaseContract {
       _prices: GmxMarket.MarketPricesStruct,
       _marketTokenAmount: BigNumberish,
       _uiFeeReceiver: string,
+      _swapPricingType: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
   };
-  callStatic: {
-    getDeposit(
-      _dataStore: string,
-      _key: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<GmxDeposit.DepositPropsStructOutput>;
-
-    getDepositAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _longTokenAmount: BigNumberish,
-      _shortTokenAmount: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getMarketTokenPrice(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _indexTokenPrice: GmxPrice.PricePropsStruct,
-      _longTokenPrice: GmxPrice.PricePropsStruct,
-      _shortTokenPrice: GmxPrice.PricePropsStruct,
-      _pnlFactorType: BytesLike,
-      _maximize: boolean,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, GmxMarketPoolValueInfo.PoolValueInfoPropsStructOutput]
-    >;
-
-    getPnlToPoolFactor(
-      _dataStore: string,
-      _marketAddress: string,
-      _prices: GmxMarket.MarketPricesStruct,
-      _isLong: boolean,
-      _maximize: boolean,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getSwapAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _tokenIn: string,
-      _amountIn: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, IGmxV2Reader.SwapFeesStructOutput] & {
-      fees: IGmxV2Reader.SwapFeesStructOutput;
-    }
-    >;
-
-    getSwapPriceImpact(
-      _dataStore: string,
-      _marketKey: string,
-      _tokenIn: string,
-      _tokenOut: string,
-      _amountIn: BigNumberish,
-      _tokenInPrice: GmxPrice.PricePropsStruct,
-      _tokenOutPrice: GmxPrice.PricePropsStruct,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
-
-    getWithdrawal(
-      _dataStore: string,
-      _key: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<GmxWithdrawal.WithdrawalPropsStructOutput>;
-
-    getWithdrawalAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _marketTokenAmount: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber]>;
-  };
-  filters: {};
-  estimateGas: {
-    getDeposit(
-      _dataStore: string,
-      _key: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDepositAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _longTokenAmount: BigNumberish,
-      _shortTokenAmount: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getMarketTokenPrice(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _indexTokenPrice: GmxPrice.PricePropsStruct,
-      _longTokenPrice: GmxPrice.PricePropsStruct,
-      _shortTokenPrice: GmxPrice.PricePropsStruct,
-      _pnlFactorType: BytesLike,
-      _maximize: boolean,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getPnlToPoolFactor(
-      _dataStore: string,
-      _marketAddress: string,
-      _prices: GmxMarket.MarketPricesStruct,
-      _isLong: boolean,
-      _maximize: boolean,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getSwapAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _tokenIn: string,
-      _amountIn: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getSwapPriceImpact(
-      _dataStore: string,
-      _marketKey: string,
-      _tokenIn: string,
-      _tokenOut: string,
-      _amountIn: BigNumberish,
-      _tokenInPrice: GmxPrice.PricePropsStruct,
-      _tokenOutPrice: GmxPrice.PricePropsStruct,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getWithdrawal(
-      _dataStore: string,
-      _key: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getWithdrawalAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _marketTokenAmount: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-  };
-  populateTransaction: {
-    getDeposit(
-      _dataStore: string,
-      _key: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getDepositAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _longTokenAmount: BigNumberish,
-      _shortTokenAmount: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getMarketTokenPrice(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _indexTokenPrice: GmxPrice.PricePropsStruct,
-      _longTokenPrice: GmxPrice.PricePropsStruct,
-      _shortTokenPrice: GmxPrice.PricePropsStruct,
-      _pnlFactorType: BytesLike,
-      _maximize: boolean,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getPnlToPoolFactor(
-      _dataStore: string,
-      _marketAddress: string,
-      _prices: GmxMarket.MarketPricesStruct,
-      _isLong: boolean,
-      _maximize: boolean,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getSwapAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _tokenIn: string,
-      _amountIn: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getSwapPriceImpact(
-      _dataStore: string,
-      _marketKey: string,
-      _tokenIn: string,
-      _tokenOut: string,
-      _amountIn: BigNumberish,
-      _tokenInPrice: GmxPrice.PricePropsStruct,
-      _tokenOutPrice: GmxPrice.PricePropsStruct,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getWithdrawal(
-      _dataStore: string,
-      _key: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getWithdrawalAmountOut(
-      _dataStore: string,
-      _market: GmxMarket.MarketPropsStruct,
-      _prices: GmxMarket.MarketPricesStruct,
-      _marketTokenAmount: BigNumberish,
-      _uiFeeReceiver: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-  };
-
-  connect(signerOrProvider: Signer | Provider | string): this;
-
-  attach(addressOrName: string): this;
-
-  deployed(): Promise<this>;
 
   getDeposit(
     _dataStore: string,
@@ -750,6 +516,8 @@ export interface IGmxV2Reader extends BaseContract {
     _longTokenAmount: BigNumberish,
     _shortTokenAmount: BigNumberish,
     _uiFeeReceiver: string,
+    _swapPricingType: BigNumberish,
+    includeVirtualInventoryImpact: boolean,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -785,8 +553,8 @@ export interface IGmxV2Reader extends BaseContract {
     overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, IGmxV2Reader.SwapFeesStructOutput] & {
-    fees: IGmxV2Reader.SwapFeesStructOutput;
-  }
+      fees: IGmxV2Reader.SwapFeesStructOutput;
+    }
   >;
 
   getSwapPriceImpact(
@@ -812,6 +580,246 @@ export interface IGmxV2Reader extends BaseContract {
     _prices: GmxMarket.MarketPricesStruct,
     _marketTokenAmount: BigNumberish,
     _uiFeeReceiver: string,
+    _swapPricingType: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber]>;
+
+  callStatic: {
+    getDeposit(
+      _dataStore: string,
+      _key: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<GmxDeposit.DepositPropsStructOutput>;
+
+    getDepositAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _longTokenAmount: BigNumberish,
+      _shortTokenAmount: BigNumberish,
+      _uiFeeReceiver: string,
+      _swapPricingType: BigNumberish,
+      includeVirtualInventoryImpact: boolean,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getMarketTokenPrice(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _indexTokenPrice: GmxPrice.PricePropsStruct,
+      _longTokenPrice: GmxPrice.PricePropsStruct,
+      _shortTokenPrice: GmxPrice.PricePropsStruct,
+      _pnlFactorType: BytesLike,
+      _maximize: boolean,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, GmxMarketPoolValueInfo.PoolValueInfoPropsStructOutput]
+    >;
+
+    getPnlToPoolFactor(
+      _dataStore: string,
+      _marketAddress: string,
+      _prices: GmxMarket.MarketPricesStruct,
+      _isLong: boolean,
+      _maximize: boolean,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getSwapAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _tokenIn: string,
+      _amountIn: BigNumberish,
+      _uiFeeReceiver: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, IGmxV2Reader.SwapFeesStructOutput] & {
+        fees: IGmxV2Reader.SwapFeesStructOutput;
+      }
+    >;
+
+    getSwapPriceImpact(
+      _dataStore: string,
+      _marketKey: string,
+      _tokenIn: string,
+      _tokenOut: string,
+      _amountIn: BigNumberish,
+      _tokenInPrice: GmxPrice.PricePropsStruct,
+      _tokenOutPrice: GmxPrice.PricePropsStruct,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
+
+    getWithdrawal(
+      _dataStore: string,
+      _key: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<GmxWithdrawal.WithdrawalPropsStructOutput>;
+
+    getWithdrawalAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _marketTokenAmount: BigNumberish,
+      _uiFeeReceiver: string,
+      _swapPricingType: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
+  };
+
+  filters: {};
+
+  estimateGas: {
+    getDeposit(
+      _dataStore: string,
+      _key: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getDepositAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _longTokenAmount: BigNumberish,
+      _shortTokenAmount: BigNumberish,
+      _uiFeeReceiver: string,
+      _swapPricingType: BigNumberish,
+      includeVirtualInventoryImpact: boolean,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getMarketTokenPrice(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _indexTokenPrice: GmxPrice.PricePropsStruct,
+      _longTokenPrice: GmxPrice.PricePropsStruct,
+      _shortTokenPrice: GmxPrice.PricePropsStruct,
+      _pnlFactorType: BytesLike,
+      _maximize: boolean,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getPnlToPoolFactor(
+      _dataStore: string,
+      _marketAddress: string,
+      _prices: GmxMarket.MarketPricesStruct,
+      _isLong: boolean,
+      _maximize: boolean,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getSwapAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _tokenIn: string,
+      _amountIn: BigNumberish,
+      _uiFeeReceiver: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getSwapPriceImpact(
+      _dataStore: string,
+      _marketKey: string,
+      _tokenIn: string,
+      _tokenOut: string,
+      _amountIn: BigNumberish,
+      _tokenInPrice: GmxPrice.PricePropsStruct,
+      _tokenOutPrice: GmxPrice.PricePropsStruct,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getWithdrawal(
+      _dataStore: string,
+      _key: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getWithdrawalAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _marketTokenAmount: BigNumberish,
+      _uiFeeReceiver: string,
+      _swapPricingType: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    getDeposit(
+      _dataStore: string,
+      _key: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getDepositAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _longTokenAmount: BigNumberish,
+      _shortTokenAmount: BigNumberish,
+      _uiFeeReceiver: string,
+      _swapPricingType: BigNumberish,
+      includeVirtualInventoryImpact: boolean,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getMarketTokenPrice(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _indexTokenPrice: GmxPrice.PricePropsStruct,
+      _longTokenPrice: GmxPrice.PricePropsStruct,
+      _shortTokenPrice: GmxPrice.PricePropsStruct,
+      _pnlFactorType: BytesLike,
+      _maximize: boolean,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getPnlToPoolFactor(
+      _dataStore: string,
+      _marketAddress: string,
+      _prices: GmxMarket.MarketPricesStruct,
+      _isLong: boolean,
+      _maximize: boolean,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getSwapAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _tokenIn: string,
+      _amountIn: BigNumberish,
+      _uiFeeReceiver: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getSwapPriceImpact(
+      _dataStore: string,
+      _marketKey: string,
+      _tokenIn: string,
+      _tokenOut: string,
+      _amountIn: BigNumberish,
+      _tokenInPrice: GmxPrice.PricePropsStruct,
+      _tokenOutPrice: GmxPrice.PricePropsStruct,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getWithdrawal(
+      _dataStore: string,
+      _key: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getWithdrawalAmountOut(
+      _dataStore: string,
+      _market: GmxMarket.MarketPropsStruct,
+      _prices: GmxMarket.MarketPricesStruct,
+      _marketTokenAmount: BigNumberish,
+      _uiFeeReceiver: string,
+      _swapPricingType: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+  };
 }
