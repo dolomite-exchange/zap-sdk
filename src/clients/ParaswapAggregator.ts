@@ -73,6 +73,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       ignoreChecks: 'true',
       ignoreGasEstimate: 'true',
       onlyParams: 'false',
+      excludeDEXS: 'ParaSwapPool,ParaSwapLimitOrders',
     }).toString();
 
     // const result = await axios.post(this.useProxy
