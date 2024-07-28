@@ -50,6 +50,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       amount: inputAmountWei.toFixed(),
       includeContractMethods: 'megaSwap,multiSwap,simpleSwap',
       partner: 'dolomite',
+      excludeDEXS: 'ParaSwapPool,ParaSwapLimitOrders',
     }).toString();
 
     // const priceRouteResponse = await (this.useProxy
@@ -59,12 +60,12 @@ export default class ParaswapAggregator extends AggregatorClient {
     const priceRouteResponse = await axios.get(`${API_URL}/prices?${pricesQueryParams}`)
       .then(response => response.data)
       .catch((error) => error);
-    if (!priceRouteResponse || !priceRouteResponse.priceRoute || priceRouteResponse?.response?.data?.error) {
+    if (!priceRouteResponse || !priceRouteResponse.priceRoute || priceRouteResponse?.data?.error) {
       // GUARD: If we don't have a price route, we can't execute the trade
       Logger.error({
         message: 'Found error in paraswap#prices',
         errorMessage: priceRouteResponse?.message ?? null,
-        data: priceRouteResponse?.response?.data?.error ?? null,
+        data: priceRouteResponse?.data?.error ?? null,
       });
       return undefined;
     }
