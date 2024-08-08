@@ -174,15 +174,6 @@ const PENDLE_PT_USDE_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | undefine
   [Network.X_LAYER]: undefined,
 };
 
-const PENDLE_PT_USDE_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
-  [Network.ARBITRUM_ONE]: undefined,
-  [Network.BASE]: undefined,
-  [Network.BERACHAIN]: undefined,
-  [Network.MANTLE]: new BigNumber(10),
-  [Network.POLYGON_ZKEVM]: undefined,
-  [Network.X_LAYER]: undefined,
-};
-
 const PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(11),
   [Network.BASE]: undefined,
@@ -1014,7 +1005,6 @@ const PT_R_ETH_2025_MARKET_ARBITRUM = '0x14FbC760eFaF36781cB0eb3Cb255aD976117B9B
 const PT_RS_ETH_SEP_2024_MARKET_ARBITRUM = '0xed99fc8bdb8e9e7b8240f62f69609a125a0fbf14';
 const PT_USDE_DEC_2024_MARKET_MANTLE = '0x2ddD4808fBB2e08b563af99B8F340433c32C8cc2';
 const PT_USDE_JUL_2024_MARKET_MANTLE = '0x7dc07c575a0c512422dcab82ce9ed74db58be30c';
-const PT_USDE_DEC_2024_MARKET_MANTLE = '0x2ddd4808fbb2e08b563af99b8f340433c32c8cc2';
 const PT_WE_ETH_APR_2024_MARKET_ARBITRUM = '0xE11f9786B06438456b044B3E21712228ADcAA0D1';
 const PT_WE_ETH_JUN_2024_MARKET_ARBITRUM = '0x952083cde7aaa11ab8449057f7de23a970aa8472';
 const PT_WE_ETH_SEP_2024_MARKET_ARBITRUM = '0xf9f9779d8ff604732eba9ad345e6a27ef5c2a9d6';
