@@ -80,6 +80,14 @@ const WBTC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
 //   [Network.X_LAYER]: new BigNumber(4),
 // };
 
+const METH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.MANTLE]: new BigNumber(5),
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 const ISOLATED_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(6),
   [Network.BASE]: undefined,
@@ -128,10 +136,10 @@ const PLV_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
-const JONES_USDC_V2_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
-  [Network.ARBITRUM_ONE]: new BigNumber(43),
+const PENDLE_PT_USDE_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
-  [Network.MANTLE]: undefined,
+  [Network.MANTLE]: new BigNumber(10),
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
@@ -140,6 +148,14 @@ const PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.ARBITRUM_ONE]: new BigNumber(11),
   [Network.BASE]: undefined,
   [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+const PENDLE_PT_METH_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.MANTLE]: new BigNumber(11),
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
@@ -320,6 +336,14 @@ const PENDLE_PT_WE_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
   [Network.X_LAYER]: undefined,
 };
 
+const JONES_USDC_V2_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(43),
+  [Network.BASE]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 const GM_BTC_SINGLE_SIDED_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(44),
   [Network.BASE]: undefined,
@@ -468,12 +492,12 @@ export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x5Ca84c34a381434786738735265b9f3FD814b824',
 };
 
-const S_GLP_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: '0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf',
-  [Network.BASE]: undefined,
-  [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
+export const METH_MAP: Record<Network, Address | undefined> = {
   [Network.X_LAYER]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.MANTLE]: '0xcDA86A272531e8640cD7F1a92c01839911B90bb0',
+  [Network.BASE]: undefined,
+  [Network.ARBITRUM_ONE]: undefined,
 };
 
 const R_ETH_MAP: Record<Network, Address | undefined> = {
@@ -486,6 +510,14 @@ const R_ETH_MAP: Record<Network, Address | undefined> = {
 
 const RS_ETH_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x4186bfc76e2e237523cbc30fd220fe055156b41f',
+  [Network.BASE]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+const S_GLP_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: '0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf',
   [Network.BASE]: undefined,
   [Network.MANTLE]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
@@ -788,6 +820,26 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
   },
   [Network.BASE]: {},
   [Network.MANTLE]: {
+    [PENDLE_PT_METH_DEC_2024_MARKET_ID_MAP[Network.MANTLE]!.toFixed()]: {
+      tokenAddress: Deployments.PendlePtmETHDec2024IsolationModeVaultFactory[Network.MANTLE].address,
+      unwrapper: Deployments.PendlePtmETHDec2024IsolationModeUnwrapperTraderV3[Network.MANTLE].address,
+      wrapper: Deployments.PendlePtmETHDec2024IsolationModeWrapperTraderV3[Network.MANTLE].address,
+      unwrapperMarketIds: [METH_MARKET_ID_MAP[Network.MANTLE]!],
+      wrapperMarketIds: [METH_MARKET_ID_MAP[Network.MANTLE]!],
+      unwrapperReadableName: 'PT-mETH Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-mETH Isolation Mode Wrapper',
+      isAsync: false,
+    },
+    [PENDLE_PT_USDE_DEC_2024_MARKET_ID_MAP[Network.MANTLE]!.toFixed()]: {
+      tokenAddress: Deployments.PendlePtUSDeDec2024IsolationModeVaultFactory[Network.MANTLE].address,
+      unwrapper: Deployments.PendlePtUSDeDec2024IsolationModeUnwrapperTraderV3[Network.MANTLE].address,
+      wrapper: Deployments.PendlePtUSDeDec2024IsolationModeWrapperTraderV3[Network.MANTLE].address,
+      unwrapperMarketIds: [USDE_MARKET_ID_MAP[Network.MANTLE]!],
+      wrapperMarketIds: [USDE_MARKET_ID_MAP[Network.MANTLE]!],
+      unwrapperReadableName: 'PT-USDe Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-USDe Isolation Mode Wrapper',
+      isAsync: false,
+    },
     [PENDLE_PT_USDE_JUL_2024_MARKET_ID_MAP[Network.MANTLE]!.toFixed()]: {
       tokenAddress: Deployments.PendlePtUSDeJul2024IsolationModeVaultFactory[Network.MANTLE].address,
       unwrapper: Deployments.PendlePtUSDeJul2024IsolationModeUnwrapperTraderV3[Network.MANTLE].address,
@@ -853,8 +905,10 @@ const PT_EZ_ETH_JUN_2024_MARKET_ARBITRUM = '0x5E03C94Fc5Fb2E21882000A96Df0b63d2c
 const PT_EZ_ETH_SEP_2024_MARKET_ARBITRUM = '0x35f3db08a6e9cb4391348b0b404f493e7ae264c0';
 const PT_GLP_MAR_2024_MARKET_ARBITRUM = '0x7D49E5Adc0EAAD9C027857767638613253eF125f';
 const PT_GLP_SEP_2024_MARKET_ARBITRUM = '0x551c423c441db0b691b5630f04d2080caee25963';
+const PT_METH_DEC_2024_MARKET_MANTLE = '0x99E83709846b6cB82d47a0D78b175E68497EA28B';
 const PT_R_ETH_2025_MARKET_ARBITRUM = '0x14FbC760eFaF36781cB0eb3Cb255aD976117B9Bd';
 const PT_RS_ETH_SEP_2024_MARKET_ARBITRUM = '0xed99fc8bdb8e9e7b8240f62f69609a125a0fbf14';
+const PT_USDE_DEC_2024_MARKET_MANTLE = '0x2ddD4808fBB2e08b563af99B8F340433c32C8cc2';
 const PT_USDE_JUL_2024_MARKET_MANTLE = '0x7dc07c575a0c512422dcab82ce9ed74db58be30c';
 const PT_WE_ETH_APR_2024_MARKET_ARBITRUM = '0xE11f9786B06438456b044B3E21712228ADcAA0D1';
 const PT_WE_ETH_JUN_2024_MARKET_ARBITRUM = '0x952083cde7aaa11ab8449057f7de23a970aa8472';
@@ -940,6 +994,18 @@ const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
   },
   [Network.BASE]: {},
   [Network.MANTLE]: {
+    [Deployments.PendlePtmETHDec2024IsolationModeVaultFactory[Network.MANTLE].address]: {
+      marketTokenAddress: PT_METH_DEC_2024_MARKET_MANTLE,
+      transformerTokenAddress: METH_MAP[Network.MANTLE]!,
+      ytTokenAddress: '0x007d35c67f97f2a898102a66df346f9e9422f7f0',
+      maturityTimestamp: 1735171200, // 26-DEC-2024
+    },
+    [Deployments.PendlePtUSDeDec2024IsolationModeVaultFactory[Network.MANTLE].address]: {
+      marketTokenAddress: PT_USDE_DEC_2024_MARKET_MANTLE,
+      transformerTokenAddress: USDE_MAP[Network.MANTLE]!,
+      ytTokenAddress: '0x119de9edbaf4565d7cb6a1b7e5c7f9d1f03de5c0',
+      maturityTimestamp: 1735171200, // 26-DEC-2024
+    },
     [Deployments.PendlePtUSDeJul2024IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_USDE_JUL_2024_MARKET_MANTLE,
       transformerTokenAddress: USDE_MAP[Network.MANTLE]!,
