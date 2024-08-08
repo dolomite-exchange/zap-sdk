@@ -5,11 +5,12 @@ export type Address = string;
 export type MarketId = BigNumber;
 
 export enum Network {
-  X_LAYER = 196,
-  POLYGON_ZKEVM = 1101,
-  MANTLE = 5000,
-  BASE = 8453,
   ARBITRUM_ONE = 42161,
+  BASE = 8453,
+  BERACHAIN = 8453,
+  MANTLE = 5000,
+  POLYGON_ZKEVM = 1101,
+  X_LAYER = 196,
 }
 
 export type BlockTag = 'latest' | number;
