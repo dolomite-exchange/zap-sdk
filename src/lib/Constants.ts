@@ -26,7 +26,8 @@ export const INTEGERS = {
 export interface GmMarket {
   indexTokenAddress: string;
   shortTokenId: MarketId;
-  longTokenId: MarketId;
+  longTokenId: MarketId | undefined;
+  longTokenAddress: string;
   marketTokenAddress: Address;
 }
 
@@ -37,6 +38,12 @@ export const INVALID_NAME = 'INVALID';
 export const BYTES_EMPTY = '0x';
 
 export const DOLOMITE_API_SERVER_URL = 'https://api.dolomite.io';
+
+// LABELS
+
+const GM_UNWRAPPER_LABEL = 'GM Intent Unwrapper';
+
+const GM_WRAPPER_LABEL = 'GM Intent Wrapper';
 
 // TOKENS
 
@@ -112,7 +119,7 @@ const ISOLATED_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
 };
 
 const USDE_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
-  [Network.ARBITRUM_ONE]: undefined,
+  [Network.ARBITRUM_ONE]: new BigNumber(54),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.MANTLE]: new BigNumber(6),
@@ -460,41 +467,126 @@ const PENDLE_PT_RS_ETH_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
   [Network.X_LAYER]: undefined,
 };
 
+const GM_AAVE_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(55),
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+const GM_DOGE_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(56),
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+const GM_GMX_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(57),
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+const GM_SOL_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(58),
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+const GM_WST_ETH_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(59),
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 // =========================
 // ======= Addresses =======
 // =========================
 
 export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined> | undefined> = {
   [Network.ARBITRUM_ONE]: {
+    [Deployments.GmxV2AAVEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0xba5DdD1f9d7F570dc94a51479a000E3BCE967196',
+      longTokenId: undefined,
+      longTokenAddress: '0xba5DdD1f9d7F570dc94a51479a000E3BCE967196',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x1CbBa6346F110c8A5ea739ef2d1eb182990e4EB2',
+    },
     [Deployments.GmxV2ARBIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0x912CE59144191C1204E64559FE8253a0e49E6548',
       longTokenId: ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0x912CE59144191C1204E64559FE8253a0e49E6548',
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407',
     },
     [Deployments.GmxV2BTCIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0x47904963fc8b2340414262125aF798B9655E58Cd',
       longTokenId: WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0x47c031236e19d024b42f8AE6780E44A573170703',
+    },
+    [Deployments.GmxV2DOGEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0xC4da4c24fd591125c3F47b340b6f4f76111883d8',
+      longTokenId: WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x6853EA96FF216fAb11D2d930CE3C508556A4bdc4',
     },
     [Deployments.GmxV2ETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
       longTokenId: WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0x70d95587d40A2caf56bd97485aB3Eec10Bee6336',
+    },
+    [Deployments.GmxV2GMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
+      longTokenId: GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x55391D178Ce46e7AC8eaAEa50A72D1A5a8A622Da',
     },
     [Deployments.GmxV2LINKIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
       longTokenId: LINK_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0x7f1fa204bb700853D36994DA19F830b6Ad18455C',
+    },
+    [Deployments.GmxV2SOLIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07',
+      longTokenId: undefined,
+      longTokenAddress: '0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x09400D9DB990D5ed3f35D7be61DfAEB900Af03C9',
     },
     [Deployments.GmxV2UNIIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0',
       longTokenId: UNI_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0',
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0xc7Abb2C5f3BF3CEB389dF0Eecd6120D451170B50',
+    },
+    [Deployments.GmxV2WstETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+      longTokenId: WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0x5979D7b546E38E414F7E9822514be443A4800529',
+      shortTokenId: USDE_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x0Cf1fb4d1FF67A3D8Ca92c9d6643F8F9be8e03E5',
     },
     // ==================================================
     // ============= Single Sided GM tokens =============
@@ -502,12 +594,14 @@ export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefine
     [Deployments.GmxV2SingleSidedBTCIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0x47904963fc8b2340414262125aF798B9655E58Cd',
       longTokenId: WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
       shortTokenId: WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0x7C11F78Ce78768518D743E81Fdfa2F860C6b9A77',
     },
     [Deployments.GmxV2SingleSidedETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
       longTokenId: WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
       shortTokenId: WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0x450bb6774Dd8a756274E0ab4107953259d2ac541',
     },
@@ -737,8 +831,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
         NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
         ARB_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       ],
-      unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GM Intent Wrapper',
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
       isAsync: true,
     },
     [GM_BTC_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -753,8 +847,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
         NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
         WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       ],
-      unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GM Intent Wrapper',
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
       isAsync: true,
     },
     [GM_ETH_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -769,8 +863,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
         NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
         WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE],
       ],
-      unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GM Intent Wrapper',
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
       isAsync: true,
     },
     [GM_LINK_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -785,8 +879,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
         NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
         LINK_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       ],
-      unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GM Intent Wrapper',
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
       isAsync: true,
     },
     [PENDLE_PT_WE_ETH_APR_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -835,8 +929,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapper: Deployments.GmxV2SingleSidedBTCAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
-      unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GM Intent Wrapper',
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
       isAsync: true,
     },
     [GM_ETH_SINGLE_SIDED_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -845,8 +939,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapper: Deployments.GmxV2SingleSidedETHAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
       wrapperMarketIds: [WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]],
-      unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GM Intent Wrapper',
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
       isAsync: true,
     },
     [GM_UNI_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -855,8 +949,8 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapper: Deployments.GmxV2UNIAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, UNI_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, UNI_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
-      unwrapperReadableName: 'GM Intent Unwrapper',
-      wrapperReadableName: 'GM Intent Wrapper',
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
       isAsync: true,
     },
     [PENDLE_PT_WE_ETH_SEP_2024_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
@@ -888,6 +982,56 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       unwrapperReadableName: 'PT-rsETH Isolation Mode Unwrapper',
       wrapperReadableName: 'PT-rsETH Isolation Mode Wrapper',
       isAsync: false,
+    },
+    [GM_AAVE_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      tokenAddress: Deployments.GmxV2AAVEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.GmxV2AAVEAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2AAVEAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
+      isAsync: true,
+    },
+    [GM_DOGE_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      tokenAddress: Deployments.GmxV2DOGEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.GmxV2DOGEAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2DOGEAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
+      isAsync: true,
+    },
+    [GM_GMX_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      tokenAddress: Deployments.GmxV2GMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.GmxV2GMXAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2GMXAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
+      isAsync: true,
+    },
+    [GM_SOL_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      tokenAddress: Deployments.GmxV2SOLIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.GmxV2SOLAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2SOLAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
+      isAsync: true,
+    },
+    [GM_WST_ETH_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      tokenAddress: Deployments.GmxV2WstETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.GmxV2WstETHAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GmxV2WstETHAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [USDE_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [USDE_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, WST_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      unwrapperReadableName: GM_UNWRAPPER_LABEL,
+      wrapperReadableName: GM_WRAPPER_LABEL,
+      isAsync: true,
     },
   },
   [Network.BASE]: {},

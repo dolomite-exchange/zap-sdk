@@ -321,10 +321,10 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@dolomite-exchange/modules-deployments@^0.0.24":
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/@dolomite-exchange/modules-deployments/-/modules-deployments-0.0.24.tgz#6f7678cd19d17e05b63c3f3ca1463610818fbb88"
-  integrity sha512-XhRoNoKIUDJS4sFDwOEFTtj+QetJF1ZubaadxW4igAK+X4nlKIGXnNdebFeq8gjnyQOJZl1ONoyllBzc080yHw==
+"@dolomite-exchange/modules-deployments@^0.0.25":
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/@dolomite-exchange/modules-deployments/-/modules-deployments-0.0.25.tgz#7ecc947e06df3fd444a33dce665253f380df2652"
+  integrity sha512-r5ioqkuZYe831JNCTZtwpFXJV9TtWL3PdR6q13au+NbXoThvZU8iMIJTHgHak6vTkj88jCP0aHO1UJViJ4l84Q==
 
 "@ethersproject/abi@5.7.0", "@ethersproject/abi@^5.7.0":
   version "5.7.0"

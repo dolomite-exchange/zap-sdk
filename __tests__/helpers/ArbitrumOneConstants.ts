@@ -93,6 +93,7 @@ export const ISOLATED_GLP_MARKET: ApiMarket = {
   },
   liquidityTokenWrapperInfo: undefined,
 };
+
 export const ARB_MARKET: ApiMarket = {
   marketId: new BigNumber(7),
   symbol: 'ARB',
@@ -186,6 +187,18 @@ export const PT_GLP_MAR_2024_MARKET: ApiMarket = {
     inputMarketIds: ARBITRUM_ISOLATION_MODE_MAP[PT_GLP_MAR_2024_MARKET_ID.toFixed()]!.wrapperMarketIds,
     readableName: ARBITRUM_ISOLATION_MODE_MAP[PT_GLP_MAR_2024_MARKET_ID.toFixed()]!.wrapperReadableName,
   },
+  liquidityTokenWrapperInfo: undefined,
+};
+
+export const WST_ETH_MARKET: ApiMarket = {
+  marketId: new BigNumber(14),
+  symbol: 'wstETH',
+  name: 'Wrapped Staked ETH',
+  tokenAddress: toChecksumOpt('0x5979D7b546E38E414F7E9822514be443A4800529')!,
+  decimals: 18,
+  isolationModeUnwrapperInfo: undefined,
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: undefined,
   liquidityTokenWrapperInfo: undefined,
 };
 
@@ -471,5 +484,57 @@ export const PT_RS_ETH_SEP_2024_MARKET: ApiMarket = getApiMarket(
   'dPT-rsETH',
   'Dolomite Isolation: PT rsETH (SEP-26-2024)',
   Deployments.PendlePtRsETHSep2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  18,
+);
+
+export const USDE_MARKET: ApiMarket = {
+  marketId: new BigNumber(54),
+  symbol: 'USDe',
+  name: 'USDe',
+  tokenAddress: toChecksumOpt('0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34')!,
+  decimals: 18,
+  isolationModeUnwrapperInfo: undefined,
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: undefined,
+  liquidityTokenWrapperInfo: undefined,
+};
+
+const GM_AAVE_MARKET_ID = new BigNumber(55);
+export const GM_AAVE_MARKET: ApiMarket = getApiMarket(
+  Network.ARBITRUM_ONE,
+  GM_AAVE_MARKET_ID,
+  'dGM',
+  'Dolomite Isolation: GMX Market',
+  Deployments.GmxV2AAVEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  18,
+);
+
+const GM_DOGE_MARKET_ID = new BigNumber(56);
+export const GM_DOGE_MARKET: ApiMarket = getApiMarket(
+  Network.ARBITRUM_ONE,
+  GM_DOGE_MARKET_ID,
+  'dGM',
+  'Dolomite Isolation: GMX Market',
+  Deployments.GmxV2DOGEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  18,
+);
+
+const GM_SOL_MARKET_ID = new BigNumber(58);
+export const GM_SOL_MARKET: ApiMarket = getApiMarket(
+  Network.ARBITRUM_ONE,
+  GM_SOL_MARKET_ID,
+  'dGM',
+  'Dolomite Isolation: GMX Market',
+  Deployments.GmxV2SOLIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+  18,
+);
+
+const GM_WST_ETH_MARKET_ID = new BigNumber(59);
+export const GM_WST_ETH_MARKET: ApiMarket = getApiMarket(
+  Network.ARBITRUM_ONE,
+  GM_WST_ETH_MARKET_ID,
+  'dGM',
+  'Dolomite Isolation: GMX Market',
+  Deployments.GmxV2WstETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
   18,
 );

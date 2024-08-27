@@ -220,7 +220,12 @@ export class DolomiteZap {
       return undefined;
     }
 
-    return [gmMarket.longTokenId, gmMarket.shortTokenId];
+    const longMarketId = gmMarket.longTokenId;
+    if (longMarketId) {
+      return [longMarketId, gmMarket.shortTokenId];
+    }
+
+    return [gmMarket.shortTokenId];
   }
 
   public getPendleMarketByIsolationModeAddress(isolationModeAddress: Address): Address | undefined {

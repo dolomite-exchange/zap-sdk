@@ -167,7 +167,7 @@ export class GmxV2GmEstimator {
 
     const gmMarket = GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
-    const longToken = marketsMap[gmMarket.longTokenId.toFixed()].tokenAddress;
+    const longToken = gmMarket.longTokenAddress;
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
     const gmMarketProps = {
@@ -246,7 +246,7 @@ export class GmxV2GmEstimator {
 
     const gmMarket = GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
-    const longToken = marketsMap[gmMarket.longTokenId.toFixed()].tokenAddress;
+    const longToken = gmMarket.longTokenAddress;
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
 
