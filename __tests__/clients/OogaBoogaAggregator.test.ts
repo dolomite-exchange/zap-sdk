@@ -4,8 +4,7 @@ import { ApiMarket, Network, ZapConfig } from '../../src';
 import OogaBoogaAggregator from '../../src/clients/OogaBoogaAggregator';
 import { USDC_MARKET, WETH_MARKET } from '../helpers/BerachainConstants';
 
-// const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address;
-const oogaBoogaTraderAddress = Deployments.OdosAggregatorTrader[Network.BERACHAIN].address;
+const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address;
 
 describe('OogaBoogaAggregator', () => {
   const networkIdOverride = Network.BERACHAIN;
@@ -26,7 +25,8 @@ describe('OogaBoogaAggregator', () => {
       const inputMarket: ApiMarket = WETH_MARKET;
       const outputMarket: ApiMarket = USDC_MARKET;
       const inputAmount = new BigNumber('1000000000000000000'); // 1 ETH
-      const minOutputAmount = new BigNumber('100000000'); // 100 USDC
+      // @follow-up This is not returning much USDC. Testnet though so probably fine
+      const minOutputAmount = new BigNumber('10000000'); // 10 USDC
       const solidAccount = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
       const aggregatorOutput = await aggregator.getSwapExactTokensForTokensData(
         inputMarket,

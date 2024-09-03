@@ -4,7 +4,7 @@
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
-    "test:specific": "NODE_ENV=test jest __tests__/specific_zaps/arbitrum_one/GmxV2Zap.test.ts",
+    "test:specific": "NODE_ENV=test jest __tests__/clients/OogaBoogaAggregator.test.ts",
     "coverage": "NODE_ENV=test jest --coverage --runInBand --forceExit --coverageReporters=text-lcov | node_modules/.bin/coveralls",
     "build": "rm -rf dist/ && node_modules/.bin/tsc --module commonjs",
     "prepublishOnly": "npm run build"
@@ -27,7 +27,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "dependencies": {
-    "@dolomite-exchange/modules-deployments": "^0.0.25",
+    "@dolomite-exchange/modules-deployments": "^0.0.26",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.1",
     "dotenv-flow": "^0.4.0",

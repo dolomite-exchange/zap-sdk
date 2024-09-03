@@ -104,6 +104,7 @@ const WBTC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
 const METH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
   [Network.MANTLE]: new BigNumber(5),
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
@@ -193,6 +194,7 @@ const PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined
 const PENDLE_PT_METH_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
   [Network.MANTLE]: new BigNumber(11),
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
@@ -399,6 +401,7 @@ const PENDLE_PT_WE_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
 const JONES_USDC_V2_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(43),
   [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
   [Network.MANTLE]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
@@ -1125,7 +1128,7 @@ export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
 export const OOGA_BOOGA_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
-  [Network.BERACHAIN]: Deployments.OdosAggregatorTrader[Network.BASE].address, // TODO: fix
+  [Network.BERACHAIN]: Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address,
   [Network.MANTLE]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
@@ -1232,6 +1235,7 @@ const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
     },
   },
   [Network.BASE]: {},
+  [Network.BERACHAIN]: {},
   [Network.MANTLE]: {
     [Deployments.PendlePtmETHDec2024IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_METH_DEC_2024_MARKET_MANTLE,
@@ -1266,6 +1270,7 @@ const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
     },
   },
   [Network.BASE]: {},
+  [Network.BERACHAIN]: {},
   [Network.MANTLE]: {},
   [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
@@ -1277,6 +1282,7 @@ const SIMPLE_ISOLATION_MODE_MAP: Record<Network, Record<string, boolean | undefi
     [Deployments.GMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: true,
   },
   [Network.BASE]: {},
+  [Network.BERACHAIN]: {},
   [Network.MANTLE]: {},
   [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
