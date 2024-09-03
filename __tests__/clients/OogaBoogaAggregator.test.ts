@@ -1,11 +1,10 @@
-// import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
+import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ApiMarket, Network, ZapConfig } from '../../src';
 import OogaBoogaAggregator from '../../src/clients/OogaBoogaAggregator';
 import { USDC_MARKET, WETH_MARKET } from '../helpers/BerachainConstants';
 
-// const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address;
-const oogaBoogaTraderAddress = '0xC50b93e55c80a5e2c76917038A15d9D4Ad63a0d1';
+const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address;
 
 describe('OogaBoogaAggregator', () => {
   const networkIdOverride = Network.BERACHAIN;

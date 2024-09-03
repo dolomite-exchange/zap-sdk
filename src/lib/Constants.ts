@@ -1128,8 +1128,7 @@ export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
 export const OOGA_BOOGA_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
-  // [Network.BERACHAIN]: Deployments.OogaBoogaAggregatorTrader[Network.BASE].address, // TODO: fix
-  [Network.BERACHAIN]: '0xC50b93e55c80a5e2c76917038A15d9D4Ad63a0d1', // TODO: fix
+  [Network.BERACHAIN]: Deployments.OogaBoogaAggregatorTrader[Network.BASE].address,
   [Network.MANTLE]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
