@@ -5,7 +5,7 @@ import { OOGA_BOOGA_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 
-const API_URL = 'https://testnet.api.oogabooga.io';
+const API_URL = 'https://bartio.api.oogabooga.io';
 
 export default class OogaBoogaAggregator extends AggregatorClient {
   public constructor(network: Network) {
@@ -34,11 +34,10 @@ export default class OogaBoogaAggregator extends AggregatorClient {
     }
 
     const queryParams = new URLSearchParams({
-      chainId: this.network.toString(), // Replace with desired chainId
       tokenIn: inputMarket.tokenAddress,
       tokenOut: outputMarket.tokenAddress,
       amount: inputAmountWei.toFixed(),
-      from: traderAddress,
+      to: traderAddress,
       slippage: zapConfig.slippageTolerance.toString(),
     });
     const quoteResponse: any | Error = await axios.get(
@@ -61,7 +60,7 @@ export default class OogaBoogaAggregator extends AggregatorClient {
       return undefined;
     }
 
-    const expectedAmountOut = new BigNumber(quoteResponse.assumedAmountOut);
+    const expectedAmountOut = new BigNumber(quoteResponse.routerParams.swapTokenInfo.outputQuote);
     const tradeData = `0x${quoteResponse.tx.data.slice(10)}`; // get rid of the method ID
     return {
       traderAddress,

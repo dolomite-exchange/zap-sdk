@@ -7,7 +7,7 @@ export type MarketId = BigNumber;
 export enum Network {
   ARBITRUM_ONE = 42161,
   BASE = 8453,
-  BERACHAIN = 8453,
+  BERACHAIN = 80084,
   MANTLE = 5000,
   POLYGON_ZKEVM = 1101,
   X_LAYER = 196,
