@@ -8,7 +8,7 @@ import AggregatorClient from './AggregatorClient';
 const API_URL = 'https://bartio.api.oogabooga.io';
 
 export default class OogaBoogaAggregator extends AggregatorClient {
-  public constructor(network: Network) {
+  public constructor(network: Network, private readonly apiKey: string | undefined) {
     super(network);
   }
 
@@ -17,7 +17,7 @@ export default class OogaBoogaAggregator extends AggregatorClient {
   }
 
   public isValidForNetwork(): boolean {
-    return !!OOGA_BOOGA_TRADER_ADDRESS_MAP[this.network];
+    return !!OOGA_BOOGA_TRADER_ADDRESS_MAP[this.network] && !!this.apiKey;
   }
 
   public async getSwapExactTokensForTokensData(
@@ -28,6 +28,10 @@ export default class OogaBoogaAggregator extends AggregatorClient {
     _unused2: Address,
     zapConfig: ZapConfig,
   ): Promise<AggregatorOutput | undefined> {
+    if (!this.apiKey) {
+      return Promise.reject(new Error('No API key is set for Ooga Booga!'));
+    }
+
     const traderAddress = OOGA_BOOGA_TRADER_ADDRESS_MAP[this.network];
     if (!traderAddress) {
       return undefined;
@@ -44,7 +48,7 @@ export default class OogaBoogaAggregator extends AggregatorClient {
       `${API_URL}/v1/swap?${queryParams.toString()}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.OOGA_BOOGA_SECRET_KEY}`,
+          Authorization: `Bearer ${this.apiKey}`,
         },
       },
     ).then(response => response.data)

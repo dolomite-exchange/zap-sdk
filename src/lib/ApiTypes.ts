@@ -130,6 +130,7 @@ export interface AggregatorOutput {
 
 export interface ReferralOutput {
   referralAddress: Address | undefined;
+  oogaBoogaApiKey: string | undefined;
   odosReferralCode: Integer | undefined;
 }
 

@@ -79,6 +79,7 @@ describe('DolomiteZap', () => {
         referralInfo: {
           referralAddress: ADDRESS_ZERO,
           odosReferralCode: new BigNumber(21231),
+          oogaBoogaApiKey: process.env.OOGA_BOOGA_SECRET_KEY,
         },
         useProxyServer,
         gasMultiplier,

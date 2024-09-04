@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import AggregatorClient from './clients/AggregatorClient';
 import DolomiteClient from './clients/DolomiteClient';
 import OdosAggregator from './clients/OdosAggregator';
+import OogaBoogaAggregator from './clients/OogaBoogaAggregator';
 import ParaswapAggregator from './clients/ParaswapAggregator';
 import {
   Address,
@@ -31,7 +32,8 @@ import {
   ADDRESS_ZERO,
   ApiMarketConverter,
   BYTES_EMPTY,
-  getGmxV2IsolationModeAsset, getPendlePtMarketForIsolationModeToken,
+  getGmxV2IsolationModeAsset,
+  getPendlePtMarketForIsolationModeToken,
   INTEGERS,
   INVALID_NAME,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
@@ -119,6 +121,7 @@ export class DolomiteZap {
       defaultBlockTag = 'latest',
       referralInfo = {
         odosReferralCode: undefined,
+        oogaBoogaApiKey: undefined,
         referralAddress: undefined,
       },
       useProxyServer = true,
@@ -198,7 +201,7 @@ export class DolomiteZap {
         [] as GenericTraderParam[][],
         [] as BigNumber[],
       ],
-    )
+    );
   }
 
   public async forceRefreshCache(): Promise<void> {
@@ -630,8 +633,9 @@ export class DolomiteZap {
     useProxyServer: boolean,
   ): AggregatorClient[] {
     const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer);
+    const oogaBoogaAggregator = new OogaBoogaAggregator(network, referralInfo.oogaBoogaApiKey);
     const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer);
-    return [odosAggregator, paraswapAggregator];
+    return [odosAggregator, oogaBoogaAggregator, paraswapAggregator];
   }
 
   protected async getMarketIdToMarketMap(forceRefresh: boolean): Promise<Record<string, ApiMarket>> {
@@ -836,7 +840,7 @@ export class DolomiteZap {
         for (let j = 0; j < marketIdsPaths.length; j += 1) {
           const marketIdsPath = marketIdsPaths[j];
           const amountsPath = amountsPaths[j];
-          let outputEstimate: EstimateOutputResult
+          let outputEstimate: EstimateOutputResult;
           if (amountsPath.some(a => a.eq(INVALID_ESTIMATION.amountOut))) {
             outputEstimate = INVALID_ESTIMATION;
           } else {
@@ -903,7 +907,7 @@ export class DolomiteZap {
       readableName: converter.unwrapperReadableName,
       trader: converter.unwrapper,
       makerAccountIndex: 0,
-    }
+    };
   }
 
   private async getMarketHelpersMap(

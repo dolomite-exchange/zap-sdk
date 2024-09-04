@@ -5,6 +5,7 @@ import OogaBoogaAggregator from '../../src/clients/OogaBoogaAggregator';
 import { USDC_MARKET, WETH_MARKET } from '../helpers/BerachainConstants';
 
 const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address;
+const secretKey = process.env.OOGA_BOOGA_SECRET_KEY!;
 
 describe('OogaBoogaAggregator', () => {
   const networkIdOverride = Network.BERACHAIN;
@@ -21,7 +22,7 @@ describe('OogaBoogaAggregator', () => {
 
   describe('#getSwapExactTokensForTokensData', () => {
     it('should work normally', async () => {
-      const aggregator = new OogaBoogaAggregator(networkIdOverride);
+      const aggregator = new OogaBoogaAggregator(networkIdOverride, secretKey);
       const inputMarket: ApiMarket = WETH_MARKET;
       const outputMarket: ApiMarket = USDC_MARKET;
       const inputAmount = new BigNumber('1000000000000000000'); // 1 ETH
@@ -46,7 +47,7 @@ describe('OogaBoogaAggregator', () => {
     });
 
     it('should fail when the swap does not make sense', async () => {
-      const aggregator = new OogaBoogaAggregator(networkIdOverride);
+      const aggregator = new OogaBoogaAggregator(networkIdOverride, secretKey);
       const inputMarket: ApiMarket = {
         ...USDC_MARKET,
         tokenAddress: '0x0000000000000000000000000000000000000001',
