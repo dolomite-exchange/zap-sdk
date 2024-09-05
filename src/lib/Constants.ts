@@ -209,6 +209,15 @@ const UNI_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+const PENDLE_PT_MNT_OCT_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: new BigNumber(12),
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 const WST_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(14),
   [Network.BASE]: undefined,
@@ -708,6 +717,15 @@ export const WE_ETH_MAP: Record<Network, Address | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+export const WMNT_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: '0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8',
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 const WST_ETH_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x5979D7b546E38E414F7E9822514be443A4800529',
   [Network.BASE]: undefined,
@@ -1080,6 +1098,16 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperReadableName: 'sMNT Isolation Mode Wrapper',
       isAsync: false,
     },
+    [PENDLE_PT_MNT_OCT_2024_MARKET_ID_MAP[Network.MANTLE]!.toFixed()]: {
+      tokenAddress: Deployments.PendlePtMntOct2024IsolationModeVaultFactory[Network.MANTLE].address,
+      unwrapper: Deployments.PendlePtMntOct2024IsolationModeUnwrapperTraderV3[Network.MANTLE].address,
+      wrapper: Deployments.PendlePtMntOct2024IsolationModeWrapperTraderV3[Network.MANTLE].address,
+      unwrapperMarketIds: [MNT_MARKET_ID_MAP[Network.MANTLE]!],
+      wrapperMarketIds: [MNT_MARKET_ID_MAP[Network.MANTLE]!],
+      unwrapperReadableName: 'PT-MNT Isolation Mode Unwrapper',
+      wrapperReadableName: 'PT-MNT Isolation Mode Wrapper',
+      isAsync: false,
+    },
   },
   [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
@@ -1243,17 +1271,23 @@ const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketProps | 
       ytTokenAddress: '0x007d35c67f97f2a898102a66df346f9e9422f7f0',
       maturityTimestamp: 1735171200, // 26-DEC-2024
     },
-    [Deployments.PendlePtUSDeDec2024IsolationModeVaultFactory[Network.MANTLE].address]: {
-      marketTokenAddress: PT_USDE_DEC_2024_MARKET_MANTLE,
-      transformerTokenAddress: USDE_MAP[Network.MANTLE]!,
-      ytTokenAddress: '0x119de9edbaf4565d7cb6a1b7e5c7f9d1f03de5c0',
-      maturityTimestamp: 1735171200, // 26-DEC-2024
+    [Deployments.PendlePtMntOct2024IsolationModeVaultFactory[Network.MANTLE].address]: {
+      marketTokenAddress: '0x4604FC1C52cBfc38C4E6DFd2CD2a9bF5b84f65Cb',
+      transformerTokenAddress: WMNT_MAP[Network.MANTLE]!,
+      ytTokenAddress: '0x40ae8dbd3c41e38fe1bbc010eee40685003945a3',
+      maturityTimestamp: 1727913600, // 03-OCT-2024
     },
     [Deployments.PendlePtUSDeJul2024IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_USDE_JUL_2024_MARKET_MANTLE,
       transformerTokenAddress: USDE_MAP[Network.MANTLE]!,
       ytTokenAddress: '0xb3c0f96c4208185cc22afd1b7cf21f1dabd9648a',
       maturityTimestamp: 1721865600, // 25-JUL-2024
+    },
+    [Deployments.PendlePtUSDeDec2024IsolationModeVaultFactory[Network.MANTLE].address]: {
+      marketTokenAddress: PT_USDE_DEC_2024_MARKET_MANTLE,
+      transformerTokenAddress: USDE_MAP[Network.MANTLE]!,
+      ytTokenAddress: '0xb3c0f96c4208185cc22afd1b7cf21f1dabd9648a',
+      maturityTimestamp: 1735171200, // 26-DEC-2024
     },
   },
   [Network.POLYGON_ZKEVM]: {},
