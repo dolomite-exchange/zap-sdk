@@ -54,11 +54,13 @@ export declare namespace GmxDeposit {
     initialShortTokenAmount: BigNumberish;
     minMarketTokens: BigNumberish;
     updatedAtBlock: BigNumberish;
+    updatedAtTime: BigNumberish;
     executionFee: BigNumberish;
     callbackGasLimit: BigNumberish;
   };
 
   export type NumbersStructOutput = [
+    BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
@@ -70,6 +72,7 @@ export declare namespace GmxDeposit {
     initialShortTokenAmount: BigNumber;
     minMarketTokens: BigNumber;
     updatedAtBlock: BigNumber;
+    updatedAtTime: BigNumber;
     executionFee: BigNumber;
     callbackGasLimit: BigNumber;
   };
@@ -241,11 +244,13 @@ export declare namespace GmxWithdrawal {
     minLongTokenAmount: BigNumberish;
     minShortTokenAmount: BigNumberish;
     updatedAtBlock: BigNumberish;
+    updatedAtTime: BigNumberish;
     executionFee: BigNumberish;
     callbackGasLimit: BigNumberish;
   };
 
   export type NumbersStructOutput = [
+    BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
@@ -257,6 +262,7 @@ export declare namespace GmxWithdrawal {
     minLongTokenAmount: BigNumber;
     minShortTokenAmount: BigNumber;
     updatedAtBlock: BigNumber;
+    updatedAtTime: BigNumber;
     executionFee: BigNumber;
     callbackGasLimit: BigNumber;
   };
@@ -288,6 +294,7 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
   functions: {
     "getDeposit(address,bytes32)": FunctionFragment;
     "getDepositAmountOut(address,(address,address,address,address),((uint256,uint256),(uint256,uint256),(uint256,uint256)),uint256,uint256,address,uint8,bool)": FunctionFragment;
+    "getMarket(address,address)": FunctionFragment;
     "getMarketTokenPrice(address,(address,address,address,address),(uint256,uint256),(uint256,uint256),(uint256,uint256),bytes32,bool)": FunctionFragment;
     "getPnlToPoolFactor(address,address,((uint256,uint256),(uint256,uint256),(uint256,uint256)),bool,bool)": FunctionFragment;
     "getSwapAmountOut(address,(address,address,address,address),((uint256,uint256),(uint256,uint256),(uint256,uint256)),address,uint256,address)": FunctionFragment;
@@ -300,6 +307,7 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "getDeposit"
       | "getDepositAmountOut"
+      | "getMarket"
       | "getMarketTokenPrice"
       | "getPnlToPoolFactor"
       | "getSwapAmountOut"
@@ -324,6 +332,10 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
       BigNumberish,
       boolean
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getMarket",
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "getMarketTokenPrice",
@@ -385,6 +397,7 @@ export interface IGmxV2ReaderInterface extends utils.Interface {
     functionFragment: "getDepositAmountOut",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "getMarket", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getMarketTokenPrice",
     data: BytesLike
@@ -438,6 +451,12 @@ export interface IGmxV2Reader extends BaseContract {
       includeVirtualInventoryImpact: boolean,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    getMarket(
+      _dataStore: string,
+      key: string,
+      overrides?: CallOverrides
+    ): Promise<[GmxMarket.MarketPropsStructOutput]>;
 
     getMarketTokenPrice(
       _dataStore: string,
@@ -521,6 +540,12 @@ export interface IGmxV2Reader extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  getMarket(
+    _dataStore: string,
+    key: string,
+    overrides?: CallOverrides
+  ): Promise<GmxMarket.MarketPropsStructOutput>;
+
   getMarketTokenPrice(
     _dataStore: string,
     _market: GmxMarket.MarketPropsStruct,
@@ -602,6 +627,12 @@ export interface IGmxV2Reader extends BaseContract {
       includeVirtualInventoryImpact: boolean,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getMarket(
+      _dataStore: string,
+      key: string,
+      overrides?: CallOverrides
+    ): Promise<GmxMarket.MarketPropsStructOutput>;
 
     getMarketTokenPrice(
       _dataStore: string,
@@ -688,6 +719,12 @@ export interface IGmxV2Reader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getMarket(
+      _dataStore: string,
+      key: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getMarketTokenPrice(
       _dataStore: string,
       _market: GmxMarket.MarketPropsStruct,
@@ -762,6 +799,12 @@ export interface IGmxV2Reader extends BaseContract {
       _uiFeeReceiver: string,
       _swapPricingType: BigNumberish,
       includeVirtualInventoryImpact: boolean,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getMarket(
+      _dataStore: string,
+      key: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
