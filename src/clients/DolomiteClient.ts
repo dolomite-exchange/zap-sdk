@@ -1,4 +1,3 @@
-import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { ApiMarket, ApiMarketHelper, ApiUnwrapperInfo, ApiWrapperInfo, BlockTag, Network } from '../lib/ApiTypes';
@@ -8,6 +7,7 @@ import { GraphqlMarketResult } from '../lib/graphql-types';
 import GraphqlPageable from '../lib/GraphqlPageable';
 import Logger from '../lib/Logger';
 import { toChecksumOpt } from '../lib/Utils';
+import { AxiosClient } from './AxiosClient';
 import IsolationModeClient from './IsolationModeClient';
 
 const defaultAxiosConfig = {
@@ -181,7 +181,7 @@ export default class DolomiteClient {
                 }
               }`;
     }
-    const result: GraphqlMarketResult = await axios.post(
+    const result: GraphqlMarketResult = await AxiosClient.post(
       this._subgraphUrl,
       {
         query,

@@ -1,9 +1,9 @@
-import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
 import { OOGA_BOOGA_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
+import { AxiosClient } from './AxiosClient';
 
 const API_URL = 'https://bartio.api.oogabooga.io';
 
@@ -44,7 +44,7 @@ export default class OogaBoogaAggregator extends AggregatorClient {
       to: traderAddress,
       slippage: zapConfig.slippageTolerance.toString(),
     });
-    const quoteResponse: any | Error = await axios.get(
+    const quoteResponse: any | Error = await AxiosClient.get(
       `${API_URL}/v1/swap?${queryParams.toString()}`,
       {
         headers: {

@@ -1,9 +1,9 @@
-import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
 import { DOLOMITE_API_SERVER_URL, ODOS_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
+import { AxiosClient } from './AxiosClient';
 
 const PROXY_API_URL = `${DOLOMITE_API_SERVER_URL}/aggregator/odos`;
 const API_URL = 'https://api.odos.xyz';
@@ -39,7 +39,7 @@ export default class OdosAggregator extends AggregatorClient {
       return undefined;
     }
 
-    const quoteResponse = await axios.post(this.useProxy ? `${PROXY_API_URL}/quote` : `${API_URL}/sor/quote/v2`, {
+    const quoteResponse = await AxiosClient.post(this.useProxy ? `${PROXY_API_URL}/quote` : `${API_URL}/sor/quote/v2`, {
       chainId: this.network, // Replace with desired chainId
       inputTokens: [
         {
@@ -72,7 +72,7 @@ export default class OdosAggregator extends AggregatorClient {
       return undefined;
     }
 
-    const result = await axios.post(this.useProxy ? `${PROXY_API_URL}/assemble` : `${API_URL}/sor/assemble`, {
+    const result = await AxiosClient.post(this.useProxy ? `${PROXY_API_URL}/assemble` : `${API_URL}/sor/assemble`, {
       userAddr: traderAddress,
       pathId: quoteResponse.pathId,
       simulate: false,

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { BigNumberish, ethers } from 'ethers';
 import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
@@ -8,6 +7,7 @@ import IGmxV2ReaderAbi from '../../abis/IGmxV2Reader.json';
 import { IArbitrumGasInfo } from '../../abis/types/IArbitrumGasInfo';
 import { IGmxV2DataStore } from '../../abis/types/IGmxV2DataStore';
 import { GmxMarket, GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
+import { AxiosClient } from '../../clients/AxiosClient';
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
   ADDRESS_ZERO,
@@ -130,7 +130,7 @@ export class GmxV2GmEstimator {
   }
 
   private static async getTokenPrices(): Promise<Record<Address, SignedPriceData>> {
-    return axios.get('https://arbitrum-api.gmxinfra.io/prices/tickers')
+    return AxiosClient.get('https://arbitrum-api.gmxinfra.io/prices/tickers')
       .then(res => res.data)
       .then(data => (data as any[]).reduce((memo, priceData) => {
         const tokenAddress = ethers.utils.getAddress(priceData.tokenAddress);

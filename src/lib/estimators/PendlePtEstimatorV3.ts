@@ -1,6 +1,6 @@
-import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
+import { AxiosClient } from '../../clients/AxiosClient';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
 import {
   getPendlePtMarketForIsolationModeToken,
@@ -62,7 +62,7 @@ export class PendlePtEstimatorV3 {
       return Promise.reject(new Error('MATURED'));
     }
 
-    const data = await axios.get(`${BASE_URL}/swapExactTokenForPt`, {
+    const data = await AxiosClient.get(`${BASE_URL}/swapExactTokenForPt`, {
       params: {
         chainId: this.network.toString(),
         receiverAddr: wrapper,
@@ -155,7 +155,7 @@ export class PendlePtEstimatorV3 {
     amountInPt: Integer,
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
-    const data = await axios.get(`${BASE_URL}/swapExactPtForToken`, {
+    const data = await AxiosClient.get(`${BASE_URL}/swapExactPtForToken`, {
       params: {
         chainId: this.network.toString(),
         receiverAddr: unwrapper,
@@ -257,7 +257,7 @@ export class PendlePtEstimatorV3 {
     amountInPt: Integer,
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
-    const data = await axios.get(`${BASE_URL}/redeemPyToToken`, {
+    const data = await AxiosClient.get(`${BASE_URL}/redeemPyToToken`, {
       params: {
         chainId: this.network.toString(),
         receiverAddr: unwrapper,

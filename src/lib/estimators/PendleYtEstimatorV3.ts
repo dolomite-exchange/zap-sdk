@@ -1,5 +1,5 @@
-import axios from 'axios';
 import BigNumber from 'bignumber.js';
+import { AxiosClient } from '../../clients/AxiosClient';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
 import { getPendleYtMarketForIsolationModeToken } from '../Constants';
 import Logger from '../Logger';
@@ -21,7 +21,7 @@ export class PendleYtEstimatorV3 {
     amountInYt: Integer,
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
-    const data = await axios.get(`${BASE_URL}/swapExactYtForToken`, {
+    const data = await AxiosClient.get(`${BASE_URL}/swapExactYtForToken`, {
       params: {
         chainId: this.network.toString(),
         receiverAddr: unwrapperAddress,
@@ -51,7 +51,7 @@ export class PendleYtEstimatorV3 {
     inputAmount: Integer,
     inputToken: Address,
   ): Promise<EstimateOutputResult> {
-    const data = await axios.get(`${BASE_URL}/swapExactTokenForYt`, {
+    const data = await AxiosClient.get(`${BASE_URL}/swapExactTokenForYt`, {
       params: {
         chainId: this.network.toString(),
         receiverAddr: wrapperAddress,
