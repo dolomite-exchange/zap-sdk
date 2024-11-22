@@ -1,6 +1,6 @@
 {
   "name": "@dolomite-exchange/zap-sdk",
-  "version": "0.3.22",
+  "version": "0.3.23",
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/dolomite-exchange/zap-sdk#readme",
   "files": [
     "dist",
+    "src",
     "LICENSE",
     "README.md"
   ],
@@ -28,7 +29,7 @@
   "types": "dist/src/index.d.ts",
   "dependencies": {
     "@dolomite-exchange/modules-deployments": "^0.0.28",
-    "axios": "^1.6.2",
+    "axios": "^1.7.7",
     "bignumber.js": "^9.1.1",
     "dotenv-flow": "^0.4.0",
     "ethers": "^5.5.3",
