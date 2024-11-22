@@ -13,7 +13,7 @@
       "node",
       "jest"
     ],
-    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
@@ -24,6 +24,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true
   },
