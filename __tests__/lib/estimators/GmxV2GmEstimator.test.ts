@@ -56,11 +56,11 @@ describe('GmxV2GmEstimator', () => {
         config,
       );
       console.log(
-        'GM amounts amounts out [ETH]:',
+        'GM amounts unwrapped amount [ETH]:',
         ethAmount.amountOut.toString(),
       );
       console.log(
-        'GM amounts amounts out [USDC]:',
+        'GM amounts unwrapped amount [USDC]:',
         usdcAmount.amountOut.toString(),
       );
     });
@@ -78,8 +78,9 @@ describe('GmxV2GmEstimator', () => {
         config,
       );
       console.log(
-        'GM amounts in [from ETH, from USDC]:',
+        'GM wrapped amount [from ETH, from USDC]:',
         marketAmountOutFromEth.amountOut.toString(),
+        marketAmountOutFromEth.extraData?.executionFee.div(parseEther('1').toString()).toFixed(6),
       );
 
       const marketAmountOutFromUsdc = await estimator.getWrappedAmount(
@@ -90,9 +91,9 @@ describe('GmxV2GmEstimator', () => {
         config,
       );
       console.log(
-        'GM amounts in [from ETH, from USDC]:',
-        marketAmountOutFromEth.amountOut.toString(),
+        'GM wrapped amount [from ETH, from USDC]:',
         marketAmountOutFromUsdc.amountOut.toString(),
+        marketAmountOutFromUsdc.extraData?.executionFee.div(parseEther('1').toString()).toFixed(6),
       );
     });
   });
