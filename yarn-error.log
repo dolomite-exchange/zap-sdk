@@ -14,17 +14,17 @@ Platform:
   linux x64
 
 Trace: 
-  Error: connect EHOSTUNREACH 104.16.3.35:443
-      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1187:16)
+  Error: getaddrinfo EAI_AGAIN registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:71:26)
 
 npm manifest: 
   {
     "name": "@dolomite-exchange/zap-sdk",
-    "version": "0.3.6",
+    "version": "0.3.32",
     "description": "SDK for zapping any asset to any asset on Dolomite.",
     "scripts": {
       "test": "NODE_ENV=test jest --runInBand",
-      "test:specific": "NODE_ENV=test jest __tests__/specific-zaps/MantleDolomiteZap.test.ts",
+      "test:specific": "NODE_ENV=test jest __tests__/lib/estimators/GmxV2GmEstimator.test.ts",
       "coverage": "NODE_ENV=test jest --coverage --runInBand --forceExit --coverageReporters=text-lcov | node_modules/.bin/coveralls",
       "build": "rm -rf dist/ && node_modules/.bin/tsc --module commonjs",
       "prepublishOnly": "npm run build"
@@ -41,19 +41,18 @@ npm manifest:
     "homepage": "https://github.com/dolomite-exchange/zap-sdk#readme",
     "files": [
       "dist",
+      "src",
       "LICENSE",
       "README.md"
     ],
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
     "dependencies": {
-      "@dolomite-exchange/modules-deployments": "^0.0.18",
-      "axios": "^1.6.2",
+      "@dolomite-exchange/modules-deployments": "^0.0.29",
+      "axios": "^0.29.0",
       "bignumber.js": "^9.1.1",
       "dotenv-flow": "^0.4.0",
-      "ethers": "^5.5.3",
-      "winston": "^3.9.0",
-      "winston-transport": "^4.5.0"
+      "ethers": "^5.5.3"
     },
     "devDependencies": {
       "@types/jest": "^24.9.1",
@@ -75,7 +74,9 @@ npm manifest:
       "supertest": "^4.0.2",
       "ts-jest": "^26.3.0",
       "ts-node": "^10.9.1",
-      "typescript": "^4.7.4"
+      "typescript": "^4.7.4",
+      "winston": "^3.9.0",
+      "winston-transport": "^4.5.0"
     }
   }
 
@@ -406,10 +407,10 @@ Lockfile:
       enabled "2.0.x"
       kuler "^2.0.0"
   
-  "@dolomite-exchange/modules-deployments@^0.0.17":
-    version "0.0.17"
-    resolved "https://registry.yarnpkg.com/@dolomite-exchange/modules-deployments/-/modules-deployments-0.0.17.tgz#cfb910b733794ce716ccdac62c478af59427a367"
-    integrity sha512-6iNKuEHZBysPRuJbtTZTVpDN+Q5fGxOsDMsG5mqo8U0rluoql0piGQk7f7QktVPnnKmbtLzRYvzja+F82HoYQA==
+  "@dolomite-exchange/modules-deployments@^0.0.28":
+    version "0.0.28"
+    resolved "https://registry.yarnpkg.com/@dolomite-exchange/modules-deployments/-/modules-deployments-0.0.28.tgz#344f4b239d0375672c5e726bae97e8e1be7ebf3c"
+    integrity sha512-PD4tAdgFnvzAeFDV3IdPP19rgHSks14AHGGyzCnxK+Wo0/1zXZdV/gXgpjywy5TMlvEQthfBHutDmIZoASR0RQ==
   
   "@ethersproject/abi@5.7.0", "@ethersproject/abi@^5.7.0":
     version "5.7.0"
@@ -1524,12 +1525,12 @@ Lockfile:
     resolved "https://registry.npmjs.org/axe-core/-/axe-core-4.7.2.tgz"
     integrity sha512-zIURGIS1E1Q4pcrMjp+nnEh+16G56eG/MUllJH8yEvw7asDo7Ac9uhC9KIH5jzpITueEZolfYglnCGIuSBz39g==
   
-  axios@^1.6.2:
-    version "1.6.2"
-    resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.2.tgz#de67d42c755b571d3e698df1b6504cde9b0ee9f2"
-    integrity sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==
+  axios@^0.29.0:
+    version "0.29.0"
+    resolved "https://registry.yarnpkg.com/axios/-/axios-0.29.0.tgz#5eed1a0bc4c0ffe060624eb7900aff66b7881eeb"
+    integrity sha512-Kjsq1xisgO5DjjNQwZFsy0gpcU1P2j36dZeQDXVhpIU26GVgkDUnROaHLSuluhMqtDE7aKA2hbKXG5yu5DN8Tg==
     dependencies:
-      follow-redirects "^1.15.0"
+      follow-redirects "^1.15.4"
       form-data "^4.0.0"
       proxy-from-env "^1.1.0"
   
@@ -2797,10 +2798,10 @@ Lockfile:
     resolved "https://registry.npmjs.org/fn.name/-/fn.name-1.1.0.tgz"
     integrity sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==
   
-  follow-redirects@^1.15.0:
-    version "1.15.2"
-    resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
-    integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+  follow-redirects@^1.15.4:
+    version "1.15.9"
+    resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.9.tgz#a604fa10e443bf98ca94228d9eebcc2e8a2c8ee1"
+    integrity sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==
   
   for-each@^0.3.3:
     version "0.3.3"
