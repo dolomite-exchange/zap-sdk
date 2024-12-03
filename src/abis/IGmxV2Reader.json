@@ -2580,6 +2580,11 @@
               },
               {
                 "internalType": "uint256",
+                "name": "updatedAtTime",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
                 "name": "executionFee",
                 "type": "uint256"
               },
@@ -2738,6 +2743,52 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IGmxDataStore",
+        "name": "_dataStore",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "key",
+        "type": "address"
+      }
+    ],
+    "name": "getMarket",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "marketToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "indexToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "longToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "shortToken",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct GmxMarket.MarketProps",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -3322,6 +3373,11 @@
               {
                 "internalType": "uint256",
                 "name": "updatedAtBlock",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "updatedAtTime",
                 "type": "uint256"
               },
               {

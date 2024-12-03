@@ -31,6 +31,14 @@ export interface GmMarket {
   marketTokenAddress: Address;
 }
 
+export interface GlvMarket {
+  glvTokenAddress: Address;
+  longTokenAddress: Address;
+  longTokenId: MarketId;
+  shortTokenAddress: Address;
+  shortTokenId: MarketId;
+}
+
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
 export const INVALID_NAME = 'INVALID';
@@ -564,6 +572,24 @@ const PENDLE_PT_RS_ETH_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
 // ======= Addresses =======
 // =========================
 
+// @todo update factory addresses
+export const GLV_MARKETS_MAP: Record<Network, Record<Address, GlvMarket | undefined> | undefined> = {
+  [Network.ARBITRUM_ONE]: {
+    ['0x1230000000000000000000000000000000000321']: {
+      glvTokenAddress: '0x528A5bac7E746C9A509A1f4F6dF58A03d44279F9',
+      longTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+      longTokenId: WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      shortTokenAddress: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+    },
+  },
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined> | undefined> = {
   [Network.ARBITRUM_ONE]: {
     [Deployments.GmxV2AAVEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
@@ -683,6 +709,15 @@ export const CM_ETH_MAP: Record<Network, Address | undefined> = {
 
 export const EZ_ETH_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+export const GLV_READER_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: '0xd4f522c4339Ae0A90a156bd716715547e44Bed65',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.MANTLE]: undefined,
