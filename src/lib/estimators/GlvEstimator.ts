@@ -1,94 +1,45 @@
-import axios from 'axios';
 import BigNumber from 'bignumber.js';
-import { BigNumberish, ethers } from 'ethers';
-import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
-import IArbitrumGasInfoAbi from '../../abis/IArbitrumGasInfo.json';
+import { ethers } from 'ethers';
+import IERC20Abi from '../../abis/IERC20.json';
 import IGlvReaderAbi from '../../abis/IGlvReader.json';
+import IGlvRegistryAbi from '../../abis/IGlvRegistry.json';
 import IGmxV2DataStoreAbi from '../../abis/IGmxV2DataStore.json';
 import IGmxV2ReaderAbi from '../../abis/IGmxV2Reader.json';
-import IERC20Abi from '../../abis/IERC20.json';
-import { IArbitrumGasInfo } from '../../abis/types/IArbitrumGasInfo';
+import { IGlvReader } from '../../abis/types/IGlvReader';
+import { IGlvRegistry } from '../../abis/types/IGlvRegistry';
 import { IGmxV2DataStore } from '../../abis/types/IGmxV2DataStore';
-import { GmxMarket, GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
+import { GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
-  ADDRESS_ZERO,
-  ARBITRUM_GAS_INFO_MAP,
-  BYTES_EMPTY,
   GLV_MARKETS_MAP,
   GLV_READER_MAP,
+  GLV_REGISTRY_PROXY_MAP,
   GM_MARKETS_MAP,
-  GMX_V2_DATA_STORE_MAP,
-  GMX_V2_READER_MAP,
+  GMX_V2_DATA_STORE_MAP, GMX_V2_READER_MAP,
 } from '../Constants';
 import { LocalCache } from '../LocalCache';
-import MarketPricesStruct = GmxMarket.MarketPricesStruct;
+import { GmxV2GmEstimator, SignedPriceData } from './GmxV2GmEstimator';
 import PricePropsStruct = GmxPrice.PricePropsStruct;
-import { IGlvReader } from '../../abis/types/IGlvReader';
-
-enum SwapPricingType {
-  TwoStep,
-  Shift,
-  Atomic
-}
-
-interface SignedPriceData {
-  tokenAddress: string;
-  minPrice: string;
-  maxPrice: string;
-}
-
-const abiCoder = ethers.utils.defaultAbiCoder;
 
 const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(4_000_000);
 
-const DEPOSIT_GAS_LIMIT_KEY = keccak256(
-  abiCoder.encode(
-    ['bytes32', 'bool'],
-    [keccak256(abiCoder.encode(['string'], ['DEPOSIT_GAS_LIMIT'])), /* _singleToken = */ true],
-  ),
-);
-
-const SINGLE_SWAP_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['SINGLE_SWAP_GAS_LIMIT']));
-
-const WITHDRAWAL_GAS_LIMIT_KEY = keccak256(
-  abiCoder.encode(
-    ['bytes32'],
-    [keccak256(abiCoder.encode(['string'], ['WITHDRAWAL_GAS_LIMIT']))],
-  ),
-);
-
-const POOL_AMOUNT_KEY = keccak256(abiCoder.encode(['string'], ['POOL_AMOUNT']));
-
-const ONE_ETH = ethers.utils.parseEther('1');
-
-const WithdrawalGasLimitsCacheKey = 'WithdrawalGasLimits';
-const DepositGasLimitsCacheKey = 'DepositGasLimits';
-
-interface WithdrawalGasLimits {
-  withdrawalGasLimit: ethers.BigNumber;
-  swapGasLimit: ethers.BigNumber;
-}
-
-interface DepositGasLimits {
-  depositGasLimit: ethers.BigNumber;
-}
+const GlvToGmMarketCacheKey = (glvToken: string): string => `GlvToGmMarket-${glvToken}`;
 
 export class GlvEstimator {
   private readonly glvReader?: IGlvReader;
+  private readonly glvRegistry?: IGlvRegistry;
   private readonly gmxV2Reader?: IGmxV2Reader;
   private readonly gmxV2DataStore?: IGmxV2DataStore;
-  private readonly arbitrumGasInfo?: IArbitrumGasInfo;
   private readonly dataStoreCache: LocalCache<any>;
 
   public constructor(
     private readonly network: Network,
     private readonly web3Provider: ethers.providers.Provider,
-    private readonly gasMultiplier: BigNumber,
+    private readonly gmxV2Estimator: GmxV2GmEstimator,
   ) {
-    this.dataStoreCache = new LocalCache<WithdrawalGasLimits>(3600);
+    this.dataStoreCache = new LocalCache<any>(3600);
     if (network !== Network.ARBITRUM_ONE) {
-      return
+      return;
     }
 
     this.glvReader = new ethers.Contract(
@@ -97,11 +48,11 @@ export class GlvEstimator {
       this.web3Provider,
     ) as IGlvReader;
 
-    this.gmxV2Reader = new ethers.Contract(
-      GMX_V2_READER_MAP[this.network]!,
-      IGmxV2ReaderAbi,
+    this.glvRegistry = new ethers.Contract(
+      GLV_REGISTRY_PROXY_MAP[this.network]!,
+      IGlvRegistryAbi,
       this.web3Provider,
-    ) as IGmxV2Reader;
+    ) as IGlvRegistry;
 
     this.gmxV2DataStore = new ethers.Contract(
       GMX_V2_DATA_STORE_MAP[this.network]!,
@@ -109,15 +60,11 @@ export class GlvEstimator {
       this.web3Provider,
     ) as IGmxV2DataStore;
 
-    this.arbitrumGasInfo = new ethers.Contract(
-      ARBITRUM_GAS_INFO_MAP[this.network]!,
-      IArbitrumGasInfoAbi,
+    this.gmxV2Reader = new ethers.Contract(
+      GMX_V2_READER_MAP[this.network]!,
+      IGmxV2ReaderAbi,
       this.web3Provider,
-    ) as IArbitrumGasInfo;
-
-    if (gasMultiplier.lt(1)) {
-      throw new Error(`Invalid gasMultiplier, expected at least 1.0, but found ${gasMultiplier.toFixed()}`);
-    }
+    ) as IGmxV2Reader;
   }
 
   private static getPriceStruct(
@@ -130,66 +77,6 @@ export class GlvEstimator {
     };
   }
 
-  private static getPricesStruct(
-    pricesMap: Record<Address, SignedPriceData>,
-    indexToken: Address,
-    longToken: Address,
-    shortToken: Address,
-  ): MarketPricesStruct {
-    return {
-      indexTokenPrice: {
-        min: pricesMap[indexToken].minPrice,
-        max: pricesMap[indexToken].maxPrice,
-      },
-      longTokenPrice: {
-        min: pricesMap[longToken].minPrice,
-        max: pricesMap[longToken].maxPrice,
-      },
-      shortTokenPrice: {
-        min: pricesMap[shortToken].minPrice,
-        max: pricesMap[shortToken].maxPrice,
-      },
-    };
-  }
-
-  private static async getTokenPrices(): Promise<Record<Address, SignedPriceData>> {
-    return axios.get('https://arbitrum-api.gmxinfra.io/prices/tickers')
-      .then(res => res.data)
-      .then(data => (data as any[]).reduce((memo, priceData) => {
-        const tokenAddress = ethers.utils.getAddress(priceData.tokenAddress);
-        memo[tokenAddress] = {
-          ...priceData,
-          tokenAddress,
-        };
-        return memo;
-      }, {}));
-  }
-
-  private static averagePrices(prices: GmxPrice.PricePropsStruct): ethers.BigNumber {
-    return ethers.BigNumber.from(prices.min.toString()).add(prices.max.toString()).div(2);
-  }
-
-  private static getPoolAmountKey(market: string, token: string): string {
-    return keccak256(
-      defaultAbiCoder.encode(
-        ['bytes32', 'address', 'address'],
-        [POOL_AMOUNT_KEY, market, token],
-      ),
-    )
-  }
-
-  private async getIndexPricesStruct(
-    pricesMap: Record<Address, SignedPriceData>,
-    markets: Address[],
-  ): Promise<PricePropsStruct[]> {
-    const pricesStruct: PricePropsStruct[] = [];
-    for (var market of markets) {
-      const indexToken = (await this.gmxV2Reader!.getMarket(this.gmxV2DataStore!.address, market)).indexToken;
-      pricesStruct.push(GlvEstimator.getPriceStruct(pricesMap, indexToken));
-    }
-    return pricesStruct;
-  }
-
   public async getUnwrappedAmount(
     isolationModeTokenAddress: Address,
     amountIn: Integer,
@@ -197,36 +84,36 @@ export class GlvEstimator {
     marketsMap: Record<string, ApiMarket>,
     config: ZapConfig,
   ): Promise<EstimateOutputResult> {
-    const tokenToSignedPriceMap = await GlvEstimator.getTokenPrices();
-    const outputToken = marketsMap[outputMarketId.toFixed()];
-
-    // @todo dynamically get the market from the registry
     const glvMarket = GLV_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
-    const gmMarket = GM_MARKETS_MAP[this.network]!["0x505582242757f16D72F8C4462A616E388Ca1b074"]!;
+    const glvToken = glvMarket.glvTokenAddress;
+
+    const [
+      tokenToSignedPriceMap,
+      gmMarketIsolationModeAddress,
+      glvTokenSupply,
+      glvPoolInfo,
+    ] = await Promise.all([
+      GmxV2GmEstimator.getTokenPrices(),
+      this.getGmMarketByGlvToken(glvMarket.glvTokenAddress),
+      (new ethers.Contract(glvToken, IERC20Abi, this.web3Provider)).totalSupply(),
+      this.glvReader!.getGlvInfo(this.gmxV2DataStore!.address, glvToken),
+    ]);
+
+    const gmMarket = GM_MARKETS_MAP[this.network][gmMarketIsolationModeAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
     const longToken = gmMarket.longTokenAddress;
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
-    const glvToken = glvMarket.glvTokenAddress;
-    const gmMarketProps = {
-      indexToken,
-      longToken,
-      shortToken,
-      marketToken,
-    };
-    const pricesStruct = GlvEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken);
 
     /**
      * Steps to calculate the expected amount out:
      *  1. Get the GLV total supply and pool value
-     *  2. Convert the amount of glv tokens to USD using the pool value and total supply
-     *  3. Get the gm market pool value and total supply
-     *  4. Use the glv usd value, gm market pool value, and gm total supply to calculate the expected amount of gm tokens
-     *  5. Get the expected amount of output tokens using the gm amount the same as GmxV2Estimator
+     *  2. Convert the amount of GLV tokens to USD using the pool value and total supply
+     *  3. Get the GM market pool value and total supply
+     *  4. Use the GLV USD value, GM market pool value, and GM total supply to calculate the amount of GM tokens
+     *  5. Get the expected amount of output tokens using the GM amount the same as GmxV2Estimator
      */
 
-    const glvTokenSupply = await (new ethers.Contract(glvToken, IERC20Abi, this.web3Provider)).totalSupply();
-    const glvPoolInfo = await this.glvReader!.getGlvInfo(this.gmxV2DataStore!.address, glvToken);
     const glvPoolValue = await this.glvReader!.getGlvValue(
       this.gmxV2DataStore!.address,
       glvPoolInfo.markets,
@@ -234,7 +121,7 @@ export class GlvEstimator {
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, glvPoolInfo.glv.longToken),
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, glvPoolInfo.glv.shortToken),
       glvPoolInfo.glv.glvToken,
-      false
+      false,
     );
     const glvTokenUsd = glvPoolValue.mul(amountIn.toFixed()).div(glvTokenSupply);
 
@@ -244,71 +131,26 @@ export class GlvEstimator {
         marketToken,
         indexToken,
         longToken,
-        shortToken
+        shortToken,
       },
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, indexToken),
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, longToken),
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, shortToken),
       ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(['string'], ['MAX_PNL_FACTOR_FOR_WITHDRAWALS'])),
-      true
+      true,
     );
     const marketTokenSupply = await (new ethers.Contract(marketToken, IERC20Abi, this.web3Provider)).totalSupply();
     const gmAmountOut = marketTokenSupply.mul(glvTokenUsd).div(marketPoolValue[1].poolValue);
 
-    const [longAmountOut, shortAmountOut] = await this.gmxV2Reader!.getWithdrawalAmountOut(
-      this.gmxV2DataStore!.address,
-      gmMarketProps,
-      pricesStruct,
-      gmAmountOut,
-      ADDRESS_ZERO,
-      SwapPricingType.TwoStep,
+    return this.gmxV2Estimator.getUnwrappedAmount(
+      gmMarketIsolationModeAddress,
+      new BigNumber(gmAmountOut.toString()),
+      outputMarketId,
+      marketsMap,
+      config,
+      tokenToSignedPriceMap,
+      CALLBACK_GAS_LIMIT,
     );
-
-    const weight = await this.getWeightForOtherAmount(
-      outputToken,
-      longToken,
-      shortToken,
-      marketToken,
-      pricesStruct,
-    );
-
-    const amountOut = outputToken.tokenAddress === longToken ? longAmountOut : shortAmountOut;
-
-    const [otherAmountOut] = longToken === shortToken
-      ? [shortAmountOut]
-      : await this.gmxV2Reader!.getSwapAmountOut(
-        this.gmxV2DataStore!.address,
-        gmMarketProps,
-        pricesStruct,
-        outputToken.tokenAddress === longToken ? shortToken : longToken,
-        outputToken.tokenAddress === longToken ? shortAmountOut : longAmountOut,
-        ADDRESS_ZERO,
-      );
-
-    const [limits, gasPriceWei] = await Promise.all([
-      this.getWithdrawalGasLimits(),
-      this.getGasPrice(config),
-    ]);
-    const totalWithdrawalGasLimit = limits.withdrawalGasLimit.add(limits.swapGasLimit).add(CALLBACK_GAS_LIMIT);
-    const executionFee = new BigNumber(
-      totalWithdrawalGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
-    );
-
-    const otherAmountOutWithSlippage = config.isLiquidation
-      ? new BigNumber(1)
-      : new BigNumber(otherAmountOut.toString())
-        .multipliedBy(1 - config.slippageTolerance)
-        .integerValue(BigNumber.ROUND_DOWN);
-    return {
-      amountOut: new BigNumber(amountOut.add(otherAmountOut).toString()),
-      tradeData: abiCoder.encode(
-        ['tuple(uint256 value)', 'uint256'],
-        [{ value: weight }, otherAmountOutWithSlippage.toFixed()],
-      ),
-      extraData: {
-        executionFee,
-      },
-    };
   }
 
   public async getWrappedAmount(
@@ -318,36 +160,40 @@ export class GlvEstimator {
     marketsMap: Record<string, ApiMarket>,
     config: ZapConfig,
   ): Promise<EstimateOutputResult> {
-    const tokenToSignedPriceMap = await GlvEstimator.getTokenPrices();
+    const glvMarket = GLV_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
+    const glvToken = glvMarket.glvTokenAddress;
+
+    const [
+      tokenToSignedPriceMap,
+      gmMarketIsolationModeAddress,
+      glvTokenSupply,
+      glvPoolInfo,
+    ] = await Promise.all([
+      GmxV2GmEstimator.getTokenPrices(),
+      this.getGmMarketByGlvToken(glvMarket.glvTokenAddress),
+      (new ethers.Contract(glvToken, IERC20Abi, this.web3Provider)).totalSupply(),
+      this.glvReader!.getGlvInfo(this.gmxV2DataStore!.address, glvToken),
+    ]);
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
-    // @todo dynamically get the market
-    const glvMarket = GLV_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
-    const gmMarket = GM_MARKETS_MAP[this.network]!["0x505582242757f16D72F8C4462A616E388Ca1b074"]!;
+    const gmMarket = GM_MARKETS_MAP[this.network][gmMarketIsolationModeAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
     const longToken = gmMarket.longTokenAddress;
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
-    const glvToken = glvMarket.glvTokenAddress;
 
     if (inputToken.tokenAddress !== longToken && inputToken.tokenAddress !== shortToken) {
       return Promise.reject(new Error(`Invalid inputToken, found: ${inputToken.symbol} / ${inputToken.tokenAddress}`));
     }
 
-    const gmAmountOut = await this.gmxV2Reader!.getDepositAmountOut(
-      this.gmxV2DataStore!.address,
-      {
-        marketToken,
-        indexToken,
-        longToken,
-        shortToken,
-      },
-      GlvEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken),
-      inputToken.tokenAddress === longToken ? amountIn.toFixed() : '0',
-      inputToken.tokenAddress === shortToken && longToken !== shortToken ? amountIn.toFixed() : '0',
-      ADDRESS_ZERO,
-      SwapPricingType.TwoStep,
-      true,
+    const gmAmountOutResult = await this.gmxV2Estimator.getWrappedAmount(
+      gmMarketIsolationModeAddress,
+      amountIn,
+      inputMarketId,
+      marketsMap,
+      config,
+      tokenToSignedPriceMap,
+      CALLBACK_GAS_LIMIT,
     );
 
     /**
@@ -365,21 +211,22 @@ export class GlvEstimator {
         marketToken,
         indexToken,
         longToken,
-        shortToken
+        shortToken,
       },
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, indexToken),
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, longToken),
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, shortToken),
       ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(['string'], ['MAX_PNL_FACTOR_FOR_DEPOSITS'])),
-      false
+      false,
     );
     if (poolValue[1].poolValue.isNegative()) {
       throw new Error('Panic: Pool value is negative');
     }
     const marketTokenSupply = await (new ethers.Contract(marketToken, IERC20Abi, this.web3Provider)).totalSupply();
-    const receivedMarketTokensUsd = poolValue[1].poolValue.mul(gmAmountOut).div(marketTokenSupply);
+    const receivedMarketTokensUsd = poolValue[1].poolValue
+      .mul(gmAmountOutResult.amountOut.toFixed())
+      .div(marketTokenSupply);
 
-    const glvPoolInfo = await this.glvReader!.getGlvInfo(this.gmxV2DataStore!.address, glvToken);
     const glvPoolValue = await this.glvReader!.getGlvValue(
       this.gmxV2DataStore!.address,
       glvPoolInfo.markets,
@@ -387,85 +234,41 @@ export class GlvEstimator {
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, glvPoolInfo.glv.longToken),
       GlvEstimator.getPriceStruct(tokenToSignedPriceMap, glvPoolInfo.glv.shortToken),
       glvPoolInfo.glv.glvToken,
-      true
+      true,
     );
-    const glvTokenSupply = await (new ethers.Contract(glvToken, IERC20Abi, this.web3Provider)).totalSupply();
     const amountOut = glvTokenSupply.mul(receivedMarketTokensUsd).div(glvPoolValue);
 
-    const [limits, gasPriceWei] = await Promise.all([
-      this.getDepositGasLimits(),
-      this.getGasPrice(config),
-    ]);
-    const totalDepositGasLimit = limits.depositGasLimit.add(CALLBACK_GAS_LIMIT);
-    const executionFee = new BigNumber(
-      totalDepositGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
-    );
-
     return {
+      ...gmAmountOutResult,
       amountOut: new BigNumber(amountOut.toString()),
-      tradeData: BYTES_EMPTY,
-      extraData: {
-        executionFee,
-      },
     };
   }
 
-  private async getWeightForOtherAmount(
-    outputToken: ApiMarket,
-    longToken: string,
-    shortToken: string,
-    marketToken: string,
-    pricesStruct: GmxMarket.MarketPricesStruct,
-  ): Promise<ethers.BigNumber> {
-    const divisor = ethers.BigNumber.from(longToken === shortToken ? 2 : 1);
-    const [longBalance, shortBalance] = await Promise.all([
-      this.gmxV2DataStore!.getUint(GlvEstimator.getPoolAmountKey(marketToken, longToken)),
-      this.gmxV2DataStore!.getUint(GlvEstimator.getPoolAmountKey(marketToken, shortToken)),
-    ]);
-
-    const longBalanceUsd = longBalance.mul(GlvEstimator.averagePrices(pricesStruct.longTokenPrice)).div(divisor);
-    const shortBalanceUsd = shortBalance.mul(GlvEstimator.averagePrices(pricesStruct.shortTokenPrice)).div(divisor);
-    const totalBalanceUsd = longBalanceUsd.add(shortBalanceUsd);
-    return outputToken.tokenAddress === longToken
-      ? ONE_ETH.mul(shortBalanceUsd).div(totalBalanceUsd)
-      : ONE_ETH.mul(longBalanceUsd).div(totalBalanceUsd);
-  }
-
-  private async getWithdrawalGasLimits(): Promise<WithdrawalGasLimits> {
-    const cachedValue = this.dataStoreCache.get(WithdrawalGasLimitsCacheKey)
-    if (cachedValue) {
-      return cachedValue;
+  private async getGmMarketByGlvToken(glvToken: string): Promise<string> {
+    let gmMarketIsolationModeAddress = this.dataStoreCache.get(GlvToGmMarketCacheKey(glvToken));
+    if (gmMarketIsolationModeAddress) {
+      return gmMarketIsolationModeAddress;
     }
 
-    const withdrawalGasLimit = await this.gmxV2DataStore!.getUint(WITHDRAWAL_GAS_LIMIT_KEY);
-    const swapGasLimit = await this.gmxV2DataStore!.getUint(SINGLE_SWAP_GAS_LIMIT_KEY);
-    const value = {
-      withdrawalGasLimit,
-      swapGasLimit,
-    };
-    this.dataStoreCache.set(WithdrawalGasLimitsCacheKey, value);
+    const gmMarketAddress = await this.glvRegistry!.glvTokenToGmMarket(glvToken);
+    const gmMarketsMap = GM_MARKETS_MAP[this.network];
+    [gmMarketIsolationModeAddress] = Object.keys(gmMarketsMap).filter(isolationModeAddress => {
+      return gmMarketsMap[isolationModeAddress]!.marketTokenAddress.toLowerCase() === gmMarketAddress.toLowerCase();
+    });
 
-    return value;
+    this.dataStoreCache.set(GlvToGmMarketCacheKey(glvToken), gmMarketIsolationModeAddress);
+    return gmMarketIsolationModeAddress;
   }
 
-  private async getDepositGasLimits(): Promise<DepositGasLimits> {
-    const cachedValue = this.dataStoreCache.get(DepositGasLimitsCacheKey)
-    if (cachedValue) {
-      return cachedValue;
+  private async getIndexPricesStruct(
+    pricesMap: Record<Address, SignedPriceData>,
+    markets: Address[],
+  ): Promise<PricePropsStruct[]> {
+    const pricesStruct: PricePropsStruct[] = [];
+    for (let i = 0; i < markets.length; i += 1) {
+      const { indexToken } = await this.gmxV2Reader!.getMarket(this.gmxV2DataStore!.address, markets[i]);
+      pricesStruct.push(GlvEstimator.getPriceStruct(pricesMap, indexToken));
     }
-
-    const depositGasLimit = await this.gmxV2DataStore!.getUint(DEPOSIT_GAS_LIMIT_KEY);
-    const value: DepositGasLimits = {
-      depositGasLimit,
-    };
-    this.dataStoreCache.set(DepositGasLimitsCacheKey, value);
-
-    return value;
-  }
-
-  private async getGasPrice(config: ZapConfig): Promise<BigNumberish> {
-    return config.gasPriceInWei
-      ? config.gasPriceInWei.toFixed()
-      : (await this.arbitrumGasInfo!.getPricesInWei())[5];
+    return pricesStruct;
   }
 }

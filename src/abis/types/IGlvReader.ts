@@ -12,22 +12,9 @@ import type {
   utils,
 } from "ethers";
 import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+import type { Provider } from "@ethersproject/providers";
 
 export declare namespace GlvDeposit {
-  export type AddressesStruct = {
-    glv: string;
-    account: string;
-    receiver: string;
-    callbackContract: string;
-    uiFeeReceiver: string;
-    market: string;
-    initialLongToken: string;
-    initialShortToken: string;
-    longTokenSwapPath: string[];
-    shortTokenSwapPath: string[];
-  };
-
   export type AddressesStructOutput = [
     string,
     string,
@@ -50,16 +37,6 @@ export declare namespace GlvDeposit {
     initialShortToken: string;
     longTokenSwapPath: string[];
     shortTokenSwapPath: string[];
-  };
-
-  export type NumbersStruct = {
-    marketTokenAmount: BigNumberish;
-    initialLongTokenAmount: BigNumberish;
-    initialShortTokenAmount: BigNumberish;
-    minGlvTokens: BigNumberish;
-    updatedAtTime: BigNumberish;
-    executionFee: BigNumberish;
-    callbackGasLimit: BigNumberish;
   };
 
   export type NumbersStructOutput = [
@@ -80,20 +57,9 @@ export declare namespace GlvDeposit {
     callbackGasLimit: BigNumber;
   };
 
-  export type FlagsStruct = {
-    shouldUnwrapNativeToken: boolean;
-    isMarketTokenDeposit: boolean;
-  };
-
   export type FlagsStructOutput = [boolean, boolean] & {
     shouldUnwrapNativeToken: boolean;
     isMarketTokenDeposit: boolean;
-  };
-
-  export type PropsStruct = {
-    addresses: GlvDeposit.AddressesStruct;
-    numbers: GlvDeposit.NumbersStruct;
-    flags: GlvDeposit.FlagsStruct;
   };
 
   export type PropsStructOutput = [
@@ -108,17 +74,6 @@ export declare namespace GlvDeposit {
 }
 
 export declare namespace GlvWithdrawal {
-  export type AddressesStruct = {
-    glv: string;
-    market: string;
-    account: string;
-    receiver: string;
-    callbackContract: string;
-    uiFeeReceiver: string;
-    longTokenSwapPath: string[];
-    shortTokenSwapPath: string[];
-  };
-
   export type AddressesStructOutput = [
     string,
     string,
@@ -139,15 +94,6 @@ export declare namespace GlvWithdrawal {
     shortTokenSwapPath: string[];
   };
 
-  export type NumbersStruct = {
-    glvTokenAmount: BigNumberish;
-    minLongTokenAmount: BigNumberish;
-    minShortTokenAmount: BigNumberish;
-    updatedAtTime: BigNumberish;
-    executionFee: BigNumberish;
-    callbackGasLimit: BigNumberish;
-  };
-
   export type NumbersStructOutput = [
     BigNumber,
     BigNumber,
@@ -164,16 +110,8 @@ export declare namespace GlvWithdrawal {
     callbackGasLimit: BigNumber;
   };
 
-  export type FlagsStruct = { shouldUnwrapNativeToken: boolean };
-
   export type FlagsStructOutput = [boolean] & {
     shouldUnwrapNativeToken: boolean;
-  };
-
-  export type PropsStruct = {
-    addresses: GlvWithdrawal.AddressesStruct;
-    numbers: GlvWithdrawal.NumbersStruct;
-    flags: GlvWithdrawal.FlagsStruct;
   };
 
   export type PropsStructOutput = [
@@ -188,12 +126,6 @@ export declare namespace GlvWithdrawal {
 }
 
 export declare namespace Glv {
-  export type PropsStruct = {
-    glvToken: string;
-    longToken: string;
-    shortToken: string;
-  };
-
   export type PropsStructOutput = [string, string, string] & {
     glvToken: string;
     longToken: string;
@@ -202,8 +134,6 @@ export declare namespace Glv {
 }
 
 export declare namespace IGlvReader {
-  export type GlvInfoStruct = { glv: Glv.PropsStruct; markets: string[] };
-
   export type GlvInfoStructOutput = [Glv.PropsStructOutput, string[]] & {
     glv: Glv.PropsStructOutput;
     markets: string[];
@@ -211,33 +141,16 @@ export declare namespace IGlvReader {
 }
 
 export declare namespace GlvShift {
-  export type AddressesStruct = {
-    glv: string;
-    fromMarket: string;
-    toMarket: string;
-  };
-
   export type AddressesStructOutput = [string, string, string] & {
     glv: string;
     fromMarket: string;
     toMarket: string;
   };
 
-  export type NumbersStruct = {
-    marketTokenAmount: BigNumberish;
-    minMarketTokens: BigNumberish;
-    updatedAtTime: BigNumberish;
-  };
-
   export type NumbersStructOutput = [BigNumber, BigNumber, BigNumber] & {
     marketTokenAmount: BigNumber;
     minMarketTokens: BigNumber;
     updatedAtTime: BigNumber;
-  };
-
-  export type PropsStruct = {
-    addresses: GlvShift.AddressesStruct;
-    numbers: GlvShift.NumbersStruct;
   };
 
   export type PropsStructOutput = [
@@ -251,11 +164,6 @@ export declare namespace GlvShift {
 
 export declare namespace GlvPrice {
   export type PropsStruct = { min: BigNumberish; max: BigNumberish };
-
-  export type PropsStructOutput = [BigNumber, BigNumber] & {
-    min: BigNumber;
-    max: BigNumber;
-  };
 }
 
 export interface IGlvReaderInterface extends utils.Interface {

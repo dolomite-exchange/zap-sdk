@@ -572,10 +572,16 @@ const PENDLE_PT_RS_ETH_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | undefi
 // ======= Addresses =======
 // =========================
 
-// @todo update factory addresses
 export const GLV_MARKETS_MAP: Record<Network, Record<Address, GlvMarket | undefined> | undefined> = {
   [Network.ARBITRUM_ONE]: {
-    ['0x1230000000000000000000000000000000000321']: {
+    [Deployments.GlvBTCV2IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      glvTokenAddress: '0xdF03EEd325b82bC1d4Db8b49c30ecc9E05104b96',
+      longTokenAddress: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
+      longTokenId: WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      shortTokenAddress: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+    },
+    [Deployments.GlvETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       glvTokenAddress: '0x528A5bac7E746C9A509A1f4F6dF58A03d44279F9',
       longTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
       longTokenId: WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
@@ -590,7 +596,7 @@ export const GLV_MARKETS_MAP: Record<Network, Record<Address, GlvMarket | undefi
   [Network.X_LAYER]: undefined,
 };
 
-export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined> | undefined> = {
+export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefined>> = {
   [Network.ARBITRUM_ONE]: {
     [Deployments.GmxV2AAVEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0xba5DdD1f9d7F570dc94a51479a000E3BCE967196',
@@ -680,11 +686,11 @@ export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefine
       marketTokenAddress: '0x450bb6774Dd8a756274E0ab4107953259d2ac541',
     },
   },
-  [Network.BASE]: undefined,
-  [Network.BERACHAIN]: undefined,
-  [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
-  [Network.X_LAYER]: undefined,
+  [Network.BASE]: {},
+  [Network.BERACHAIN]: {},
+  [Network.MANTLE]: {},
+  [Network.POLYGON_ZKEVM]: {},
+  [Network.X_LAYER]: {},
 };
 
 // OTHER ADDRESSES
@@ -716,8 +722,17 @@ export const EZ_ETH_MAP: Record<Network, Address | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+export const GLV_REGISTRY_PROXY_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: '0x14F7137BAD9339c0901Df6728FF4B798F0f4429C',
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 export const GLV_READER_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: '0xd4f522c4339Ae0A90a156bd716715547e44Bed65',
+  [Network.ARBITRUM_ONE]: '0x6a9505D0B44cFA863d9281EA5B0b34cB36243b45',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.MANTLE]: undefined,
@@ -735,7 +750,7 @@ export const GMX_V2_DATA_STORE_MAP: Record<Network, Address | undefined> = {
 };
 
 export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: '0x5Ca84c34a381434786738735265b9f3FD814b824',
+  [Network.ARBITRUM_ONE]: '0x0537C767cDAC0726c76Bb89e92904fe28fd02fE1',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.MANTLE]: undefined,

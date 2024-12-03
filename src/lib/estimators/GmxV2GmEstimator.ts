@@ -26,7 +26,7 @@ enum SwapPricingType {
   Atomic
 }
 
-interface SignedPriceData {
+export interface SignedPriceData {
   tokenAddress: string;
   minPrice: string;
   maxPrice: string;
@@ -81,7 +81,7 @@ export class GmxV2GmEstimator {
   ) {
     this.dataStoreCache = new LocalCache<WithdrawalGasLimits>(3600);
     if (network !== Network.ARBITRUM_ONE) {
-      return
+      return;
     }
 
     this.gmxV2Reader = new ethers.Contract(
@@ -107,6 +107,19 @@ export class GmxV2GmEstimator {
     }
   }
 
+  static async getTokenPrices(): Promise<Record<Address, SignedPriceData>> {
+    return AxiosClient.get('https://arbitrum-api.gmxinfra.io/prices/tickers')
+      .then(res => res.data)
+      .then(data => (data as any[]).reduce((memo, priceData) => {
+        const tokenAddress = ethers.utils.getAddress(priceData.tokenAddress);
+        memo[tokenAddress] = {
+          ...priceData,
+          tokenAddress,
+        };
+        return memo;
+      }, {}));
+  }
+
   private static getPricesStruct(
     pricesMap: Record<Address, SignedPriceData>,
     indexToken: Address,
@@ -129,19 +142,6 @@ export class GmxV2GmEstimator {
     };
   }
 
-  private static async getTokenPrices(): Promise<Record<Address, SignedPriceData>> {
-    return AxiosClient.get('https://arbitrum-api.gmxinfra.io/prices/tickers')
-      .then(res => res.data)
-      .then(data => (data as any[]).reduce((memo, priceData) => {
-        const tokenAddress = ethers.utils.getAddress(priceData.tokenAddress);
-        memo[tokenAddress] = {
-          ...priceData,
-          tokenAddress,
-        };
-        return memo;
-      }, {}));
-  }
-
   private static averagePrices(prices: GmxPrice.PricePropsStruct): ethers.BigNumber {
     return ethers.BigNumber.from(prices.min.toString()).add(prices.max.toString()).div(2);
   }
@@ -152,7 +152,7 @@ export class GmxV2GmEstimator {
         ['bytes32', 'address', 'address'],
         [POOL_AMOUNT_KEY, market, token],
       ),
-    )
+    );
   }
 
   public async getUnwrappedAmount(
@@ -161,10 +161,13 @@ export class GmxV2GmEstimator {
     outputMarketId: MarketId,
     marketsMap: Record<string, ApiMarket>,
     config: ZapConfig,
+    tokenPrices?: Record<string, SignedPriceData>,
+    callbackGasLimit: ethers.BigNumber = CALLBACK_GAS_LIMIT,
   ): Promise<EstimateOutputResult> {
-    const tokenToSignedPriceMap = await GmxV2GmEstimator.getTokenPrices();
+    const tokenToSignedPriceMap = tokenPrices ?? await GmxV2GmEstimator.getTokenPrices();
     const outputToken = marketsMap[outputMarketId.toFixed()];
 
+    // TODO: make dynamic
     const gmMarket = GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
     const longToken = gmMarket.longTokenAddress;
@@ -178,22 +181,30 @@ export class GmxV2GmEstimator {
     };
     const pricesStruct = GmxV2GmEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken);
 
-    const [longAmountOut, shortAmountOut] = await this.gmxV2Reader!.getWithdrawalAmountOut(
-      this.gmxV2DataStore!.address,
-      gmMarketProps,
-      pricesStruct,
-      amountIn.toFixed(),
-      ADDRESS_ZERO,
-      SwapPricingType.TwoStep,
-    );
-
-    const weight = await this.getWeightForOtherAmount(
-      outputToken,
-      longToken,
-      shortToken,
-      marketToken,
-      pricesStruct,
-    );
+    const [
+      [longAmountOut, shortAmountOut],
+      weight,
+      limits,
+      gasPriceWei,
+    ] = await Promise.all([
+      this.gmxV2Reader!.getWithdrawalAmountOut(
+        this.gmxV2DataStore!.address,
+        gmMarketProps,
+        pricesStruct,
+        amountIn.toFixed(),
+        ADDRESS_ZERO,
+        SwapPricingType.TwoStep,
+      ),
+      this.getWeightForOtherAmount(
+        outputToken,
+        longToken,
+        shortToken,
+        marketToken,
+        pricesStruct,
+      ),
+      this.getWithdrawalGasLimits(),
+      this.getGasPrice(config),
+    ]);
 
     const amountOut = outputToken.tokenAddress === longToken ? longAmountOut : shortAmountOut;
 
@@ -208,11 +219,7 @@ export class GmxV2GmEstimator {
         ADDRESS_ZERO,
       );
 
-    const [limits, gasPriceWei] = await Promise.all([
-      this.getWithdrawalGasLimits(),
-      this.getGasPrice(config),
-    ]);
-    const totalWithdrawalGasLimit = limits.withdrawalGasLimit.add(limits.swapGasLimit).add(CALLBACK_GAS_LIMIT);
+    const totalWithdrawalGasLimit = limits.withdrawalGasLimit.add(limits.swapGasLimit).add(callbackGasLimit);
     const executionFee = new BigNumber(
       totalWithdrawalGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
     );
@@ -240,8 +247,10 @@ export class GmxV2GmEstimator {
     inputMarketId: MarketId,
     marketsMap: Record<string, ApiMarket>,
     config: ZapConfig,
+    tokenPrices?: Record<string, SignedPriceData>,
+    callbackGasLimit: ethers.BigNumber = CALLBACK_GAS_LIMIT,
   ): Promise<EstimateOutputResult> {
-    const tokenToSignedPriceMap = await GmxV2GmEstimator.getTokenPrices();
+    const tokenToSignedPriceMap = tokenPrices ?? await GmxV2GmEstimator.getTokenPrices();
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
     const gmMarket = GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
@@ -254,27 +263,27 @@ export class GmxV2GmEstimator {
       return Promise.reject(new Error(`Invalid inputToken, found: ${inputToken.symbol} / ${inputToken.tokenAddress}`));
     }
 
-    const amountOut = await this.gmxV2Reader!.getDepositAmountOut(
-      this.gmxV2DataStore!.address,
-      {
-        marketToken,
-        indexToken,
-        longToken,
-        shortToken,
-      },
-      GmxV2GmEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken),
-      inputToken.tokenAddress === longToken ? amountIn.toFixed() : '0',
-      inputToken.tokenAddress === shortToken && longToken !== shortToken ? amountIn.toFixed() : '0',
-      ADDRESS_ZERO,
-      SwapPricingType.TwoStep,
-      true,
-    );
-
-    const [limits, gasPriceWei] = await Promise.all([
+    const [amountOut, limits, gasPriceWei] = await Promise.all([
+      this.gmxV2Reader!.getDepositAmountOut(
+        this.gmxV2DataStore!.address,
+        {
+          marketToken,
+          indexToken,
+          longToken,
+          shortToken,
+        },
+        GmxV2GmEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken),
+        inputToken.tokenAddress === longToken ? amountIn.toFixed() : '0',
+        inputToken.tokenAddress === shortToken && longToken !== shortToken ? amountIn.toFixed() : '0',
+        ADDRESS_ZERO,
+        SwapPricingType.TwoStep,
+        true,
+      ),
       this.getDepositGasLimits(),
       this.getGasPrice(config),
     ]);
-    const totalDepositGasLimit = limits.depositGasLimit.add(CALLBACK_GAS_LIMIT);
+
+    const totalDepositGasLimit = limits.depositGasLimit.add(callbackGasLimit);
     const executionFee = new BigNumber(
       totalDepositGasLimit.mul(gasPriceWei).mul(this.gasMultiplier.toString()).toString(),
     );
@@ -310,13 +319,15 @@ export class GmxV2GmEstimator {
   }
 
   private async getWithdrawalGasLimits(): Promise<WithdrawalGasLimits> {
-    const cachedValue = this.dataStoreCache.get(WithdrawalGasLimitsCacheKey)
+    const cachedValue = this.dataStoreCache.get(WithdrawalGasLimitsCacheKey);
     if (cachedValue) {
       return cachedValue;
     }
 
-    const withdrawalGasLimit = await this.gmxV2DataStore!.getUint(WITHDRAWAL_GAS_LIMIT_KEY);
-    const swapGasLimit = await this.gmxV2DataStore!.getUint(SINGLE_SWAP_GAS_LIMIT_KEY);
+    const [withdrawalGasLimit, swapGasLimit] = await Promise.all([
+      this.gmxV2DataStore!.getUint(WITHDRAWAL_GAS_LIMIT_KEY),
+      this.gmxV2DataStore!.getUint(SINGLE_SWAP_GAS_LIMIT_KEY),
+    ]);
     const value = {
       withdrawalGasLimit,
       swapGasLimit,
@@ -327,7 +338,7 @@ export class GmxV2GmEstimator {
   }
 
   private async getDepositGasLimits(): Promise<DepositGasLimits> {
-    const cachedValue = this.dataStoreCache.get(DepositGasLimitsCacheKey)
+    const cachedValue = this.dataStoreCache.get(DepositGasLimitsCacheKey);
     if (cachedValue) {
       return cachedValue;
     }
