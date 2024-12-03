@@ -5,18 +5,20 @@ import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, Z
 import {
   BYTES_EMPTY,
   getPendlePtTransformerTokenForIsolationModeToken,
-  getPendleYtTransformerTokenForIsolationModeToken,
+  getPendleYtTransformerTokenForIsolationModeToken, isGlvIsolationModeAsset,
   isGmxV2IsolationModeAsset,
   isPendlePtAsset,
   isPendleYtAsset,
   isSimpleIsolationModeAsset,
 } from '../Constants';
+import { GlvEstimator } from './GlvEstimator';
 import { GmxV2GmEstimator } from './GmxV2GmEstimator';
 import { PendlePtEstimatorV3 } from './PendlePtEstimatorV3';
 import { PendleYtEstimatorV3 } from './PendleYtEstimatorV3';
 import { SimpleEstimator } from './SimpleEstimator';
 
 export class StandardEstimator {
+  private readonly glvEstimator: GlvEstimator;
   private readonly gmxV2GmEstimator: GmxV2GmEstimator;
   private readonly pendlePtEstimatorV3: PendlePtEstimatorV3;
   private readonly pendleYtEstimatorV3: PendleYtEstimatorV3;
@@ -28,6 +30,7 @@ export class StandardEstimator {
     gasMultiplier: BigNumber,
   ) {
     this.gmxV2GmEstimator = new GmxV2GmEstimator(this.network, this.web3Provider, gasMultiplier);
+    this.glvEstimator = new GlvEstimator(this.network, this.web3Provider, this.gmxV2GmEstimator);
     this.pendlePtEstimatorV3 = new PendlePtEstimatorV3(this.network);
     this.pendleYtEstimatorV3 = new PendleYtEstimatorV3(this.network);
     this.simpleEstimator = new SimpleEstimator();
@@ -63,6 +66,14 @@ export class StandardEstimator {
       return { tradeData: result.tradeData, amountOut: result.amountOut };
     } else if (isSimpleIsolationModeAsset(this.network, isolationModeTokenAddress)) {
       return this.simpleEstimator.getUnwrappedAmount(amountIn);
+    } else if (isGlvIsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      return this.glvEstimator.getUnwrappedAmount(
+        isolationModeTokenAddress,
+        amountIn,
+        outputMarketId,
+        marketsMap,
+        config,
+      );
     } else if (isGmxV2IsolationModeAsset(this.network, isolationModeTokenAddress)) {
       return this.gmxV2GmEstimator.getUnwrappedAmount(
         isolationModeTokenAddress,
@@ -115,6 +126,14 @@ export class StandardEstimator {
       return this.simpleEstimator.getWrappedAmount(amountIn);
     } else if (isGmxV2IsolationModeAsset(this.network, isolationModeTokenAddress)) {
       return this.gmxV2GmEstimator.getWrappedAmount(
+        isolationModeTokenAddress,
+        amountIn,
+        inputMarketId,
+        marketsMap,
+        config,
+      );
+    } else if (isGlvIsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      return this.glvEstimator.getWrappedAmount(
         isolationModeTokenAddress,
         amountIn,
         inputMarketId,
