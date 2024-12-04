@@ -1317,9 +1317,9 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: true,
     },
     [GLV_BTC_ISOLATED_MARKET_ID[Network.ARBITRUM_ONE]!.toFixed()]: {
-      tokenAddress: Deployments.PendlePtRsETHDec2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
-      unwrapper: Deployments.PendlePtRsETHDec2024IsolationModeUnwrapperTraderV3[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtRsETHDec2024IsolationModeWrapperTraderV3[Network.ARBITRUM_ONE].address,
+      tokenAddress: Deployments.GlvBTCV2IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.GlvBTCV2AsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GlvBTCV2AsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       wrapperMarketIds: [WBTC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!, NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
       unwrapperReadableName: GLV_UNWRAPPER_LABEL,
@@ -1327,9 +1327,9 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: true,
     },
     [GLV_ETH_ISOLATED_MARKET_ID[Network.ARBITRUM_ONE]!.toFixed()]: {
-      tokenAddress: Deployments.PendlePtRsETHDec2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
-      unwrapper: Deployments.PendlePtRsETHDec2024IsolationModeUnwrapperTraderV3[Network.ARBITRUM_ONE].address,
-      wrapper: Deployments.PendlePtRsETHDec2024IsolationModeWrapperTraderV3[Network.ARBITRUM_ONE].address,
+      tokenAddress: Deployments.GlvETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.GlvETHAsyncIsolationModeUnwrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.GlvETHAsyncIsolationModeWrapperTraderProxyV2[Network.ARBITRUM_ONE].address,
       unwrapperMarketIds: [
         WETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
         NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
