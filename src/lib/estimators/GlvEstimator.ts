@@ -33,6 +33,8 @@ const GLV_DEPOSIT_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['GLV_DE
 
 const GLV_WITHDRAWAL_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['GLV_WITHDRAWAL_GAS_LIMIT']));
 
+const GLV_PER_MARKET_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['GLV_PER_MARKET_GAS_LIMIT']));
+
 const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(4_000_000);
 
 const GlvToGmMarketCacheKey = (glvToken: string): string => `GlvToGmMarket-${glvToken}`;
