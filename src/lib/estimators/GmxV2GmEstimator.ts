@@ -161,10 +161,9 @@ export class GmxV2GmEstimator {
     marketsMap: Record<string, ApiMarket>,
     config: ZapConfig,
     tokenPrices?: Record<string, SignedPriceData>,
+    gasLimitOverride?: ethers.BigNumber,
     callbackGasLimit: ethers.BigNumber = CALLBACK_GAS_LIMIT,
-    gasLimitKey: string = WITHDRAWAL_GAS_LIMIT_KEY,
   ): Promise<EstimateOutputResult> {
-    console.log(gasLimitKey, WITHDRAWAL_GAS_LIMIT_KEY);
     const tokenToSignedPriceMap = tokenPrices ?? await GmxV2GmEstimator.getTokenPrices();
     const outputToken = marketsMap[outputMarketId.toFixed()];
 
@@ -212,7 +211,7 @@ export class GmxV2GmEstimator {
       gasPriceWei,
     ] = await Promise.all([
       this.multicall.callStatic.aggregate(calls),
-      this.getWithdrawalGasLimits(),
+      this.getWithdrawalGasLimits(gasLimitOverride),
       this.getGasPrice(config),
     ]);
 
@@ -271,10 +270,9 @@ export class GmxV2GmEstimator {
     marketsMap: Record<string, ApiMarket>,
     config: ZapConfig,
     tokenPrices?: Record<string, SignedPriceData>,
+    gasLimitOverride?: ethers.BigNumber,
     callbackGasLimit: ethers.BigNumber = CALLBACK_GAS_LIMIT,
-    gasLimitKey: string = DEPOSIT_GAS_LIMIT_KEY,
   ): Promise<EstimateOutputResult> {
-    console.log(gasLimitKey, DEPOSIT_GAS_LIMIT_KEY);
     const tokenToSignedPriceMap = tokenPrices ?? await GmxV2GmEstimator.getTokenPrices();
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
@@ -304,7 +302,7 @@ export class GmxV2GmEstimator {
         SwapPricingType.TwoStep,
         true,
       ),
-      this.getDepositGasLimits(),
+      this.getDepositGasLimits(gasLimitOverride),
       this.getGasPrice(config),
     ]);
 
@@ -340,7 +338,14 @@ export class GmxV2GmEstimator {
       : ONE_ETH.mul(longBalanceUsd).div(totalBalanceUsd);
   }
 
-  private async getWithdrawalGasLimits(): Promise<WithdrawalGasLimits> {
+  private async getWithdrawalGasLimits(gasLimitOverride?: ethers.BigNumber): Promise<WithdrawalGasLimits> {
+    if (gasLimitOverride) {
+      return {
+        withdrawalGasLimit: gasLimitOverride,
+        swapGasLimit: ethers.BigNumber.from('0'),
+      }
+    }
+
     const cachedValue = this.dataStoreCache.get(WithdrawalGasLimitsCacheKey);
     if (cachedValue) {
       return cachedValue;
@@ -376,7 +381,13 @@ export class GmxV2GmEstimator {
     return value;
   }
 
-  private async getDepositGasLimits(): Promise<DepositGasLimits> {
+  private async getDepositGasLimits(gasLimitOverride?: ethers.BigNumber): Promise<DepositGasLimits> {
+    if (gasLimitOverride) {
+      return {
+        depositGasLimit: gasLimitOverride,
+      };
+    }
+
     const cachedValue = this.dataStoreCache.get(DepositGasLimitsCacheKey);
     if (cachedValue) {
       return cachedValue;

@@ -49,8 +49,8 @@ describe('GlvEstimator', () => {
       );
       console.log(
         'GLV unwrapped amounts [from ETH, from USDC]:',
-        ethAmount.amountOut.toString(),
-        usdcAmount.amountOut.toString(),
+        `[${ethAmount.amountOut.toString()}, ${ethAmount.extraData?.executionFee.toFixed()}]`,
+        `[${usdcAmount.amountOut.toString()}, ${usdcAmount.extraData?.executionFee.toFixed()}]`,
       );
     });
   });
@@ -76,8 +76,8 @@ describe('GlvEstimator', () => {
       );
       console.log(
         'GLV wrapped amounts [from ETH, from USDC]:',
-        glvAmountOutFromEth.amountOut.toString(),
-        glvAmountOutFromUsdc.amountOut.toString(),
+        `[${glvAmountOutFromEth.amountOut.toString()}, ${glvAmountOutFromEth.extraData?.executionFee.toFixed()}]`,
+        `[${glvAmountOutFromUsdc.amountOut.toString()}, ${glvAmountOutFromUsdc.extraData?.executionFee.toFixed()}]`,
       );
     });
   });
