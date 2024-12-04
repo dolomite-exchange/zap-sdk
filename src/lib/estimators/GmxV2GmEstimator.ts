@@ -4,9 +4,11 @@ import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
 import IArbitrumGasInfoAbi from '../../abis/IArbitrumGasInfo.json';
 import IGmxV2DataStoreAbi from '../../abis/IGmxV2DataStore.json';
 import IGmxV2ReaderAbi from '../../abis/IGmxV2Reader.json';
+import MulticallAbi from '../../abis/Multicall.json';
 import { IArbitrumGasInfo } from '../../abis/types/IArbitrumGasInfo';
 import { IGmxV2DataStore } from '../../abis/types/IGmxV2DataStore';
 import { GmxMarket, GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
+import { Multicall, Multicall__CallStruct } from '../../abis/types/Multicall';
 import { AxiosClient } from '../../clients/AxiosClient';
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
@@ -16,6 +18,7 @@ import {
   GM_MARKETS_MAP,
   GMX_V2_DATA_STORE_MAP,
   GMX_V2_READER_MAP,
+  MULTICALL_MAP,
 } from '../Constants';
 import { LocalCache } from '../LocalCache';
 import MarketPricesStruct = GmxMarket.MarketPricesStruct;
@@ -72,6 +75,7 @@ export class GmxV2GmEstimator {
   private readonly gmxV2Reader?: IGmxV2Reader;
   private readonly gmxV2DataStore?: IGmxV2DataStore;
   private readonly arbitrumGasInfo?: IArbitrumGasInfo;
+  private readonly multicall: Multicall;
   private readonly dataStoreCache: LocalCache<any>;
 
   public constructor(
@@ -79,6 +83,11 @@ export class GmxV2GmEstimator {
     private readonly web3Provider: ethers.providers.Provider,
     private readonly gasMultiplier: BigNumber,
   ) {
+    this.multicall = new ethers.Contract(
+      MULTICALL_MAP[this.network]!,
+      MulticallAbi,
+      this.web3Provider,
+    ) as Multicall;
     this.dataStoreCache = new LocalCache<WithdrawalGasLimits>(3600);
     if (network !== Network.ARBITRUM_ONE) {
       return;
@@ -181,31 +190,53 @@ export class GmxV2GmEstimator {
     };
     const pricesStruct = GmxV2GmEstimator.getPricesStruct(tokenToSignedPriceMap, indexToken, longToken, shortToken);
 
+    const longAmountKey = GmxV2GmEstimator.getPoolAmountKey(marketToken, longToken);
+    const shortAmountKey = GmxV2GmEstimator.getPoolAmountKey(marketToken, shortToken);
+    const calls: Multicall__CallStruct[] = [
+      {
+        target: this.gmxV2DataStore!.address,
+        callData: (await this.gmxV2DataStore!.populateTransaction.getUint(longAmountKey)).data!,
+      },
+      {
+        target: this.gmxV2DataStore!.address,
+        callData: (await this.gmxV2DataStore!.populateTransaction.getUint(shortAmountKey)).data!,
+      },
+      {
+        target: this.gmxV2Reader!.address,
+        callData: (await this.gmxV2Reader!.populateTransaction.getWithdrawalAmountOut(
+          this.gmxV2DataStore!.address,
+          gmMarketProps,
+          pricesStruct,
+          amountIn.toFixed(),
+          ADDRESS_ZERO,
+          SwapPricingType.TwoStep,
+        )).data!,
+      },
+    ];
+
     const [
-      [longAmountOut, shortAmountOut],
-      weight,
+      { returnData },
       limits,
       gasPriceWei,
     ] = await Promise.all([
-      this.gmxV2Reader!.getWithdrawalAmountOut(
-        this.gmxV2DataStore!.address,
-        gmMarketProps,
-        pricesStruct,
-        amountIn.toFixed(),
-        ADDRESS_ZERO,
-        SwapPricingType.TwoStep,
-      ),
-      this.getWeightForOtherAmount(
-        outputToken,
-        longToken,
-        shortToken,
-        marketToken,
-        pricesStruct,
-      ),
+      this.multicall.callStatic.aggregate(calls),
       this.getWithdrawalGasLimits(),
       this.getGasPrice(config),
     ]);
 
+    const weight = this.getWeightForOtherAmount(
+      outputToken,
+      longToken,
+      shortToken,
+      pricesStruct,
+      this.gmxV2DataStore!.interface.decodeFunctionResult('getUint', returnData[0])[0],
+      this.gmxV2DataStore!.interface.decodeFunctionResult('getUint', returnData[1])[0],
+    );
+
+    const [longAmountOut, shortAmountOut] = this.gmxV2Reader!.interface.decodeFunctionResult(
+      'getWithdrawalAmountOut',
+      returnData[2],
+    );
     const amountOut = outputToken.tokenAddress === longToken ? longAmountOut : shortAmountOut;
 
     const [otherAmountOut] = longToken === shortToken
@@ -297,22 +328,19 @@ export class GmxV2GmEstimator {
     };
   }
 
-  private async getWeightForOtherAmount(
+  private getWeightForOtherAmount(
     outputToken: ApiMarket,
     longToken: string,
     shortToken: string,
-    marketToken: string,
     pricesStruct: GmxMarket.MarketPricesStruct,
-  ): Promise<ethers.BigNumber> {
+    longBalance: ethers.BigNumber,
+    shortBalance: ethers.BigNumber,
+  ): ethers.BigNumber {
     const divisor = ethers.BigNumber.from(longToken === shortToken ? 2 : 1);
-    const [longBalance, shortBalance] = await Promise.all([
-      this.gmxV2DataStore!.getUint(GmxV2GmEstimator.getPoolAmountKey(marketToken, longToken)),
-      this.gmxV2DataStore!.getUint(GmxV2GmEstimator.getPoolAmountKey(marketToken, shortToken)),
-    ]);
-
     const longBalanceUsd = longBalance.mul(GmxV2GmEstimator.averagePrices(pricesStruct.longTokenPrice)).div(divisor);
     const shortBalanceUsd = shortBalance.mul(GmxV2GmEstimator.averagePrices(pricesStruct.shortTokenPrice)).div(divisor);
     const totalBalanceUsd = longBalanceUsd.add(shortBalanceUsd);
+
     return outputToken.tokenAddress === longToken
       ? ONE_ETH.mul(shortBalanceUsd).div(totalBalanceUsd)
       : ONE_ETH.mul(longBalanceUsd).div(totalBalanceUsd);
@@ -324,10 +352,27 @@ export class GmxV2GmEstimator {
       return cachedValue;
     }
 
-    const [withdrawalGasLimit, swapGasLimit] = await Promise.all([
-      this.gmxV2DataStore!.getUint(WITHDRAWAL_GAS_LIMIT_KEY),
-      this.gmxV2DataStore!.getUint(SINGLE_SWAP_GAS_LIMIT_KEY),
-    ]);
+    const calls: Multicall__CallStruct[] = [
+      {
+        target: this.gmxV2DataStore!.address,
+        callData: (await this.gmxV2DataStore!.populateTransaction.getUint(WITHDRAWAL_GAS_LIMIT_KEY)).data!,
+      },
+      {
+        target: this.gmxV2DataStore!.address,
+        callData: (await this.gmxV2DataStore!.populateTransaction.getUint(SINGLE_SWAP_GAS_LIMIT_KEY)).data!,
+      },
+    ];
+
+    const { returnData } = await this.multicall.callStatic.aggregate(calls);
+    const withdrawalGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
+      'getUint',
+      returnData[0],
+    )[0] as ethers.BigNumber;
+    const swapGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
+      'getUint',
+      returnData[1],
+    )[0] as ethers.BigNumber;
+
     const value = {
       withdrawalGasLimit,
       swapGasLimit,

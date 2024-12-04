@@ -834,6 +834,15 @@ export const METH_MAP: Record<Network, Address | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+export const MULTICALL_MAP: Record<Network, Address> = {
+  [Network.ARBITRUM_ONE]: '0xB18B8B1A5BDEa1f3c9776715b9325F932803FB1f',
+  [Network.BASE]: '0x836b557Cf9eF29fcF49C776841191782df34e4e5',
+  [Network.BERACHAIN]: '0x80dE7cB50cC6b0E1336cddE50dF78EfF413dE7fb',
+  [Network.MANTLE]: '0x6978Ffdcd509dED2F8557565e0a9FC5CFA1bEbc5',
+  [Network.POLYGON_ZKEVM]: '0x4232FCE0D67839F4FD536990bDc02043d9Ab708a',
+  [Network.X_LAYER]: '0x86CFc6BA3bbBC603b8deC5B032aFa10A3592470D',
+};
+
 const R_ETH_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
   [Network.BASE]: undefined,

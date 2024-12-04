@@ -5,17 +5,26 @@ import IGlvReaderAbi from '../../abis/IGlvReader.json';
 import IGlvRegistryAbi from '../../abis/IGlvRegistry.json';
 import IGmxV2DataStoreAbi from '../../abis/IGmxV2DataStore.json';
 import IGmxV2ReaderAbi from '../../abis/IGmxV2Reader.json';
+import MulticallAbi from '../../abis/Multicall.json';
+import { IERC20 } from '../../abis/types/IERC20';
 import { IGlvReader } from '../../abis/types/IGlvReader';
 import { IGlvRegistry } from '../../abis/types/IGlvRegistry';
 import { IGmxV2DataStore } from '../../abis/types/IGmxV2DataStore';
-import { GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
+import {
+  GmxMarketPoolValueInfo,
+  GmxPrice,
+  IGmxV2Reader,
+} from '../../abis/types/IGmxV2Reader';
+import { Multicall, Multicall__CallStruct } from '../../abis/types/Multicall';
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
   GLV_MARKETS_MAP,
   GLV_READER_MAP,
   GLV_REGISTRY_PROXY_MAP,
   GM_MARKETS_MAP,
-  GMX_V2_DATA_STORE_MAP, GMX_V2_READER_MAP,
+  GMX_V2_DATA_STORE_MAP,
+  GMX_V2_READER_MAP,
+  MULTICALL_MAP,
 } from '../Constants';
 import { LocalCache } from '../LocalCache';
 import { GmxV2GmEstimator, SignedPriceData } from './GmxV2GmEstimator';
@@ -30,6 +39,7 @@ export class GlvEstimator {
   private readonly glvRegistry?: IGlvRegistry;
   private readonly gmxV2Reader?: IGmxV2Reader;
   private readonly gmxV2DataStore?: IGmxV2DataStore;
+  private readonly multicall: Multicall;
   private readonly dataStoreCache: LocalCache<any>;
 
   public constructor(
@@ -37,7 +47,13 @@ export class GlvEstimator {
     private readonly web3Provider: ethers.providers.Provider,
     private readonly gmxV2Estimator: GmxV2GmEstimator,
   ) {
+    this.multicall = new ethers.Contract(
+      MULTICALL_MAP[this.network]!,
+      MulticallAbi,
+      this.web3Provider,
+    ) as Multicall;
     this.dataStoreCache = new LocalCache<any>(3600);
+
     if (network !== Network.ARBITRUM_ONE) {
       return;
     }
@@ -86,24 +102,45 @@ export class GlvEstimator {
   ): Promise<EstimateOutputResult> {
     const glvMarket = GLV_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
     const glvToken = glvMarket.glvTokenAddress;
+    const glvTokenContract = new ethers.Contract(glvToken, IERC20Abi, this.web3Provider) as IERC20;
+
+    const calls: Multicall__CallStruct[] = [
+      {
+        target: glvTokenContract.address,
+        callData: (await glvTokenContract.populateTransaction.totalSupply()).data!,
+      },
+      {
+        target: this.glvReader!.address,
+        callData: (await this.glvReader!.populateTransaction.getGlvInfo(this.gmxV2DataStore!.address, glvToken)).data!,
+      },
+    ];
 
     const [
       tokenToSignedPriceMap,
       gmMarketIsolationModeAddress,
-      glvTokenSupply,
-      glvPoolInfo,
+      { returnData: multicallResults },
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
       this.getGmMarketByGlvToken(glvMarket.glvTokenAddress),
-      (new ethers.Contract(glvToken, IERC20Abi, this.web3Provider)).totalSupply(),
-      this.glvReader!.getGlvInfo(this.gmxV2DataStore!.address, glvToken),
+      this.multicall.callStatic.aggregate(calls),
     ]);
+
+    const glvTokenSupply = glvTokenContract.interface.decodeFunctionResult(
+      'totalSupply',
+      multicallResults[0],
+    )[0] as ethers.BigNumber;
+
+    const glvPoolInfo = this.glvReader!.interface.decodeFunctionResult(
+      'getGlvInfo',
+      multicallResults[1],
+    )[0] as IGlvReader.GlvInfoStructOutput;
 
     const gmMarket = GM_MARKETS_MAP[this.network][gmMarketIsolationModeAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
     const longToken = gmMarket.longTokenAddress;
     const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
+    const marketTokenContract = new ethers.Contract(marketToken, IERC20Abi, this.web3Provider) as IERC20;
 
     /**
      * Steps to calculate the expected amount out:
@@ -114,7 +151,7 @@ export class GlvEstimator {
      *  5. Get the expected amount of output tokens using the GM amount the same as GmxV2Estimator
      */
 
-    const glvPoolValue = await this.glvReader!.getGlvValue(
+    const glvPoolValueTransaction = await this.glvReader!.populateTransaction.getGlvValue(
       this.gmxV2DataStore!.address,
       glvPoolInfo.markets,
       await this.getIndexPricesStruct(tokenToSignedPriceMap, glvPoolInfo.markets),
@@ -123,9 +160,7 @@ export class GlvEstimator {
       glvPoolInfo.glv.glvToken,
       false,
     );
-    const glvTokenUsd = glvPoolValue.mul(amountIn.toFixed()).div(glvTokenSupply);
-
-    const marketPoolValue = await this.gmxV2Reader!.getMarketTokenPrice(
+    const marketPoolValueTransaction = await this.gmxV2Reader!.populateTransaction.getMarketTokenPrice(
       this.gmxV2DataStore!.address,
       {
         marketToken,
@@ -139,8 +174,38 @@ export class GlvEstimator {
       ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(['string'], ['MAX_PNL_FACTOR_FOR_WITHDRAWALS'])),
       true,
     );
-    const marketTokenSupply = await (new ethers.Contract(marketToken, IERC20Abi, this.web3Provider)).totalSupply();
-    const gmAmountOut = marketTokenSupply.mul(glvTokenUsd).div(marketPoolValue[1].poolValue);
+    const marketTokenSupplyTransaction = await marketTokenContract.populateTransaction.totalSupply();
+
+    const { returnData: multicallResults2 } = await this.multicall.callStatic.aggregate([
+      {
+        target: this.glvReader!.address,
+        callData: glvPoolValueTransaction.data!,
+      },
+      {
+        target: this.gmxV2Reader!.address,
+        callData: marketPoolValueTransaction.data!,
+      },
+      {
+        target: marketTokenContract.address,
+        callData: marketTokenSupplyTransaction.data!,
+      },
+    ]);
+
+    const glvPoolValue = this.glvReader!.interface.decodeFunctionResult(
+      'getGlvValue',
+      multicallResults2[0],
+    )[0] as ethers.BigNumber;
+    const marketPoolValueStruct = this.gmxV2Reader!.interface.decodeFunctionResult(
+      'getMarketTokenPrice',
+      multicallResults2[1],
+    )[1] as GmxMarketPoolValueInfo.PoolValueInfoPropsStructOutput;
+    const marketTokenSupply = marketTokenContract.interface.decodeFunctionResult(
+      'totalSupply',
+      multicallResults2[2],
+    )[0] as ethers.BigNumber;
+
+    const glvTokenUsd = glvPoolValue.mul(amountIn.toFixed()).div(glvTokenSupply);
+    const gmAmountOut = marketTokenSupply.mul(glvTokenUsd).div(marketPoolValueStruct.poolValue);
 
     return this.gmxV2Estimator.getUnwrappedAmount(
       gmMarketIsolationModeAddress,
@@ -162,18 +227,39 @@ export class GlvEstimator {
   ): Promise<EstimateOutputResult> {
     const glvMarket = GLV_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
     const glvToken = glvMarket.glvTokenAddress;
+    const glvTokenContract = new ethers.Contract(glvToken, IERC20Abi, this.web3Provider) as IERC20;
+
+    const calls: Multicall__CallStruct[] = [
+      {
+        target: glvTokenContract.address,
+        callData: (await glvTokenContract.populateTransaction.totalSupply()).data!,
+      },
+      {
+        target: this.glvReader!.address,
+        callData: (await this.glvReader!.populateTransaction.getGlvInfo(this.gmxV2DataStore!.address, glvToken)).data!,
+      },
+    ];
 
     const [
       tokenToSignedPriceMap,
       gmMarketIsolationModeAddress,
-      glvTokenSupply,
-      glvPoolInfo,
+      { returnData: multicallResults },
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
       this.getGmMarketByGlvToken(glvMarket.glvTokenAddress),
-      (new ethers.Contract(glvToken, IERC20Abi, this.web3Provider)).totalSupply(),
-      this.glvReader!.getGlvInfo(this.gmxV2DataStore!.address, glvToken),
+      this.multicall.callStatic.aggregate(calls),
     ]);
+
+    const glvTokenSupply = glvTokenContract.interface.decodeFunctionResult(
+      'totalSupply',
+      multicallResults[0],
+    )[0] as ethers.BigNumber;
+
+    const glvPoolInfo = this.glvReader!.interface.decodeFunctionResult(
+      'getGlvInfo',
+      multicallResults[1],
+    )[0] as IGlvReader.GlvInfoStructOutput;
+
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
     const gmMarket = GM_MARKETS_MAP[this.network][gmMarketIsolationModeAddress]!;
@@ -264,11 +350,20 @@ export class GlvEstimator {
     pricesMap: Record<Address, SignedPriceData>,
     markets: Address[],
   ): Promise<PricePropsStruct[]> {
-    const pricesStruct: PricePropsStruct[] = [];
-    for (let i = 0; i < markets.length; i += 1) {
-      const { indexToken } = await this.gmxV2Reader!.getMarket(this.gmxV2DataStore!.address, markets[i]);
-      pricesStruct.push(GlvEstimator.getPriceStruct(pricesMap, indexToken));
-    }
-    return pricesStruct;
+    const transactions = await Promise.all(
+      markets.map(m => this.gmxV2Reader!.populateTransaction.getMarket(this.gmxV2DataStore!.address, m)),
+    );
+
+    const { returnData } = await this.multicall.callStatic.aggregate(
+      transactions.map(t => ({
+        target: this.gmxV2Reader!.address,
+        callData: t.data!,
+      })),
+    );
+
+    return returnData.map(result => {
+      const [{ indexToken }] = this.gmxV2Reader!.interface.decodeFunctionResult('getMarket', result);
+      return GlvEstimator.getPriceStruct(pricesMap, indexToken);
+    });
   }
 }
