@@ -700,6 +700,13 @@ export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefine
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0x70d95587d40A2caf56bd97485aB3Eec10Bee6336',
     },
+    [Deployments.GmxV2SingleSidedGMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
+      longTokenId: GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
+      shortTokenId: GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0xbD48149673724f9cAeE647bb4e9D9dDaF896Efeb',
+    },
     [Deployments.GmxV2GMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
       longTokenId: GMX_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
@@ -714,6 +721,20 @@ export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefine
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0x7f1fa204bb700853D36994DA19F830b6Ad18455C',
     },
+    [Deployments.GmxV2PENDLEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8',
+      longTokenId: PENDLE_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      longTokenAddress: '0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x784292E87715d93afD7cb8C941BacaFAAA9A5102',
+    },
+    [Deployments.GmxV2PEPEIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00',
+      longTokenId: undefined,
+      longTokenAddress: '0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x2b477989A149B17073D9C9C82eC9cB03591e20c6',
+    },
     [Deployments.GmxV2SOLIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07',
       longTokenId: undefined,
@@ -727,6 +748,13 @@ export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarket | undefine
       longTokenAddress: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0',
       shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
       marketTokenAddress: '0xc7Abb2C5f3BF3CEB389dF0Eecd6120D451170B50',
+    },
+    [Deployments.GmxV2WIFIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
+      indexTokenAddress: '0xA1b91fe9FD52141Ff8cac388Ce3F10BFDc1dE79d',
+      longTokenId: undefined,
+      longTokenAddress: '0xA1b91fe9FD52141Ff8cac388Ce3F10BFDc1dE79d',
+      shortTokenId: NATIVE_USDC_MARKET_ID_MAP[Network.ARBITRUM_ONE]!,
+      marketTokenAddress: '0x0418643F94Ef14917f1345cE5C460C37dE463ef7',
     },
     [Deployments.GmxV2WstETHIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       indexTokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
