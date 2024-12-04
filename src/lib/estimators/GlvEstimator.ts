@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
+import { keccak256 } from 'ethers/lib/utils';
 import IERC20Abi from '../../abis/IERC20.json';
 import IGlvReaderAbi from '../../abis/IGlvReader.json';
 import IGlvRegistryAbi from '../../abis/IGlvRegistry.json';
@@ -10,11 +11,7 @@ import { IERC20 } from '../../abis/types/IERC20';
 import { IGlvReader } from '../../abis/types/IGlvReader';
 import { IGlvRegistry } from '../../abis/types/IGlvRegistry';
 import { IGmxV2DataStore } from '../../abis/types/IGmxV2DataStore';
-import {
-  GmxMarketPoolValueInfo,
-  GmxPrice,
-  IGmxV2Reader,
-} from '../../abis/types/IGmxV2Reader';
+import { GmxMarketPoolValueInfo, GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
 import { Multicall, Multicall__CallStruct } from '../../abis/types/Multicall';
 import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
@@ -29,6 +26,12 @@ import {
 import { LocalCache } from '../LocalCache';
 import { GmxV2GmEstimator, SignedPriceData } from './GmxV2GmEstimator';
 import PricePropsStruct = GmxPrice.PricePropsStruct;
+
+const abiCoder = ethers.utils.defaultAbiCoder;
+
+const GLV_DEPOSIT_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['GLV_DEPOSIT_GAS_LIMIT']));
+
+const GLV_WITHDRAWAL_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['GLV_WITHDRAWAL_GAS_LIMIT']));
 
 const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(4_000_000);
 
@@ -215,6 +218,7 @@ export class GlvEstimator {
       config,
       tokenToSignedPriceMap,
       CALLBACK_GAS_LIMIT,
+      GLV_WITHDRAWAL_GAS_LIMIT_KEY,
     );
   }
 
@@ -280,6 +284,7 @@ export class GlvEstimator {
       config,
       tokenToSignedPriceMap,
       CALLBACK_GAS_LIMIT,
+      GLV_DEPOSIT_GAS_LIMIT_KEY,
     );
 
     /**

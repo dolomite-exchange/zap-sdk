@@ -39,21 +39,11 @@ const abiCoder = ethers.utils.defaultAbiCoder;
 
 const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(3_000_000);
 
-const DEPOSIT_GAS_LIMIT_KEY = keccak256(
-  abiCoder.encode(
-    ['bytes32'],
-    [keccak256(abiCoder.encode(['string'], ['DEPOSIT_GAS_LIMIT']))],
-  ),
-);
+const DEPOSIT_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['DEPOSIT_GAS_LIMIT']));
 
 const SINGLE_SWAP_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['SINGLE_SWAP_GAS_LIMIT']));
 
-const WITHDRAWAL_GAS_LIMIT_KEY = keccak256(
-  abiCoder.encode(
-    ['bytes32'],
-    [keccak256(abiCoder.encode(['string'], ['WITHDRAWAL_GAS_LIMIT']))],
-  ),
-);
+const WITHDRAWAL_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['WITHDRAWAL_GAS_LIMIT']));
 
 const POOL_AMOUNT_KEY = keccak256(abiCoder.encode(['string'], ['POOL_AMOUNT']));
 
@@ -172,7 +162,9 @@ export class GmxV2GmEstimator {
     config: ZapConfig,
     tokenPrices?: Record<string, SignedPriceData>,
     callbackGasLimit: ethers.BigNumber = CALLBACK_GAS_LIMIT,
+    gasLimitKey: string = WITHDRAWAL_GAS_LIMIT_KEY,
   ): Promise<EstimateOutputResult> {
+    console.log(gasLimitKey, WITHDRAWAL_GAS_LIMIT_KEY);
     const tokenToSignedPriceMap = tokenPrices ?? await GmxV2GmEstimator.getTokenPrices();
     const outputToken = marketsMap[outputMarketId.toFixed()];
 
@@ -280,7 +272,9 @@ export class GmxV2GmEstimator {
     config: ZapConfig,
     tokenPrices?: Record<string, SignedPriceData>,
     callbackGasLimit: ethers.BigNumber = CALLBACK_GAS_LIMIT,
+    gasLimitKey: string = DEPOSIT_GAS_LIMIT_KEY,
   ): Promise<EstimateOutputResult> {
+    console.log(gasLimitKey, DEPOSIT_GAS_LIMIT_KEY);
     const tokenToSignedPriceMap = tokenPrices ?? await GmxV2GmEstimator.getTokenPrices();
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
