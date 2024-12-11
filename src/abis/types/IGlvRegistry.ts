@@ -29,18 +29,22 @@ export interface IGlvRegistryInterface extends utils.Interface {
     "glvHandler()": FunctionFragment;
     "glvReader()": FunctionFragment;
     "glvRouter()": FunctionFragment;
-    "glvTokenToGmMarket(address)": FunctionFragment;
+    "glvTokenToGmMarketForDeposit(address)": FunctionFragment;
+    "glvTokenToGmMarketForWithdrawal(address)": FunctionFragment;
     "glvVault()": FunctionFragment;
     "gmxDataStore()": FunctionFragment;
     "gmxExchangeRouter()": FunctionFragment;
     "gmxReader()": FunctionFragment;
+    "handlerSetGlvTokenToGmMarketForDeposit(address,address)": FunctionFragment;
+    "handlerSetGlvTokenToGmMarketForWithdrawal(address,address)": FunctionFragment;
     "isHandler(address)": FunctionFragment;
     "ownerSetCallbackGasLimit(uint256)": FunctionFragment;
     "ownerSetDolomiteRegistry(address)": FunctionFragment;
     "ownerSetGlvHandler(address)": FunctionFragment;
     "ownerSetGlvReader(address)": FunctionFragment;
     "ownerSetGlvRouter(address)": FunctionFragment;
-    "ownerSetGlvTokenToGmMarket(address,address)": FunctionFragment;
+    "ownerSetGlvTokenToGmMarketForDeposit(address,address)": FunctionFragment;
+    "ownerSetGlvTokenToGmMarketForWithdrawal(address,address)": FunctionFragment;
     "ownerSetGlvVault(address)": FunctionFragment;
     "ownerSetGmxDataStore(address)": FunctionFragment;
     "ownerSetGmxExchangeRouter(address)": FunctionFragment;
@@ -59,18 +63,22 @@ export interface IGlvRegistryInterface extends utils.Interface {
       | "glvHandler"
       | "glvReader"
       | "glvRouter"
-      | "glvTokenToGmMarket"
+      | "glvTokenToGmMarketForDeposit"
+      | "glvTokenToGmMarketForWithdrawal"
       | "glvVault"
       | "gmxDataStore"
       | "gmxExchangeRouter"
       | "gmxReader"
+      | "handlerSetGlvTokenToGmMarketForDeposit"
+      | "handlerSetGlvTokenToGmMarketForWithdrawal"
       | "isHandler"
       | "ownerSetCallbackGasLimit"
       | "ownerSetDolomiteRegistry"
       | "ownerSetGlvHandler"
       | "ownerSetGlvReader"
       | "ownerSetGlvRouter"
-      | "ownerSetGlvTokenToGmMarket"
+      | "ownerSetGlvTokenToGmMarketForDeposit"
+      | "ownerSetGlvTokenToGmMarketForWithdrawal"
       | "ownerSetGlvVault"
       | "ownerSetGmxDataStore"
       | "ownerSetGmxExchangeRouter"
@@ -103,7 +111,11 @@ export interface IGlvRegistryInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "glvReader", values?: undefined): string;
   encodeFunctionData(functionFragment: "glvRouter", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "glvTokenToGmMarket",
+    functionFragment: "glvTokenToGmMarketForDeposit",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "glvTokenToGmMarketForWithdrawal",
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "glvVault", values?: undefined): string;
@@ -116,6 +128,14 @@ export interface IGlvRegistryInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "gmxReader", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "handlerSetGlvTokenToGmMarketForDeposit",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "handlerSetGlvTokenToGmMarketForWithdrawal",
+    values: [string, string]
+  ): string;
   encodeFunctionData(functionFragment: "isHandler", values: [string]): string;
   encodeFunctionData(
     functionFragment: "ownerSetCallbackGasLimit",
@@ -138,7 +158,11 @@ export interface IGlvRegistryInterface extends utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "ownerSetGlvTokenToGmMarket",
+    functionFragment: "ownerSetGlvTokenToGmMarketForDeposit",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "ownerSetGlvTokenToGmMarketForWithdrawal",
     values: [string, string]
   ): string;
   encodeFunctionData(
@@ -190,7 +214,11 @@ export interface IGlvRegistryInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "glvReader", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "glvRouter", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "glvTokenToGmMarket",
+    functionFragment: "glvTokenToGmMarketForDeposit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "glvTokenToGmMarketForWithdrawal",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "glvVault", data: BytesLike): Result;
@@ -203,6 +231,14 @@ export interface IGlvRegistryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "gmxReader", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "handlerSetGlvTokenToGmMarketForDeposit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "handlerSetGlvTokenToGmMarketForWithdrawal",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "isHandler", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "ownerSetCallbackGasLimit",
@@ -225,7 +261,11 @@ export interface IGlvRegistryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "ownerSetGlvTokenToGmMarket",
+    functionFragment: "ownerSetGlvTokenToGmMarketForDeposit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "ownerSetGlvTokenToGmMarketForWithdrawal",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -316,7 +356,12 @@ export interface IGlvRegistry extends BaseContract {
 
     glvRouter(overrides?: CallOverrides): Promise<[string]>;
 
-    glvTokenToGmMarket(
+    glvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    glvTokenToGmMarketForWithdrawal(
       _glvToken: string,
       overrides?: CallOverrides
     ): Promise<[string]>;
@@ -328,6 +373,18 @@ export interface IGlvRegistry extends BaseContract {
     gmxExchangeRouter(overrides?: CallOverrides): Promise<[string]>;
 
     gmxReader(overrides?: CallOverrides): Promise<[string]>;
+
+    handlerSetGlvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    handlerSetGlvTokenToGmMarketForWithdrawal(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
 
     isHandler(_handler: string, overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -356,7 +413,13 @@ export interface IGlvRegistry extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
-    ownerSetGlvTokenToGmMarket(
+    ownerSetGlvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    ownerSetGlvTokenToGmMarketForWithdrawal(
       _glvToken: string,
       _gmMarket: string,
       overrides?: Overrides & { from?: string }
@@ -421,7 +484,12 @@ export interface IGlvRegistry extends BaseContract {
 
   glvRouter(overrides?: CallOverrides): Promise<string>;
 
-  glvTokenToGmMarket(
+  glvTokenToGmMarketForDeposit(
+    _glvToken: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  glvTokenToGmMarketForWithdrawal(
     _glvToken: string,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -433,6 +501,18 @@ export interface IGlvRegistry extends BaseContract {
   gmxExchangeRouter(overrides?: CallOverrides): Promise<string>;
 
   gmxReader(overrides?: CallOverrides): Promise<string>;
+
+  handlerSetGlvTokenToGmMarketForDeposit(
+    _glvToken: string,
+    _gmMarket: string,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  handlerSetGlvTokenToGmMarketForWithdrawal(
+    _glvToken: string,
+    _gmMarket: string,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
 
   isHandler(_handler: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -461,7 +541,13 @@ export interface IGlvRegistry extends BaseContract {
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
-  ownerSetGlvTokenToGmMarket(
+  ownerSetGlvTokenToGmMarketForDeposit(
+    _glvToken: string,
+    _gmMarket: string,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  ownerSetGlvTokenToGmMarketForWithdrawal(
     _glvToken: string,
     _gmMarket: string,
     overrides?: Overrides & { from?: string }
@@ -526,7 +612,12 @@ export interface IGlvRegistry extends BaseContract {
 
     glvRouter(overrides?: CallOverrides): Promise<string>;
 
-    glvTokenToGmMarket(
+    glvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    glvTokenToGmMarketForWithdrawal(
       _glvToken: string,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -538,6 +629,18 @@ export interface IGlvRegistry extends BaseContract {
     gmxExchangeRouter(overrides?: CallOverrides): Promise<string>;
 
     gmxReader(overrides?: CallOverrides): Promise<string>;
+
+    handlerSetGlvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    handlerSetGlvTokenToGmMarketForWithdrawal(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     isHandler(_handler: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -566,7 +669,13 @@ export interface IGlvRegistry extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    ownerSetGlvTokenToGmMarket(
+    ownerSetGlvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    ownerSetGlvTokenToGmMarketForWithdrawal(
       _glvToken: string,
       _gmMarket: string,
       overrides?: CallOverrides
@@ -632,7 +741,12 @@ export interface IGlvRegistry extends BaseContract {
 
     glvRouter(overrides?: CallOverrides): Promise<BigNumber>;
 
-    glvTokenToGmMarket(
+    glvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    glvTokenToGmMarketForWithdrawal(
       _glvToken: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -644,6 +758,18 @@ export interface IGlvRegistry extends BaseContract {
     gmxExchangeRouter(overrides?: CallOverrides): Promise<BigNumber>;
 
     gmxReader(overrides?: CallOverrides): Promise<BigNumber>;
+
+    handlerSetGlvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    handlerSetGlvTokenToGmMarketForWithdrawal(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
 
     isHandler(_handler: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -672,7 +798,13 @@ export interface IGlvRegistry extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
-    ownerSetGlvTokenToGmMarket(
+    ownerSetGlvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    ownerSetGlvTokenToGmMarketForWithdrawal(
       _glvToken: string,
       _gmMarket: string,
       overrides?: Overrides & { from?: string }
@@ -738,7 +870,12 @@ export interface IGlvRegistry extends BaseContract {
 
     glvRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    glvTokenToGmMarket(
+    glvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    glvTokenToGmMarketForWithdrawal(
       _glvToken: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -750,6 +887,18 @@ export interface IGlvRegistry extends BaseContract {
     gmxExchangeRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     gmxReader(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    handlerSetGlvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    handlerSetGlvTokenToGmMarketForWithdrawal(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
 
     isHandler(
       _handler: string,
@@ -781,7 +930,13 @@ export interface IGlvRegistry extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    ownerSetGlvTokenToGmMarket(
+    ownerSetGlvTokenToGmMarketForDeposit(
+      _glvToken: string,
+      _gmMarket: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    ownerSetGlvTokenToGmMarketForWithdrawal(
       _glvToken: string,
       _gmMarket: string,
       overrides?: Overrides & { from?: string }

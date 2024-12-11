@@ -37,7 +37,9 @@ const GLV_PER_MARKET_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['GLV
 
 const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(4_000_000);
 
-const GlvToGmMarketCacheKey = (glvToken: string): string => `GlvToGmMarket-${glvToken}`;
+const GlvToGmMarketCacheKey = (glvToken: string, isDeposit: boolean): string => `GlvToGmMarket-${isDeposit
+  ? 'Deposit'
+  : 'Withdrawal'}-${glvToken}`;
 const DepositGasLimitCacheKey = 'DepositGasLimit';
 const WithdrawalGasLimitCacheKey = 'WithdrawalGasLimit';
 
@@ -129,7 +131,7 @@ export class GlvEstimator {
       { withdrawalGasLimit, glvPerMarketGasLimit },
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
-      this.getGmMarketByGlvToken(glvMarket.glvTokenAddress),
+      this.getGmMarketByGlvToken(glvMarket.glvTokenAddress, false),
       this.multicall.callStatic.aggregate(calls),
       this.getWithdrawalGasLimit(),
     ]);
@@ -259,7 +261,7 @@ export class GlvEstimator {
       { depositGasLimit, glvPerMarketGasLimit },
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
-      this.getGmMarketByGlvToken(glvMarket.glvTokenAddress),
+      this.getGmMarketByGlvToken(glvMarket.glvTokenAddress, true),
       this.multicall.callStatic.aggregate(calls),
       this.getDepositGasLimit(),
     ]);
@@ -347,19 +349,22 @@ export class GlvEstimator {
     };
   }
 
-  private async getGmMarketByGlvToken(glvToken: string): Promise<string> {
-    let gmMarketIsolationModeAddress = this.dataStoreCache.get(GlvToGmMarketCacheKey(glvToken));
+  private async getGmMarketByGlvToken(glvToken: string, isDeposit: boolean): Promise<string> {
+    let gmMarketIsolationModeAddress = this.dataStoreCache.get(GlvToGmMarketCacheKey(glvToken, isDeposit));
     if (gmMarketIsolationModeAddress) {
       return gmMarketIsolationModeAddress;
     }
 
-    const gmMarketAddress = await this.glvRegistry!.glvTokenToGmMarket(glvToken);
+    const gmMarketAddress = isDeposit
+      ? await this.glvRegistry!.glvTokenToGmMarketForDeposit(glvToken)
+      : await this.glvRegistry!.glvTokenToGmMarketForWithdrawal(glvToken);
+
     const gmMarketsMap = GM_MARKETS_MAP[this.network];
     [gmMarketIsolationModeAddress] = Object.keys(gmMarketsMap).filter(isolationModeAddress => {
       return gmMarketsMap[isolationModeAddress]!.marketTokenAddress.toLowerCase() === gmMarketAddress.toLowerCase();
     });
 
-    this.dataStoreCache.set(GlvToGmMarketCacheKey(glvToken), gmMarketIsolationModeAddress);
+    this.dataStoreCache.set(GlvToGmMarketCacheKey(glvToken, isDeposit), gmMarketIsolationModeAddress);
     return gmMarketIsolationModeAddress;
   }
 
