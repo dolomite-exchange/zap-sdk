@@ -303,7 +303,26 @@
         "type": "address"
       }
     ],
-    "name": "glvTokenToGmMarket",
+    "name": "glvTokenToGmMarketForDeposit",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_glvToken",
+        "type": "address"
+      }
+    ],
+    "name": "glvTokenToGmMarketForWithdrawal",
     "outputs": [
       {
         "internalType": "address",
@@ -364,6 +383,42 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_glvToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_gmMarket",
+        "type": "address"
+      }
+    ],
+    "name": "handlerSetGlvTokenToGmMarketForDeposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_glvToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_gmMarket",
+        "type": "address"
+      }
+    ],
+    "name": "handlerSetGlvTokenToGmMarketForWithdrawal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -463,7 +518,25 @@
         "type": "address"
       }
     ],
-    "name": "ownerSetGlvTokenToGmMarket",
+    "name": "ownerSetGlvTokenToGmMarketForDeposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_glvToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_gmMarket",
+        "type": "address"
+      }
+    ],
+    "name": "ownerSetGlvTokenToGmMarketForWithdrawal",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
