@@ -5,7 +5,7 @@ import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, Z
 import {
   BYTES_EMPTY,
   getPendlePtTransformerTokenForIsolationModeToken,
-  getPendleYtTransformerTokenForIsolationModeToken, isGlvIsolationModeAsset,
+  getPendleYtTransformerTokenForIsolationModeToken, GM_MARKETS_MAP, isGlvIsolationModeAsset,
   isGmxV2IsolationModeAsset,
   isPendlePtAsset,
   isPendleYtAsset,
@@ -76,7 +76,7 @@ export class StandardEstimator {
       );
     } else if (isGmxV2IsolationModeAsset(this.network, isolationModeTokenAddress)) {
       return this.gmxV2GmEstimator.getUnwrappedAmount(
-        isolationModeTokenAddress,
+        GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!,
         amountIn,
         outputMarketId,
         marketsMap,
@@ -126,7 +126,7 @@ export class StandardEstimator {
       return this.simpleEstimator.getWrappedAmount(amountIn);
     } else if (isGmxV2IsolationModeAsset(this.network, isolationModeTokenAddress)) {
       return this.gmxV2GmEstimator.getWrappedAmount(
-        isolationModeTokenAddress,
+        GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!,
         amountIn,
         inputMarketId,
         marketsMap,

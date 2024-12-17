@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import { ApiMarket, Network, ZapConfig } from '../../../src';
+import { GM_MARKETS_MAP } from '../../../src/lib/Constants';
 import { GmxV2GmEstimator } from '../../../src/lib/estimators/GmxV2GmEstimator';
 import { NATIVE_USDC_MARKET, WETH_MARKET } from '../../helpers/ArbitrumOneConstants';
 
@@ -24,9 +25,9 @@ describe('GmxV2GmEstimator', () => {
     slippageTolerance: 0.003,
     subAccountNumber: new BigNumber('12321'),
     disallowAggregator: false,
-  }
+  };
 
-  const gmEthIsolationModeAddress = Deployments.GmxV2ETHIsolationModeVaultFactory[network]!.address;
+  const gmEthMarket = GM_MARKETS_MAP[network]![Deployments.GmxV2ETHIsolationModeVaultFactory[network]!.address]!;
 
   describe('constructor', () => {
     it('should fail if the gas multiplier is invalid', () => {
@@ -34,7 +35,7 @@ describe('GmxV2GmEstimator', () => {
       expect(() => {
         // eslint-disable-next-line no-new
         new GmxV2GmEstimator(network, web3Provider, invalidGasMultiplier);
-      }).toThrow(`Invalid gasMultiplier, expected at least 1.0, but found ${invalidGasMultiplier.toFixed()}`)
+      }).toThrow(`Invalid gasMultiplier, expected at least 1.0, but found ${invalidGasMultiplier.toFixed()}`);
     });
   });
 
@@ -42,14 +43,14 @@ describe('GmxV2GmEstimator', () => {
     it('should work normally', async () => {
       const gmAmountIn = new BigNumber(parseEther('100').toString());
       const ethAmount = await estimator.getUnwrappedAmount(
-        gmEthIsolationModeAddress,
+        gmEthMarket,
         gmAmountIn,
         WETH_MARKET.marketId,
         marketsMap,
         config,
       );
       const usdcAmount = await estimator.getUnwrappedAmount(
-        gmEthIsolationModeAddress,
+        gmEthMarket,
         gmAmountIn,
         NATIVE_USDC_MARKET.marketId,
         marketsMap,
@@ -71,7 +72,7 @@ describe('GmxV2GmEstimator', () => {
       const ethAmountIn = new BigNumber(parseEther('0.1').toString()); // 0.1 ETH
       const usdcAmountIn = new BigNumber('300000000'); // $300
       const marketAmountOutFromEth = await estimator.getWrappedAmount(
-        gmEthIsolationModeAddress,
+        gmEthMarket,
         ethAmountIn,
         WETH_MARKET.marketId,
         marketsMap,
@@ -84,7 +85,7 @@ describe('GmxV2GmEstimator', () => {
       );
 
       const marketAmountOutFromUsdc = await estimator.getWrappedAmount(
-        gmEthIsolationModeAddress,
+        gmEthMarket,
         usdcAmountIn,
         NATIVE_USDC_MARKET.marketId,
         marketsMap,

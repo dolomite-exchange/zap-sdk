@@ -223,12 +223,7 @@ export class DolomiteZap {
       return undefined;
     }
 
-    const longMarketId = gmMarket.longTokenId;
-    if (longMarketId) {
-      return [longMarketId, gmMarket.shortTokenId];
-    }
-
-    return [gmMarket.shortTokenId];
+    return [gmMarket.longTokenId, gmMarket.shortTokenId].filter((id): id is BigNumber => !!id);
   }
 
   public getPendleMarketByIsolationModeAddress(isolationModeAddress: Address): Address | undefined {

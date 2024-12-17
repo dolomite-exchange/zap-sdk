@@ -19,12 +19,19 @@ import {
   GLV_READER_MAP,
   GLV_REGISTRY_PROXY_MAP,
   GM_MARKETS_MAP,
+  GmMarket,
   GMX_V2_DATA_STORE_MAP,
   GMX_V2_READER_MAP,
   MULTICALL_MAP,
 } from '../Constants';
 import { LocalCache } from '../LocalCache';
-import { GmxV2GmEstimator, SignedPriceData } from './GmxV2GmEstimator';
+import {
+  DEPOSIT_GAS_LIMIT_KEY,
+  GmxV2GmEstimator,
+  SignedPriceData,
+  SINGLE_SWAP_GAS_LIMIT_KEY,
+  WITHDRAWAL_GAS_LIMIT_KEY,
+} from './GmxV2GmEstimator';
 import PricePropsStruct = GmxPrice.PricePropsStruct;
 
 const abiCoder = ethers.utils.defaultAbiCoder;
@@ -126,9 +133,9 @@ export class GlvEstimator {
 
     const [
       tokenToSignedPriceMap,
-      gmMarketIsolationModeAddress,
+      gmMarket,
       { returnData: multicallResults },
-      { withdrawalGasLimit, glvPerMarketGasLimit },
+      { glvWithdrawalGasLimit, glvPerMarketGasLimit, gmWithdrawalGasLimit, swapWithdrawalGasLimit },
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
       this.getGmMarketByGlvToken(glvMarket.glvTokenAddress, false),
@@ -146,10 +153,9 @@ export class GlvEstimator {
       multicallResults[1],
     )[0] as IGlvReader.GlvInfoStructOutput;
 
-    const gmMarket = GM_MARKETS_MAP[this.network][gmMarketIsolationModeAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
     const longToken = gmMarket.longTokenAddress;
-    const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
+    const shortToken = gmMarket.shortTokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
     const marketTokenContract = new ethers.Contract(marketToken, IERC20Abi, this.web3Provider) as IERC20;
 
@@ -218,10 +224,13 @@ export class GlvEstimator {
     const glvTokenUsd = glvPoolValue.mul(amountIn.toFixed()).div(glvTokenSupply);
     const gmAmountOut = marketTokenSupply.mul(glvTokenUsd).div(marketPoolValueStruct.poolValue);
 
-    const gasLimitOverride = withdrawalGasLimit.add(glvPerMarketGasLimit.mul(glvPoolInfo.markets.length));
+    const gasLimitOverride = glvWithdrawalGasLimit
+      .add(glvPerMarketGasLimit.mul(glvPoolInfo.markets.length))
+      .add(gmWithdrawalGasLimit)
+      .add(swapWithdrawalGasLimit);
 
     return this.gmxV2Estimator.getUnwrappedAmount(
-      gmMarketIsolationModeAddress,
+      gmMarket,
       new BigNumber(gmAmountOut.toString()),
       outputMarketId,
       marketsMap,
@@ -256,9 +265,9 @@ export class GlvEstimator {
 
     const [
       tokenToSignedPriceMap,
-      gmMarketIsolationModeAddress,
+      gmMarket,
       { returnData: multicallResults },
-      { depositGasLimit, glvPerMarketGasLimit },
+      { glvDepositGasLimit, glvPerMarketGasLimit, gmDepositGasLimit },
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
       this.getGmMarketByGlvToken(glvMarket.glvTokenAddress, true),
@@ -276,14 +285,15 @@ export class GlvEstimator {
       multicallResults[1],
     )[0] as IGlvReader.GlvInfoStructOutput;
 
-    const gasLimitOverride = depositGasLimit.add(glvPerMarketGasLimit.mul(glvPoolInfo.markets.length));
+    const gasLimitOverride = glvDepositGasLimit
+      .add(glvPerMarketGasLimit.mul(glvPoolInfo.markets.length))
+      .add(gmDepositGasLimit);
 
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
-    const gmMarket = GM_MARKETS_MAP[this.network][gmMarketIsolationModeAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
     const longToken = gmMarket.longTokenAddress;
-    const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
+    const shortToken = gmMarket.shortTokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
 
     if (inputToken.tokenAddress !== longToken && inputToken.tokenAddress !== shortToken) {
@@ -291,7 +301,7 @@ export class GlvEstimator {
     }
 
     const gmAmountOutResult = await this.gmxV2Estimator.getWrappedAmount(
-      gmMarketIsolationModeAddress,
+      gmMarket,
       amountIn,
       inputMarketId,
       marketsMap,
@@ -349,10 +359,10 @@ export class GlvEstimator {
     };
   }
 
-  private async getGmMarketByGlvToken(glvToken: string, isDeposit: boolean): Promise<string> {
-    let gmMarketIsolationModeAddress = this.dataStoreCache.get(GlvToGmMarketCacheKey(glvToken, isDeposit));
-    if (gmMarketIsolationModeAddress) {
-      return gmMarketIsolationModeAddress;
+  private async getGmMarketByGlvToken(glvToken: string, isDeposit: boolean): Promise<GmMarket> {
+    let gmMarket = this.dataStoreCache.get(GlvToGmMarketCacheKey(glvToken, isDeposit));
+    if (gmMarket) {
+      return gmMarket;
     }
 
     const gmMarketAddress = isDeposit
@@ -360,17 +370,31 @@ export class GlvEstimator {
       : await this.glvRegistry!.glvTokenToGmMarketForWithdrawal(glvToken);
 
     const gmMarketsMap = GM_MARKETS_MAP[this.network];
-    [gmMarketIsolationModeAddress] = Object.keys(gmMarketsMap).filter(isolationModeAddress => {
+    const gmMarketIsolationModeAddress = Object.keys(gmMarketsMap).find(isolationModeAddress => {
       return gmMarketsMap[isolationModeAddress]!.marketTokenAddress.toLowerCase() === gmMarketAddress.toLowerCase();
     });
 
-    this.dataStoreCache.set(GlvToGmMarketCacheKey(glvToken, isDeposit), gmMarketIsolationModeAddress);
-    return gmMarketIsolationModeAddress;
+    if (gmMarketIsolationModeAddress) {
+      gmMarket = GM_MARKETS_MAP[this.network][gmMarketIsolationModeAddress]!;
+    } else {
+      const result = await this.gmxV2Reader!.getMarket(this.gmxV2DataStore!.address, gmMarketAddress);
+      gmMarket = {
+        indexTokenAddress: result.indexToken,
+        shortTokenAddress: result.shortToken,
+        marketTokenAddress: result.marketToken,
+        longTokenAddress: result.longToken,
+      };
+    }
+
+    this.dataStoreCache.set(GlvToGmMarketCacheKey(glvToken, isDeposit), gmMarket);
+    return gmMarket;
   }
 
   private async getWithdrawalGasLimit(): Promise<{
-    withdrawalGasLimit: ethers.BigNumber,
+    glvWithdrawalGasLimit: ethers.BigNumber,
     glvPerMarketGasLimit: ethers.BigNumber
+    gmWithdrawalGasLimit: ethers.BigNumber,
+    swapWithdrawalGasLimit: ethers.BigNumber,
   }> {
     const gasLimit = this.dataStoreCache.get(WithdrawalGasLimitCacheKey);
     if (gasLimit) {
@@ -386,11 +410,19 @@ export class GlvEstimator {
         target: this.gmxV2DataStore!.address,
         callData: (await this.gmxV2DataStore!.populateTransaction.getUint(GLV_PER_MARKET_GAS_LIMIT_KEY)).data!,
       },
+      {
+        target: this.gmxV2DataStore!.address,
+        callData: (await this.gmxV2DataStore!.populateTransaction.getUint(WITHDRAWAL_GAS_LIMIT_KEY)).data!,
+      },
+      {
+        target: this.gmxV2DataStore!.address,
+        callData: (await this.gmxV2DataStore!.populateTransaction.getUint(SINGLE_SWAP_GAS_LIMIT_KEY)).data!,
+      },
     ];
 
     const { returnData } = await this.multicall.callStatic.aggregate(calls);
 
-    const withdrawalGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
+    const glvWithdrawalGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
       'getUint',
       returnData[0],
     )[0] as ethers.BigNumber;
@@ -400,9 +432,21 @@ export class GlvEstimator {
       returnData[1],
     )[0] as ethers.BigNumber;
 
+    const gmWithdrawalGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
+      'getUint',
+      returnData[2],
+    )[0] as ethers.BigNumber;
+
+    const swapWithdrawalGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
+      'getUint',
+      returnData[3],
+    )[0] as ethers.BigNumber;
+
     const result = {
-      withdrawalGasLimit,
+      glvWithdrawalGasLimit,
       glvPerMarketGasLimit,
+      gmWithdrawalGasLimit,
+      swapWithdrawalGasLimit,
     };
     this.dataStoreCache.set(WithdrawalGasLimitCacheKey, result);
 
@@ -410,8 +454,9 @@ export class GlvEstimator {
   }
 
   private async getDepositGasLimit(): Promise<{
-    depositGasLimit: ethers.BigNumber,
+    glvDepositGasLimit: ethers.BigNumber,
     glvPerMarketGasLimit: ethers.BigNumber
+    gmDepositGasLimit: ethers.BigNumber,
   }> {
     const gasLimit = this.dataStoreCache.get(DepositGasLimitCacheKey);
     if (gasLimit) {
@@ -427,11 +472,15 @@ export class GlvEstimator {
         target: this.gmxV2DataStore!.address,
         callData: (await this.gmxV2DataStore!.populateTransaction.getUint(GLV_PER_MARKET_GAS_LIMIT_KEY)).data!,
       },
+      {
+        target: this.gmxV2DataStore!.address,
+        callData: (await this.gmxV2DataStore!.populateTransaction.getUint(DEPOSIT_GAS_LIMIT_KEY)).data!,
+      },
     ];
 
     const { returnData } = await this.multicall.callStatic.aggregate(calls);
 
-    const depositGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
+    const glvDepositGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
       'getUint',
       returnData[0],
     )[0] as ethers.BigNumber;
@@ -441,9 +490,15 @@ export class GlvEstimator {
       returnData[1],
     )[0] as ethers.BigNumber;
 
+    const gmDepositGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
+      'getUint',
+      returnData[2],
+    )[0] as ethers.BigNumber;
+
     const result = {
-      depositGasLimit,
+      glvDepositGasLimit,
       glvPerMarketGasLimit,
+      gmDepositGasLimit,
     };
     this.dataStoreCache.set(DepositGasLimitCacheKey, result);
 

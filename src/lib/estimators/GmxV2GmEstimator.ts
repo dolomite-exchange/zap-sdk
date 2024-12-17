@@ -15,7 +15,7 @@ import {
   ADDRESS_ZERO,
   ARBITRUM_GAS_INFO_MAP,
   BYTES_EMPTY,
-  GM_MARKETS_MAP,
+  GmMarket,
   GMX_V2_DATA_STORE_MAP,
   GMX_V2_READER_MAP,
   MULTICALL_MAP,
@@ -39,11 +39,11 @@ const abiCoder = ethers.utils.defaultAbiCoder;
 
 const CALLBACK_GAS_LIMIT = ethers.BigNumber.from(3_000_000);
 
-const DEPOSIT_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['DEPOSIT_GAS_LIMIT']));
+export const DEPOSIT_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['DEPOSIT_GAS_LIMIT']));
 
-const SINGLE_SWAP_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['SINGLE_SWAP_GAS_LIMIT']));
+export const SINGLE_SWAP_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['SINGLE_SWAP_GAS_LIMIT']));
 
-const WITHDRAWAL_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['WITHDRAWAL_GAS_LIMIT']));
+export const WITHDRAWAL_GAS_LIMIT_KEY = keccak256(abiCoder.encode(['string'], ['WITHDRAWAL_GAS_LIMIT']));
 
 const POOL_AMOUNT_KEY = keccak256(abiCoder.encode(['string'], ['POOL_AMOUNT']));
 
@@ -155,7 +155,7 @@ export class GmxV2GmEstimator {
   }
 
   public async getUnwrappedAmount(
-    isolationModeTokenAddress: Address,
+    gmMarket: GmMarket,
     amountIn: Integer,
     outputMarketId: MarketId,
     marketsMap: Record<string, ApiMarket>,
@@ -167,11 +167,9 @@ export class GmxV2GmEstimator {
     const tokenToSignedPriceMap = tokenPrices ?? await GmxV2GmEstimator.getTokenPrices();
     const outputToken = marketsMap[outputMarketId.toFixed()];
 
-    // TODO: make dynamic
-    const gmMarket = GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
     const longToken = gmMarket.longTokenAddress;
-    const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
+    const shortToken = gmMarket.shortTokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
     const gmMarketProps = {
       indexToken,
@@ -264,7 +262,7 @@ export class GmxV2GmEstimator {
   }
 
   public async getWrappedAmount(
-    isolationModeTokenAddress: Address,
+    gmMarket: GmMarket,
     amountIn: Integer,
     inputMarketId: MarketId,
     marketsMap: Record<string, ApiMarket>,
@@ -276,10 +274,9 @@ export class GmxV2GmEstimator {
     const tokenToSignedPriceMap = tokenPrices ?? await GmxV2GmEstimator.getTokenPrices();
     const inputToken = marketsMap[inputMarketId.toFixed()];
 
-    const gmMarket = GM_MARKETS_MAP[this.network]![isolationModeTokenAddress]!;
     const indexToken = gmMarket.indexTokenAddress;
     const longToken = gmMarket.longTokenAddress;
-    const shortToken = marketsMap[gmMarket.shortTokenId.toFixed()].tokenAddress;
+    const shortToken = gmMarket.shortTokenAddress;
     const marketToken = gmMarket.marketTokenAddress;
 
     if (inputToken.tokenAddress !== longToken && inputToken.tokenAddress !== shortToken) {
@@ -343,7 +340,7 @@ export class GmxV2GmEstimator {
       return {
         withdrawalGasLimit: gasLimitOverride,
         swapGasLimit: ethers.BigNumber.from('0'),
-      }
+      };
     }
 
     const cachedValue = this.dataStoreCache.get(WithdrawalGasLimitsCacheKey);
