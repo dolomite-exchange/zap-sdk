@@ -1,3 +1,4 @@
+import ModuleDeployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
@@ -5,7 +6,6 @@ import { ApiMarket, Network, ZapConfig } from '../../../src';
 import { GmxV2GmEstimator } from '../../../src/lib/estimators/GmxV2GmEstimator';
 import { NATIVE_USDC_MARKET, WETH_MARKET } from '../../helpers/ArbitrumOneConstants';
 import { GlvEstimator } from '../../../src/lib/estimators/GlvEstimator';
-import ModuleDeployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 
 describe('GlvEstimator', () => {
   const network = Network.ARBITRUM_ONE;
@@ -18,7 +18,7 @@ describe('GlvEstimator', () => {
     [NATIVE_USDC_MARKET.marketId.toFixed()]: NATIVE_USDC_MARKET,
   };
   const config: ZapConfig = {
-    gasPriceInWei: new BigNumber('100000000'), // 0.1 gwei
+    gasPriceInWei: new BigNumber('17000000'), // 0.017 gwei
     blockTag: 'latest',
     filterOutZapsWithInsufficientOutput: false,
     isLiquidation: false,
