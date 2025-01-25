@@ -59,7 +59,7 @@ export class GlvEstimator {
   private readonly glvRegistry?: IGlvRegistry;
   private readonly gmxV2Reader?: IGmxV2Reader;
   private readonly gmxV2DataStore?: IGmxV2DataStore;
-  private readonly multicall: Multicall;
+  private readonly multicall?: Multicall;
   private readonly dataStoreCache: LocalCache<any>;
 
   public constructor(
@@ -67,11 +67,6 @@ export class GlvEstimator {
     private readonly web3Provider: ethers.providers.Provider,
     private readonly gmxV2Estimator: GmxV2GmEstimator,
   ) {
-    this.multicall = new ethers.Contract(
-      MULTICALL_MAP[this.network]!,
-      MulticallAbi,
-      this.web3Provider,
-    ) as Multicall;
     this.dataStoreCache = new LocalCache<any>(3600);
 
     if (network !== Network.ARBITRUM_ONE) {
@@ -101,6 +96,12 @@ export class GlvEstimator {
       IGmxV2ReaderAbi,
       this.web3Provider,
     ) as IGmxV2Reader;
+
+    this.multicall = new ethers.Contract(
+      MULTICALL_MAP[this.network]!,
+      MulticallAbi,
+      this.web3Provider,
+    ) as Multicall;
   }
 
   private static getPriceStruct(
@@ -169,7 +170,7 @@ export class GlvEstimator {
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
       this.getGmMarketByGlvToken(glvMarket.glvTokenAddress, false),
-      this.multicall.callStatic.aggregate(calls),
+      this.multicall!.callStatic.aggregate(calls),
       this.getWithdrawalGasLimit(),
     ]);
 
@@ -223,7 +224,7 @@ export class GlvEstimator {
     );
     const marketTokenSupplyTransaction = await marketTokenContract.populateTransaction.totalSupply();
 
-    const { returnData: multicallResults2 } = await this.multicall.callStatic.aggregate([
+    const { returnData: multicallResults2 } = await this.multicall!.callStatic.aggregate([
       {
         target: this.glvReader!.address,
         callData: glvPoolValueTransaction.data!,
@@ -307,7 +308,7 @@ export class GlvEstimator {
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
       this.getGmMarketByGlvToken(glvMarket.glvTokenAddress, true),
-      this.multicall.callStatic.aggregate(calls),
+      this.multicall!.callStatic.aggregate(calls),
       this.getDepositGasLimit(),
     ]);
 
@@ -472,7 +473,7 @@ export class GlvEstimator {
       },
     ];
 
-    const { returnData } = await this.multicall.callStatic.aggregate(calls);
+    const { returnData } = await this.multicall!.callStatic.aggregate(calls);
 
     const glvWithdrawalGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
       'getUint',
@@ -553,7 +554,7 @@ export class GlvEstimator {
       },
     ];
 
-    const { returnData } = await this.multicall.callStatic.aggregate(calls);
+    const { returnData } = await this.multicall!.callStatic.aggregate(calls);
 
     const glvDepositGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
       'getUint',
@@ -600,7 +601,7 @@ export class GlvEstimator {
       markets.map(m => this.gmxV2Reader!.populateTransaction.getMarket(this.gmxV2DataStore!.address, m)),
     );
 
-    const { returnData } = await this.multicall.callStatic.aggregate(
+    const { returnData } = await this.multicall!.callStatic.aggregate(
       transactions.map(t => ({
         target: this.gmxV2Reader!.address,
         callData: t.data!,

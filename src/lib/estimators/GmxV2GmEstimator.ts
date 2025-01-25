@@ -65,7 +65,7 @@ export class GmxV2GmEstimator {
   private readonly gmxV2Reader?: IGmxV2Reader;
   private readonly gmxV2DataStore?: IGmxV2DataStore;
   private readonly arbitrumGasInfo?: IArbitrumGasInfo;
-  private readonly multicall: Multicall;
+  private readonly multicall?: Multicall;
   private readonly dataStoreCache: LocalCache<any>;
 
   public constructor(
@@ -73,11 +73,6 @@ export class GmxV2GmEstimator {
     private readonly web3Provider: ethers.providers.Provider,
     private readonly gasMultiplier: BigNumber,
   ) {
-    this.multicall = new ethers.Contract(
-      MULTICALL_MAP[this.network]!,
-      MulticallAbi,
-      this.web3Provider,
-    ) as Multicall;
     this.dataStoreCache = new LocalCache<WithdrawalGasLimits>(3600);
     if (network !== Network.ARBITRUM_ONE) {
       return;
@@ -100,6 +95,12 @@ export class GmxV2GmEstimator {
       IArbitrumGasInfoAbi,
       this.web3Provider,
     ) as IArbitrumGasInfo;
+
+    this.multicall = new ethers.Contract(
+      MULTICALL_MAP[this.network]!,
+      MulticallAbi,
+      this.web3Provider,
+    ) as Multicall;
 
     if (gasMultiplier.lt(1)) {
       throw new Error(`Invalid gasMultiplier, expected at least 1.0, but found ${gasMultiplier.toFixed()}`);
@@ -208,7 +209,7 @@ export class GmxV2GmEstimator {
       limits,
       gasPriceWei,
     ] = await Promise.all([
-      this.multicall.callStatic.aggregate(calls),
+      this.multicall!.callStatic.aggregate(calls),
       this.getWithdrawalGasLimits(gasLimitOverride),
       this.getGasPrice(config),
     ]);
@@ -359,7 +360,7 @@ export class GmxV2GmEstimator {
       },
     ];
 
-    const { returnData } = await this.multicall.callStatic.aggregate(calls);
+    const { returnData } = await this.multicall!.callStatic.aggregate(calls);
     const withdrawalGasLimit = this.gmxV2DataStore!.interface.decodeFunctionResult(
       'getUint',
       returnData[0],
