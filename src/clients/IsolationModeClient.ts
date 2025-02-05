@@ -1,6 +1,6 @@
 import { ApiToken, MarketId, Network } from '../lib/ApiTypes';
-import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP, LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP } from '../lib/Constants';
-import { GraphqlToken } from '../lib/graphql-types';
+import { GraphqlToken } from '../lib/GraphqlTypes';
+import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP, LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP } from '../lib/MarketIds';
 
 export default class IsolationModeClient {
   public readonly network: Network;

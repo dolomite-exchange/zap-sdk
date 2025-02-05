@@ -10,12 +10,11 @@ import { IGmxV2DataStore } from '../../abis/types/IGmxV2DataStore';
 import { GmxMarket, GmxPrice, IGmxV2Reader } from '../../abis/types/IGmxV2Reader';
 import { Multicall, Multicall__CallStruct } from '../../abis/types/Multicall';
 import { AxiosClient } from '../../clients/AxiosClient';
-import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
+import { Address, ApiMarket, EstimateOutputResult, GmMarket, Integer, MarketId, Network, ZapConfig } from '../ApiTypes';
 import {
   ADDRESS_ZERO,
   ARBITRUM_GAS_INFO_MAP,
   BYTES_EMPTY,
-  GmMarket,
   GMX_V2_DATA_STORE_MAP,
   GMX_V2_READER_MAP,
   MULTICALL_MAP,

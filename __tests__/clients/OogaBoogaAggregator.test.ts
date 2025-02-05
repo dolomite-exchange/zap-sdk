@@ -4,11 +4,11 @@ import { ApiMarket, Network, ZapConfig } from '../../src';
 import OogaBoogaAggregator from '../../src/clients/OogaBoogaAggregator';
 import { USDC_MARKET, WETH_MARKET } from '../helpers/BerachainConstants';
 
-const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address;
+const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN_BARTIO].address;
 const secretKey = process.env.OOGA_BOOGA_SECRET_KEY!;
 
 describe('OogaBoogaAggregator', () => {
-  const networkIdOverride = Network.BERACHAIN;
+  const networkIdOverride = Network.BERACHAIN_BARTIO;
   const config: ZapConfig = {
     slippageTolerance: 0.003,
     filterOutZapsWithInsufficientOutput: false,

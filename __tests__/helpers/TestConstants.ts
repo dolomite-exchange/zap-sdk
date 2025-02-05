@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { ApiMarket, MarketId, Network } from '../../src';
-import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../src/lib/Constants';
+
+import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../src/lib/MarketIds';
 
 export const SLEEP_DURATION_BETWEEN_TESTS = 6_000;
 

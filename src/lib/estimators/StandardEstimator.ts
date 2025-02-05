@@ -5,12 +5,13 @@ import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, Z
 import {
   BYTES_EMPTY,
   getPendlePtTransformerTokenForIsolationModeToken,
-  getPendleYtTransformerTokenForIsolationModeToken, GM_MARKETS_MAP, isGlvIsolationModeAsset,
+  getPendleYtTransformerTokenForIsolationModeToken, isGlvIsolationModeAsset,
   isGmxV2IsolationModeAsset,
   isPendlePtAsset,
   isPendleYtAsset,
   isSimpleIsolationModeAsset,
 } from '../Constants';
+import { GM_MARKETS_MAP } from '../GmMarkets';
 import { GlvEstimator } from './GlvEstimator';
 import { GmxV2GmEstimator } from './GmxV2GmEstimator';
 import { PendlePtEstimatorV3 } from './PendlePtEstimatorV3';

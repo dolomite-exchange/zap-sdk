@@ -2,7 +2,8 @@ import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deplo
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../../src';
-import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/Constants';
+
+import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/MarketIds';
 import { SLEEP_DURATION_BETWEEN_TESTS } from '../../helpers/TestConstants';
 import sleep from '../../helpers/sleep';
 import { PT_USDE_JUL_2024_MARKET, USDC_MARKET, USDE_MARKET } from '../../helpers/MantleConstants';

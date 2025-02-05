@@ -3,8 +3,8 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import { ApiMarket, Network, ZapConfig } from '../../../src';
-import { GM_MARKETS_MAP } from '../../../src/lib/Constants';
 import { GmxV2GmEstimator } from '../../../src/lib/estimators/GmxV2GmEstimator';
+import { GM_MARKETS_MAP } from '../../../src/lib/GmMarkets';
 import { NATIVE_USDC_MARKET, WETH_MARKET } from '../../helpers/ArbitrumOneConstants';
 
 describe('GmxV2GmEstimator', () => {

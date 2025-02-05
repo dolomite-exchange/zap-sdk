@@ -7,7 +7,8 @@ export type MarketId = BigNumber;
 export enum Network {
   ARBITRUM_ONE = 42161,
   BASE = 8453,
-  BERACHAIN = 80084,
+  BERACHAIN = 80094,
+  BERACHAIN_BARTIO = 80084,
   MANTLE = 5000,
   POLYGON_ZKEVM = 1101,
   X_LAYER = 196,
@@ -90,6 +91,7 @@ export interface ApiWrapperHelper {
   ) => Promise<EstimateOutputResult>;
 }
 
+// noinspection JSUnusedGlobalSymbols
 export enum GenericTraderType {
   ExternalLiquidity = 0,
   InternalLiquidity = 1,
@@ -189,19 +191,6 @@ export interface ApiOraclePrice {
   oraclePrice: Integer;
 }
 
-export enum ApiAsyncDepositStatus {
-  CREATED = 'CREATED',
-  DEPOSIT_EXECUTED = 'DEPOSIT_EXECUTED',
-  DEPOSIT_FAILED = 'DEPOSIT_FAILED',
-  DEPOSIT_CANCELLED = 'DEPOSIT_CANCELLED',
-  DEPOSIT_CANCELLED_FAILED = 'DEPOSIT_CANCELLED_FAILED',
-}
-
-export enum ApiAsyncActionType {
-  DEPOSIT = 'DEPOSIT',
-  WITHDRAWAL = 'WITHDRAWAL',
-}
-
 export interface ApiAsyncAction {
   id: string;
   key: string;
@@ -215,12 +204,34 @@ export interface ApiAsyncAction {
   outputAmount: Integer;
 }
 
+export enum ApiAsyncActionType {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAWAL = 'WITHDRAWAL',
+}
+
 // noinspection JSUnusedGlobalSymbols
 export interface ApiAsyncDeposit extends ApiAsyncAction {
   actionType: ApiAsyncActionType.DEPOSIT;
   status: ApiAsyncDepositStatus;
 }
 
+// noinspection JSUnusedGlobalSymbols
+export enum ApiAsyncDepositStatus {
+  CREATED = 'CREATED',
+  DEPOSIT_EXECUTED = 'DEPOSIT_EXECUTED',
+  DEPOSIT_FAILED = 'DEPOSIT_FAILED',
+  DEPOSIT_CANCELLED = 'DEPOSIT_CANCELLED',
+  DEPOSIT_CANCELLED_FAILED = 'DEPOSIT_CANCELLED_FAILED',
+}
+
+// noinspection JSUnusedGlobalSymbols
+export enum ApiAsyncTradeType {
+  FromWithdrawal = 0,
+  FromDeposit = 1,
+  NoOp = 2,
+}
+
+// noinspection JSUnusedGlobalSymbols
 export enum ApiAsyncWithdrawalStatus {
   CREATED = 'CREATED',
   WITHDRAWAL_EXECUTED = 'WITHDRAWAL_EXECUTED',
@@ -234,8 +245,41 @@ export interface ApiAsyncWithdrawal extends ApiAsyncAction {
   status: ApiAsyncWithdrawalStatus;
 }
 
-export enum ApiAsyncTradeType {
-  FromWithdrawal = 0,
-  FromDeposit = 1,
-  NoOp = 2,
+export interface ApiMarketConverter {
+  tokenAddress: Address;
+  unwrapper: Address;
+  unwrapperForLiquidation?: Address;
+  wrapper: Address;
+  unwrapperMarketIds: MarketId[];
+  wrapperMarketIds: MarketId[];
+  unwrapperReadableName: string;
+  wrapperReadableName: string;
+  isAsync: boolean;
+}
+
+export interface GlvMarket {
+  glvTokenAddress: Address;
+  longTokenAddress: Address;
+  longTokenId: MarketId;
+  shortTokenAddress: Address;
+  shortTokenId: MarketId;
+}
+
+export interface GmMarket {
+  indexTokenAddress: string;
+  shortTokenAddress: string;
+  longTokenAddress: string;
+  marketTokenAddress: Address;
+}
+
+export interface GmMarketWithMarketId extends GmMarket {
+  shortTokenId: MarketId | undefined;
+  longTokenId: MarketId | undefined;
+}
+
+export interface PendleMarketProps {
+  marketTokenAddress: string;
+  transformerTokenAddress: string;
+  ytTokenAddress: string;
+  maturityTimestamp: number;
 }

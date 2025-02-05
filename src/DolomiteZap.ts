@@ -11,6 +11,7 @@ import {
   ApiAsyncActionType,
   ApiAsyncTradeType,
   ApiMarket,
+  ApiMarketConverter,
   ApiMarketHelper,
   ApiOraclePrice,
   ApiToken,
@@ -30,17 +31,15 @@ import {
 } from './lib/ApiTypes';
 import {
   ADDRESS_ZERO,
-  ApiMarketConverter,
   BYTES_EMPTY,
   getGmxV2IsolationModeAsset,
   getPendlePtMarketForIsolationModeToken,
   INTEGERS,
   INVALID_NAME,
-  ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
-  LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
 } from './lib/Constants';
 import { LocalCache } from './lib/LocalCache';
 import Logger from './lib/Logger';
+import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP, LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP } from './lib/MarketIds';
 import { toChecksumOpt, zapOutputParamIsInvalid } from './lib/Utils';
 
 const ONE_HOUR = 60 * 60;
@@ -149,6 +148,7 @@ export class DolomiteZap {
     return this._subgraphUrl;
   }
 
+  // noinspection JSUnusedGlobalSymbols
   public set subgraphUrl(newSubgraphUrl: string) {
     this._subgraphUrl = newSubgraphUrl;
     this.client.subgraphUrl = newSubgraphUrl;
@@ -226,6 +226,7 @@ export class DolomiteZap {
     return [gmMarket.longTokenId, gmMarket.shortTokenId].filter((id): id is BigNumber => !!id);
   }
 
+  // noinspection JSUnusedGlobalSymbols
   public getPendleMarketByIsolationModeAddress(isolationModeAddress: Address): Address | undefined {
     return getPendlePtMarketForIsolationModeToken(this.network, isolationModeAddress);
   }

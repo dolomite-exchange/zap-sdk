@@ -2,7 +2,8 @@ import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deplo
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { DolomiteZap, GenericTraderType, Network } from '../../../src';
-import { BYTES_EMPTY, ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/Constants';
+import { BYTES_EMPTY } from '../../../src/lib/Constants';
+import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/MarketIds';
 import { ARB_MARKET, USDC_MARKET, VOTE_ENABLED_ARB_MARKET } from '../../helpers/ArbitrumOneConstants';
 import sleep from '../../helpers/sleep';
 import { SLEEP_DURATION_BETWEEN_TESTS } from '../../helpers/TestConstants';

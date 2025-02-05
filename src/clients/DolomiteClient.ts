@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { ApiMarket, ApiMarketHelper, ApiUnwrapperInfo, ApiWrapperInfo, BlockTag, Network } from '../lib/ApiTypes';
 import { isTokenIgnored } from '../lib/Constants';
 import { StandardEstimator } from '../lib/estimators/StandardEstimator';
-import { GraphqlMarketResult } from '../lib/graphql-types';
+import { GraphqlMarketResult } from '../lib/GraphqlTypes';
 import GraphqlPageable from '../lib/GraphqlPageable';
 import Logger from '../lib/Logger';
 import { toChecksumOpt } from '../lib/Utils';
