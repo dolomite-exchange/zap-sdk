@@ -445,11 +445,11 @@ export const PENDLE_PT_RS_ETH_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId |
 };
 
 export const PENDLE_PT_USDE_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
-  [Network.ARBITRUM_ONE]: new BigNumber(60),
+  [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.BERACHAIN_BARTIO]: undefined,
-  [Network.MANTLE]: undefined,
+  [Network.MANTLE]: new BigNumber(10),
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
