@@ -5,7 +5,10 @@ import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 import { AxiosClient } from './AxiosClient';
 
-const API_URL = 'https://bartio.api.oogabooga.io';
+const API_URL_MAP = {
+  [Network.BERACHAIN]: 'https://mainnet.api.oogabooga.io',
+  [Network.BERACHAIN_BARTIO]: 'https://bartio.api.oogabooga.io',
+};
 
 export default class OogaBoogaAggregator extends AggregatorClient {
   public constructor(network: Network, private readonly apiKey: string | undefined) {
@@ -17,7 +20,7 @@ export default class OogaBoogaAggregator extends AggregatorClient {
   }
 
   public isValidForNetwork(): boolean {
-    return !!OOGA_BOOGA_TRADER_ADDRESS_MAP[this.network] && !!this.apiKey;
+    return !!OOGA_BOOGA_TRADER_ADDRESS_MAP[this.network] && !!this.apiKey && !!API_URL_MAP[this.network];
   }
 
   public async getSwapExactTokensForTokensData(
@@ -45,7 +48,7 @@ export default class OogaBoogaAggregator extends AggregatorClient {
       slippage: zapConfig.slippageTolerance.toString(),
     });
     const quoteResponse: any | Error = await AxiosClient.get(
-      `${API_URL}/v1/swap?${queryParams.toString()}`,
+      `${API_URL_MAP[this.network]}/v1/swap?${queryParams.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
