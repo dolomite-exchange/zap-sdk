@@ -13,6 +13,9 @@ const API_URL_MAP = {
 export default class OogaBoogaAggregator extends AggregatorClient {
   public constructor(network: Network, private readonly apiKey: string | undefined) {
     super(network);
+    if (network === Network.BERACHAIN && !apiKey) {
+      throw new Error('Could not find API key for BERACHAIN network');
+    }
   }
 
   public get name(): string {
