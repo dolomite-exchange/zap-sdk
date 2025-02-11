@@ -51,6 +51,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       includeContractMethods: 'megaSwap,multiSwap,simpleSwap',
       partner: 'dolomite',
       excludeDEXS: 'ParaSwapPool,ParaSwapLimitOrders',
+      version: '6.2',
     }).toString();
 
     // const priceRouteResponse = await (this.useProxy
