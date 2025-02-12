@@ -11,21 +11,21 @@ import {
   Network,
 } from '../src';
 import { ADDRESS_ZERO, BYTES_EMPTY } from '../src/lib/Constants';
-import sleep from './helpers/sleep';
-import {
-  setUnwrapperMarketIdByMarketId,
-  SLEEP_DURATION_BETWEEN_TESTS,
-
-} from './helpers/TestConstants';
-import { TestDolomiteZap } from './helpers/TestDolomiteZap';
 import {
   ARB_MARKET,
   GLP_MARKET,
-  GM_ARB_MARKET, ISOLATED_GLP_MARKET,
+  GM_ARB_MARKET,
+  ISOLATED_GLP_MARKET,
   J_USDC_MARKET,
-  MAGIC_GLP_MARKET, NATIVE_USDC_MARKET,
-  PLV_GLP_MARKET, USDC_MARKET, WETH_MARKET,
+  MAGIC_GLP_MARKET,
+  NATIVE_USDC_MARKET,
+  PLV_GLP_MARKET,
+  USDC_MARKET,
+  WETH_MARKET,
 } from './helpers/ArbitrumOneConstants';
+import sleep from './helpers/sleep';
+import { setUnwrapperMarketIdByMarketId, SLEEP_DURATION_BETWEEN_TESTS } from './helpers/TestConstants';
+import { TestDolomiteZap } from './helpers/TestDolomiteZap';
 
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
@@ -228,7 +228,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
           .toBeTruthy();
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
-      })
+      });
 
       it('should work when there is one of the aggregators returns bad data', async () => {
         const testZap = new TestDolomiteZap({
@@ -270,7 +270,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
           .toBeTruthy();
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
-      })
+      });
     });
 
     describe('Isolation Mode tokens', () => {
@@ -336,6 +336,43 @@ describe('DolomiteZap', () => {
         expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
         expect(outputParam.traderParams[0].trader)
           .toEqual(Deployments.GLPIsolationModeWrapperTraderV4[network].address);
+        expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
+
+        expect(outputParam.makerAccounts.length).toEqual(0);
+        expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
+          .toBeTruthy();
+        expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
+      });
+
+      it('should work for gmGMX-USD', async () => {
+        const amountIn = new BigNumber('100000000'); // 100 USDC
+        const minAmountOut = new BigNumber('50000000000000000000'); // 50 gmGMX
+        const gmGmxMarketId = new BigNumber('57');
+        const outputParams = await zap.getSwapExactTokensForTokensParams(
+          NATIVE_USDC_MARKET,
+          amountIn,
+          { marketId: gmGmxMarketId, symbol: 'gmGMX-USD' },
+          minAmountOut,
+          txOrigin,
+          { disallowAggregator: true },
+        );
+
+        expect(outputParams.length).toBe(1);
+
+        const outputParam = outputParams[0];
+        expect(outputParam.marketIdsPath.length).toEqual(2);
+        expect(outputParam.marketIdsPath[0]).toEqual(NATIVE_USDC_MARKET.marketId);
+        expect(outputParam.marketIdsPath[1]).toEqual(gmGmxMarketId);
+
+        expect(outputParam.amountWeisPath.length).toEqual(2);
+        expect(outputParam.amountWeisPath[0]).toEqual(amountIn);
+        expect(outputParam.amountWeisPath[1].isGreaterThan(minAmountOut)).toBeTruthy();
+
+        expect(outputParam.traderParams.length).toEqual(1);
+        expect(outputParam.traderParams[0].traderType).toEqual(GenericTraderType.IsolationModeWrapper);
+        expect(outputParam.traderParams[0].makerAccountIndex).toEqual(0);
+        expect(outputParam.traderParams[0].trader)
+          .toEqual(Deployments.GmxV2GMXAsyncIsolationModeWrapperTraderProxyV2[network].address);
         expect(outputParam.traderParams[0].tradeData).toEqual(BYTES_EMPTY);
 
         expect(outputParam.makerAccounts.length).toEqual(0);

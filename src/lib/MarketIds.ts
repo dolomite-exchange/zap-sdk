@@ -155,7 +155,7 @@ export const GM_ETH_SINGLE_SIDED_ISOLATED_MARKET_ID_MAP: Record<Network, MarketI
 };
 
 export const GM_GMX_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
-  [Network.ARBITRUM_ONE]: new BigNumber(30),
+  [Network.ARBITRUM_ONE]: new BigNumber(57),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.BERACHAIN_BARTIO]: undefined,
