@@ -7,7 +7,6 @@ import { AxiosClient } from './AxiosClient';
 
 const API_URL_MAP = {
   [Network.BERACHAIN]: 'https://mainnet.api.oogabooga.io',
-  [Network.BERACHAIN_BARTIO]: 'https://bartio.api.oogabooga.io',
 };
 
 export default class OogaBoogaAggregator extends AggregatorClient {

@@ -114,7 +114,6 @@ export const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketP
   },
   [Network.BASE]: {},
   [Network.BERACHAIN]: {},
-  [Network.BERACHAIN_BARTIO]: {},
   [Network.MANTLE]: {
     [Deployments.PendlePtcmETHFeb2025IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_CM_ETH_FEB_2025_MARKET_MANTLE,

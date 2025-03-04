@@ -21,7 +21,6 @@ export const GLV_MARKETS_MAP: Record<Network, Record<Address, GlvMarket | undefi
   },
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BERACHAIN_BARTIO]: undefined,
   [Network.MANTLE]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
