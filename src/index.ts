@@ -27,3 +27,4 @@ export { DolomiteZap } from './DolomiteZap';
 export { BigNumber };
 export * from './lib/ApiTypes';
 export { INTEGERS, DOLOMITE_API_SERVER_URL } from './lib/Constants';
+export { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP, LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP } from './lib/MarketIds';
