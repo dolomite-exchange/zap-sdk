@@ -26,6 +26,7 @@ import { GM_MARKETS_MAP } from '../GmMarkets';
 import { LocalCache } from '../LocalCache';
 import { GmxV2GmEstimator, SignedPriceData, SINGLE_SWAP_GAS_LIMIT_KEY } from './GmxV2GmEstimator';
 import PricePropsStruct = GmxPrice.PricePropsStruct;
+import { AxiosClient } from '../../clients/AxiosClient';
 
 const abiCoder = ethers.utils.defaultAbiCoder;
 
@@ -103,6 +104,11 @@ export class GlvEstimator {
     ) as Multicall;
   }
 
+  static async getGlvBalances(): Promise<any> {
+    return AxiosClient.get('https://arbitrum-api.gmxinfra2.io/glvs/info')
+      .then(res => res.data);
+  }
+
   private static getPriceStruct(
     pricesMap: Record<Address, SignedPriceData>,
     token: Address,
@@ -168,7 +174,7 @@ export class GlvEstimator {
       },
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
-      this.getGmMarketByGlvToken(glvMarket.glvTokenAddress, false),
+      this.getGmMarketForGlvWithdrawal(glvMarket.glvTokenAddress),
       this.multicall!.callStatic.aggregate(calls),
       this.getWithdrawalGasLimit(),
     ]);
@@ -398,6 +404,49 @@ export class GlvEstimator {
       ...gmAmountOutResult,
       amountOut: new BigNumber(amountOut.toString()),
     };
+  }
+
+  private async getGmMarketForGlvWithdrawal(glvToken: string): Promise<GmMarket> {
+    const glvBalances = await GlvEstimator.getGlvBalances();
+    const glv = glvBalances.glvs.find(g => g.glvToken.toLowerCase() === glvToken.toLowerCase());
+    if (!glv) {
+      throw new Error(`Could not find GLV token ${glvToken} in GLV balances`);
+    }
+
+    // Find market with highest balanceUsd
+    let highestBalanceMarket = glv.markets[0];
+    let highestBalance = ethers.BigNumber.from(highestBalanceMarket.balanceUsd);
+
+    for (let i = 1; i < glv.markets.length; i++) {
+      const market = glv.markets[i];
+      const balance = ethers.BigNumber.from(market.balanceUsd);
+      if (balance.gt(highestBalance)) {
+        highestBalanceMarket = market;
+        highestBalance = balance;
+      }
+    }
+    const gmMarketAddress = highestBalanceMarket.address;
+
+    const gmMarketsMap = GM_MARKETS_MAP[this.network];
+    const gmMarketIsolationModeAddress = Object.keys(gmMarketsMap).find(isolationModeAddress => {
+      return gmMarketsMap[isolationModeAddress]!.marketTokenAddress.toLowerCase() === gmMarketAddress.toLowerCase();
+    });
+
+    let gmMarket: GmMarket;
+    if (gmMarketIsolationModeAddress) {
+      gmMarket = GM_MARKETS_MAP[this.network][gmMarketIsolationModeAddress]!;
+    } else {
+      const result = await this.gmxV2Reader!.getMarket(this.gmxV2DataStore!.address, gmMarketAddress);
+      gmMarket = {
+        indexTokenAddress: result.indexToken,
+        shortTokenAddress: result.shortToken,
+        marketTokenAddress: result.marketToken,
+        longTokenAddress: result.longToken,
+      };
+    }
+
+    this.dataStoreCache.set(GlvToGmMarketCacheKey(glvToken, false), gmMarket);
+    return gmMarket;
   }
 
   private async getGmMarketByGlvToken(glvToken: string, isDeposit: boolean): Promise<GmMarket> {
