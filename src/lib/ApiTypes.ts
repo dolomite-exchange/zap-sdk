@@ -77,6 +77,7 @@ export interface EstimateOutputResult {
 export interface ApiUnwrapperHelper {
   estimateOutputFunction: (
     amountIn: Integer,
+    inputMarketId: MarketId,
     outputMarketId: MarketId,
     config: ZapConfig,
   ) => Promise<EstimateOutputResult>;
@@ -281,4 +282,8 @@ export interface PendleMarketProps {
   transformerTokenAddress: string;
   ytTokenAddress: string;
   maturityTimestamp: number;
+}
+
+export interface POLMarketProps {
+  dTokenAddress: string;
 }

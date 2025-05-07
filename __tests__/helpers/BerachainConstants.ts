@@ -25,3 +25,15 @@ export const USDC_MARKET: ApiMarket = {
   isolationModeWrapperInfo: undefined,
   liquidityTokenWrapperInfo: undefined,
 };
+
+export const RUSD_MARKET: ApiMarket = {
+  marketId: new BigNumber(8),
+  symbol: 'rUSD',
+  name: 'Reservoir Stablecoin',
+  tokenAddress: toChecksumOpt('0x09D4214C03D01F49544C0448DBE3A27f768F2b34')!,
+  decimals: 18,
+  isolationModeUnwrapperInfo: undefined,
+  liquidityTokenUnwrapperInfo: undefined,
+  isolationModeWrapperInfo: undefined,
+  liquidityTokenWrapperInfo: undefined,
+};

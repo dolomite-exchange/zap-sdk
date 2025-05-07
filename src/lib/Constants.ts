@@ -7,6 +7,7 @@ import { GM_MARKETS_MAP } from './GmMarkets';
 import { GraphqlToken } from './GraphqlTypes';
 import { PENDLE_PT_MARKET_MAP } from './PendlePtMarkets';
 import { PENDLE_YT_MARKET_MAP } from './PendleYtMarkets';
+import { POL_MARKETS_MAP } from './POLMarkets';
 
 export const INTEGERS = {
   NEGATIVE_ONE: new BigNumber(-1),
@@ -34,6 +35,14 @@ export const ARBITRUM_GAS_INFO_MAP: Record<Network, Address | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+export const BERACHAIN_REWARDS_REGISTRY_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: '0x1111111111111111111111111111111111111111',
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
 export const GLV_READER_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x6a9505D0B44cFA863d9281EA5B0b34cB36243b45',
   [Network.BASE]: undefined,
@@ -136,6 +145,10 @@ export function isGlvIsolationModeAsset(network: Network, tokenAddress: Address)
 
 export function isGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): boolean {
   return !!GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
+export function isPOLIsolationModeAsset(network: Network, tokenAddress: Address): boolean {
+  return !!POL_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
 export function getGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): GmMarketWithMarketId | undefined {
