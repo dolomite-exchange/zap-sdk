@@ -174,7 +174,7 @@ export class GlvEstimator {
       },
     ] = await Promise.all([
       GmxV2GmEstimator.getTokenPrices(),
-      this.getGmMarketForGlvWithdrawal(glvMarket.glvTokenAddress),
+      this.getGmMarketByGlvToken(glvMarket.glvTokenAddress, false),
       this.multicall!.callStatic.aggregate(calls),
       this.getWithdrawalGasLimit(),
     ]);
