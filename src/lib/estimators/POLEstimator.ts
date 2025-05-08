@@ -38,12 +38,12 @@ export class POLEstimator {
       [isLiquidation ? 3 : 2] // @dev metavaultAccountId
     );
 
-    let amountOut: Integer;
+    let amountOutPar: Integer;
     if (isLiquidation) {
-      amountOut = amountIn;
+      amountOutPar = amountIn;
     } else {
       const feePercentage = new BigNumber((await this.berachainRewardsRegistry!.polFeePercentage(inputMarketId.toFixed())).toString());
-      amountOut = amountIn.minus(amountIn.times(feePercentage).div(ONE_ETH));
+      amountOutPar = amountIn.minus(amountIn.times(feePercentage).div(ONE_ETH));
     }
 
     const dToken = new ethers.Contract(
@@ -51,8 +51,8 @@ export class POLEstimator {
       IERC4626Abi,
       this.web3Provider
     ) as IERC4626;
-    const weiOut = await dToken.convertToAssets(amountOut.toFixed());
 
+    const weiOut = await dToken.convertToAssets(amountOutPar.toFixed());
     return {
       tradeData,
       amountOut: new BigNumber(weiOut.toString())
@@ -75,7 +75,6 @@ export class POLEstimator {
     ) as IERC4626;
 
     const amountOut = await dToken.convertToShares(amountIn.toFixed());
-
     return {
       tradeData,
       amountOut: new BigNumber(amountOut.toString()),
