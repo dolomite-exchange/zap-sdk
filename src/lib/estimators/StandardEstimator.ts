@@ -5,10 +5,12 @@ import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, Z
 import {
   BYTES_EMPTY,
   getPendlePtTransformerTokenForIsolationModeToken,
-  getPendleYtTransformerTokenForIsolationModeToken, isGlvIsolationModeAsset,
+  getPendleYtTransformerTokenForIsolationModeToken,
+  isGlvIsolationModeAsset,
   isGmxV2IsolationModeAsset,
   isPendlePtAsset,
   isPendleYtAsset,
+  isPOLIsolationModeAsset,
   isSimpleIsolationModeAsset,
 } from '../Constants';
 import { GM_MARKETS_MAP } from '../GmMarkets';
@@ -16,6 +18,7 @@ import { GlvEstimator } from './GlvEstimator';
 import { GmxV2GmEstimator } from './GmxV2GmEstimator';
 import { PendlePtEstimatorV3 } from './PendlePtEstimatorV3';
 import { PendleYtEstimatorV3 } from './PendleYtEstimatorV3';
+import { POLEstimator } from './POLEstimator';
 import { SimpleEstimator } from './SimpleEstimator';
 
 export class StandardEstimator {
@@ -23,6 +26,7 @@ export class StandardEstimator {
   private readonly gmxV2GmEstimator: GmxV2GmEstimator;
   private readonly pendlePtEstimatorV3: PendlePtEstimatorV3;
   private readonly pendleYtEstimatorV3: PendleYtEstimatorV3;
+  private readonly polEstimator: POLEstimator;
   private readonly simpleEstimator: SimpleEstimator;
 
   public constructor(
@@ -34,6 +38,7 @@ export class StandardEstimator {
     this.glvEstimator = new GlvEstimator(this.network, this.web3Provider, this.gmxV2GmEstimator);
     this.pendlePtEstimatorV3 = new PendlePtEstimatorV3(this.network);
     this.pendleYtEstimatorV3 = new PendleYtEstimatorV3(this.network);
+    this.polEstimator = new POLEstimator(this.network, this.web3Provider);
     this.simpleEstimator = new SimpleEstimator();
   }
 
@@ -83,6 +88,8 @@ export class StandardEstimator {
         marketsMap,
         config,
       );
+    } else if (isPOLIsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      return this.polEstimator.getUnwrappedAmount(amountIn, isolationModeTokenAddress, config.isLiquidation);
     } else {
       // fallback is to call getExchangeCost
       const contract = new ethers.Contract(unwrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
@@ -141,6 +148,8 @@ export class StandardEstimator {
         marketsMap,
         config,
       );
+    } else if (isPOLIsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      return this.polEstimator.getWrappedAmount(amountIn, isolationModeTokenAddress);
     } else {
       const contract = new ethers.Contract(wrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
       const tradeData = BYTES_EMPTY;

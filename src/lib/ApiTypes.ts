@@ -282,3 +282,8 @@ export interface PendleMarketProps {
   ytTokenAddress: string;
   maturityTimestamp: number;
 }
+
+export interface POLMarketProps {
+  marketId: MarketId;
+  dTokenAddress: string;
+}

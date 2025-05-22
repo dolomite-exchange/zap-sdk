@@ -239,6 +239,24 @@ export const GMX_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+export const IBGT_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: new BigNumber(34),
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+export const IBGT_STAKED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: new BigNumber(38),
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 export const ISOLATED_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(6),
   [Network.BASE]: undefined,
@@ -491,6 +509,15 @@ export const PLV_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+export const POL_RUSD_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: new BigNumber(39),
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
 export const R_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(49),
   [Network.BASE]: undefined,
@@ -504,6 +531,15 @@ export const RS_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(49),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+export const RUSD_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: new BigNumber(8),
   [Network.MANTLE]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
@@ -997,7 +1033,28 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
     },
   },
   [Network.BASE]: {},
-  [Network.BERACHAIN]: {},
+  [Network.BERACHAIN]: {
+    [IBGT_STAKED_MARKET_ID_MAP[Network.BERACHAIN]!.toFixed()]: {
+      tokenAddress: Deployments.InfraredBGTIsolationModeVaultFactory[Network.BERACHAIN].address,
+      unwrapper: Deployments.InfraredBGTIsolationModeUnwrapperTraderV2[Network.BERACHAIN].address,
+      wrapper: Deployments.InfraredBGTIsolationModeWrapperTraderV2[Network.BERACHAIN].address,
+      unwrapperMarketIds: [IBGT_MARKET_ID_MAP[Network.BERACHAIN]!],
+      wrapperMarketIds: [IBGT_MARKET_ID_MAP[Network.BERACHAIN]!],
+      unwrapperReadableName: 'Staked iBGT Isolation Mode Unwrapper',
+      wrapperReadableName: 'Staked iBGT Isolation Mode Wrapper',
+      isAsync: false,
+    },
+    [POL_RUSD_MARKET_ID_MAP[Network.BERACHAIN]!.toFixed()]: {
+      tokenAddress: Deployments.POLrUsdIsolationModeVaultFactory[Network.BERACHAIN].address,
+      unwrapper: Deployments.POLrUsdIsolationModeUnwrapperUpgradeableProxy[Network.BERACHAIN].address,
+      wrapper: Deployments.POLrUsdIsolationModeWrapperUpgradeableProxy[Network.BERACHAIN].address,
+      unwrapperMarketIds: [RUSD_MARKET_ID_MAP[Network.BERACHAIN]!],
+      wrapperMarketIds: [RUSD_MARKET_ID_MAP[Network.BERACHAIN]!],
+      unwrapperReadableName: 'pol-rUSD Isolation Mode Unwrapper',
+      wrapperReadableName: 'pol-rUSD Isolation Mode Wrapper',
+      isAsync: false,
+    },
+  },
   [Network.MANTLE]: {
     [PENDLE_PT_CM_ETH_FEB_2025_MARKET_ID_MAP[Network.MANTLE]!.toFixed()]: {
       tokenAddress: Deployments.PendlePtcmETHFeb2025IsolationModeVaultFactory[Network.MANTLE].address,

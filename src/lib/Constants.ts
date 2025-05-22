@@ -1,12 +1,13 @@
 import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Address, GmMarketWithMarketId, Network } from './ApiTypes';
+import { Address, GmMarketWithMarketId, Network, POLMarketProps } from './ApiTypes';
 import { GLV_MARKETS_MAP } from './GlvMarkets';
 import { GM_MARKETS_MAP } from './GmMarkets';
 import { GraphqlToken } from './GraphqlTypes';
 import { PENDLE_PT_MARKET_MAP } from './PendlePtMarkets';
 import { PENDLE_YT_MARKET_MAP } from './PendleYtMarkets';
+import { POL_MARKETS_MAP } from './POLMarkets';
 
 export const INTEGERS = {
   NEGATIVE_ONE: new BigNumber(-1),
@@ -34,6 +35,14 @@ export const ARBITRUM_GAS_INFO_MAP: Record<Network, Address | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+export const BERACHAIN_REWARDS_REGISTRY_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: '0x20c8323a22BBaD344Ae2aceEd2022E60B933c61F',
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
 export const GLV_READER_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x6a9505D0B44cFA863d9281EA5B0b34cB36243b45',
   [Network.BASE]: undefined,
@@ -112,7 +121,9 @@ const SIMPLE_ISOLATION_MODE_MAP: Record<Network, Record<string, boolean | undefi
     [Deployments.GMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: true,
   },
   [Network.BASE]: {},
-  [Network.BERACHAIN]: {},
+  [Network.BERACHAIN]: {
+    [Deployments.InfraredBGTIsolationModeVaultFactory[Network.BERACHAIN].address]: true,
+  },
   [Network.MANTLE]: {},
   [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
@@ -138,8 +149,16 @@ export function isGmxV2IsolationModeAsset(network: Network, tokenAddress: Addres
   return !!GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
+export function isPOLIsolationModeAsset(network: Network, tokenAddress: Address): boolean {
+  return !!POL_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
 export function getGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): GmMarketWithMarketId | undefined {
   return GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
+export function getPOLMarketAsset(network: Network, tokenAddress: Address): POLMarketProps | undefined {
+  return POL_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
 export function getPendlePtMarketForIsolationModeToken(
