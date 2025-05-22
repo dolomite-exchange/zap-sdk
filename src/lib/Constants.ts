@@ -1,7 +1,7 @@
 import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Address, GmMarketWithMarketId, Network } from './ApiTypes';
+import { Address, GmMarketWithMarketId, Network, POLMarketProps } from './ApiTypes';
 import { GLV_MARKETS_MAP } from './GlvMarkets';
 import { GM_MARKETS_MAP } from './GmMarkets';
 import { GraphqlToken } from './GraphqlTypes';
@@ -38,7 +38,7 @@ export const ARBITRUM_GAS_INFO_MAP: Record<Network, Address | undefined> = {
 export const BERACHAIN_REWARDS_REGISTRY_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
-  [Network.BERACHAIN]: '0x1111111111111111111111111111111111111111',
+  [Network.BERACHAIN]: '0x20c8323a22BBaD344Ae2aceEd2022E60B933c61F',
   [Network.MANTLE]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
@@ -121,7 +121,9 @@ const SIMPLE_ISOLATION_MODE_MAP: Record<Network, Record<string, boolean | undefi
     [Deployments.GMXIsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: true,
   },
   [Network.BASE]: {},
-  [Network.BERACHAIN]: {},
+  [Network.BERACHAIN]: {
+    [Deployments.InfraredBGTIsolationModeVaultFactory[Network.BERACHAIN].address]: true,
+  },
   [Network.MANTLE]: {},
   [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
@@ -153,6 +155,10 @@ export function isPOLIsolationModeAsset(network: Network, tokenAddress: Address)
 
 export function getGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): GmMarketWithMarketId | undefined {
   return GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
+export function getPOLMarketAsset(network: Network, tokenAddress: Address): POLMarketProps | undefined {
+  return POL_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
 export function getPendlePtMarketForIsolationModeToken(

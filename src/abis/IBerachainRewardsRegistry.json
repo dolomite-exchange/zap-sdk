@@ -244,6 +244,19 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "polTokenVault",
+        "type": "address"
+      }
+    ],
+    "name": "PolTokenVaultSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "polUnwrapperTrader",
         "type": "address"
       }
@@ -858,6 +871,19 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_polTokenVault",
+        "type": "address"
+      }
+    ],
+    "name": "ownerSetPolTokenVault",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_polUnwrapperTrader",
         "type": "address"
       }
@@ -951,6 +977,19 @@
   {
     "inputs": [],
     "name": "polLiquidator",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "polTokenVault",
     "outputs": [
       {
         "internalType": "address",

@@ -5,7 +5,8 @@ import { Address, ApiMarket, EstimateOutputResult, Integer, MarketId, Network, Z
 import {
   BYTES_EMPTY,
   getPendlePtTransformerTokenForIsolationModeToken,
-  getPendleYtTransformerTokenForIsolationModeToken, isGlvIsolationModeAsset,
+  getPendleYtTransformerTokenForIsolationModeToken,
+  isGlvIsolationModeAsset,
   isGmxV2IsolationModeAsset,
   isPendlePtAsset,
   isPendleYtAsset,
@@ -45,7 +46,6 @@ export class StandardEstimator {
     isolationModeTokenAddress: Address,
     unwrapperAddress: Address,
     amountIn: Integer,
-    inputMarketId: MarketId,
     outputMarketId: MarketId,
     config: ZapConfig,
     marketsMap: Record<string, ApiMarket>,
@@ -89,12 +89,7 @@ export class StandardEstimator {
         config,
       );
     } else if (isPOLIsolationModeAsset(this.network, isolationModeTokenAddress)) {
-      return this.polEstimator.getUnwrappedAmount(
-        amountIn,
-        inputMarketId,
-        outputMarketId,
-        config.isLiquidation,
-      );
+      return this.polEstimator.getUnwrappedAmount(amountIn, isolationModeTokenAddress, config.isLiquidation);
     } else {
       // fallback is to call getExchangeCost
       const contract = new ethers.Contract(unwrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
@@ -154,10 +149,7 @@ export class StandardEstimator {
         config,
       );
     } else if (isPOLIsolationModeAsset(this.network, isolationModeTokenAddress)) {
-      return this.polEstimator.getWrappedAmount(
-        amountIn,
-        inputMarketId
-      );
+      return this.polEstimator.getWrappedAmount(amountIn, isolationModeTokenAddress);
     } else {
       const contract = new ethers.Contract(wrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);
       const tradeData = BYTES_EMPTY;

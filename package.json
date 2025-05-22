@@ -4,7 +4,7 @@
   "description": "SDK for zapping any asset to any asset on Dolomite.",
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
-    "test:specific": "NODE_ENV=test jest __tests__/DolomiteZap.test.ts",
+    "test:specific": "NODE_ENV=test jest __tests__/specific_zaps/berachain/StakediBGTZap.test.ts",
     "coverage": "NODE_ENV=test jest --coverage --runInBand --forceExit --coverageReporters=text-lcov | node_modules/.bin/coveralls",
     "build": "rm -rf dist/ && node_modules/.bin/tsc --module commonjs",
     "prepublishOnly": "npm run build"
@@ -28,7 +28,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "dependencies": {
-    "@dolomite-exchange/modules-deployments": "^0.1.3",
+    "@dolomite-exchange/modules-deployments": "^0.1.5",
     "axios": "^0.29.0",
     "bignumber.js": "^9.1.1",
     "dotenv-flow": "^0.4.0",

@@ -683,7 +683,6 @@ export class DolomiteZap {
 
           return unwrapperHelper.estimateOutputFunction(
             amountIn,
-            inputMarketId,
             outputMarket.marketId,
             actualConfig,
           ).catch(e => {
