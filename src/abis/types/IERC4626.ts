@@ -18,7 +18,7 @@ import type {
   Result,
   EventFragment,
 } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+import type { Provider } from "@ethersproject/providers";
 
 export interface IERC4626Interface extends utils.Interface {
   functions: {

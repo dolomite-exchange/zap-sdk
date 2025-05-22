@@ -3,12 +3,13 @@ import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import { Network, ZapConfig } from '../../../src';
 import { POLEstimator } from '../../../src/lib/estimators/POLEstimator';
-import { RUSD_MARKET } from '../../helpers/BerachainConstants';
+import { POL_RUSD_MARKET } from '../../helpers/BerachainConstants';
+
+const network = Network.BERACHAIN;
+const web3Provider = new ethers.providers.JsonRpcProvider('https://rpc.berachain.com');
+const estimator = new POLEstimator(network, web3Provider);
 
 describe('POLEstimator', () => {
-  const network = Network.BERACHAIN;
-  const web3Provider = new ethers.providers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
-  const estimator = new POLEstimator(network, web3Provider);
   const config: ZapConfig = {
     gasPriceInWei: new BigNumber('100000000'), // 0.1 gwei
     blockTag: 'latest',
@@ -25,9 +26,8 @@ describe('POLEstimator', () => {
       const polRUsdAmountIn = new BigNumber(parseEther('100').toString());
       const estimatorOutput = await estimator.getUnwrappedAmount(
         polRUsdAmountIn,
-        new BigNumber(25), // @todo adjust once deployed
-        RUSD_MARKET.marketId,
-        config.isLiquidation
+        POL_RUSD_MARKET.tokenAddress,
+        config.isLiquidation,
       );
       console.log(
         'rUsd weiAmountOut',
@@ -41,7 +41,7 @@ describe('POLEstimator', () => {
       const rUsdWeiAmountIn = new BigNumber(parseEther('100').toString());
       const estimatorOutput = await estimator.getWrappedAmount(
         rUsdWeiAmountIn,
-        new BigNumber(25) // @todo adjust once deployed
+        POL_RUSD_MARKET.tokenAddress,
       );
       console.log(
         'pol-rUsd output amount:',
