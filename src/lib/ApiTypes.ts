@@ -144,6 +144,7 @@ export interface ZapConfig {
   subAccountNumber: Integer | undefined;
   gasPriceInWei: Integer | undefined;
   disallowAggregator: boolean;
+  additionalMakerAccounts: AccountInfo[] | undefined
 }
 
 export interface ZapOutputParam {

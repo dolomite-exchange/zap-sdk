@@ -25,6 +25,7 @@ describe('GmxV2GmEstimator', () => {
     slippageTolerance: 0.003,
     subAccountNumber: new BigNumber('12321'),
     disallowAggregator: false,
+    additionalMakerAccounts: undefined,
   };
 
   const gmEthMarket = GM_MARKETS_MAP[network]![Deployments.GmxV2ETHIsolationModeVaultFactory[network]!.address]!;

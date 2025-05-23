@@ -19,6 +19,7 @@ describe('OogaBoogaAggregator', () => {
     gasPriceInWei: undefined,
     disallowAggregator: false,
     subAccountNumber: undefined,
+    additionalMakerAccounts: undefined,
   };
 
   describe('#getSwapExactTokensForTokensData', () => {

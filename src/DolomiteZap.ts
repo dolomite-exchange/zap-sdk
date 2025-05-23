@@ -279,6 +279,7 @@ export class DolomiteZap {
       subAccountNumber: config?.subAccountNumber,
       disallowAggregator: config?.disallowAggregator ?? false,
       gasPriceInWei: config?.gasPriceInWei,
+      additionalMakerAccounts: config?.additionalMakerAccounts,
     };
     const marketsMap = await this.getMarketIdToMarketMap(false);
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
@@ -458,7 +459,7 @@ export class DolomiteZap {
         expectedAmountOut: expectedAmountOutBeforeOverwrite,
         amountWeisPath: amountsPaths[i],
         traderParams: traderParamsArrays[i],
-        makerAccounts: [],
+        makerAccounts: config?.additionalMakerAccounts ?? [],
         originalAmountOutMin: amountOutMin,
         executionFee: executionFees[i].gt(INTEGERS.ZERO) ? executionFees[i] : undefined,
       };

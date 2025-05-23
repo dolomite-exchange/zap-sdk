@@ -89,6 +89,10 @@ export class StandardEstimator {
         config,
       );
     } else if (isPOLIsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      if (!config.additionalMakerAccounts || config.additionalMakerAccounts.length === 0) {
+        return Promise.reject(new Error('polEstimator: Missing meta vault account info!'));
+      }
+
       return this.polEstimator.getUnwrappedAmount(amountIn, isolationModeTokenAddress, config.isLiquidation);
     } else {
       // fallback is to call getExchangeCost
@@ -149,6 +153,10 @@ export class StandardEstimator {
         config,
       );
     } else if (isPOLIsolationModeAsset(this.network, isolationModeTokenAddress)) {
+      if (!config.additionalMakerAccounts || config.additionalMakerAccounts.length === 0) {
+        return Promise.reject(new Error('polEstimator: Missing meta vault account info!'));
+      }
+
       return this.polEstimator.getWrappedAmount(amountIn, isolationModeTokenAddress);
     } else {
       const contract = new ethers.Contract(wrapperAddress, IDolomiteMarginExchangeWrapper, this.web3Provider);

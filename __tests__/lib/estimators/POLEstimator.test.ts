@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import { Network, ZapConfig } from '../../../src';
+import { ADDRESS_ZERO } from '../../../src/lib/Constants';
 import { POLEstimator } from '../../../src/lib/estimators/POLEstimator';
 import { POL_RUSD_MARKET } from '../../helpers/BerachainConstants';
 
@@ -19,6 +20,7 @@ describe('POLEstimator', () => {
     slippageTolerance: 0.003,
     subAccountNumber: new BigNumber('12321'),
     disallowAggregator: false,
+    additionalMakerAccounts: [{ owner: ADDRESS_ZERO, number: 1 }],
   };
 
   describe('#getUnwrappedAmount', () => {
