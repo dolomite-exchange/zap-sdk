@@ -47,7 +47,7 @@ export class POLEstimator {
       const feePercentage = new BigNumber(
         (await this.berachainRewardsRegistry!.polFeePercentage(inputMarketId.toFixed())).toString(),
       );
-      amountOutPar = amountIn.minus(amountIn.times(feePercentage).div(ONE_ETH));
+      amountOutPar = amountIn.minus(amountIn.times(feePercentage).dividedToIntegerBy(ONE_ETH));
     }
 
     const dToken = new ethers.Contract(polMarket!.dTokenAddress, IERC4626Abi, this.web3Provider) as IERC4626;
@@ -65,7 +65,7 @@ export class POLEstimator {
   ): Promise<EstimateOutputResult> {
     const tradeData = ethers.utils.defaultAbiCoder.encode(
       ['uint256'],
-      [2], // @dev metavaultAccountId
+      [2], // NOTE: This is the meta vault accountId
     );
 
     const dToken = new ethers.Contract(
