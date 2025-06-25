@@ -146,6 +146,7 @@ export const GM_MARKETS_MAP: Record<Network, Record<Address, GmMarketWithMarketI
   },
   [Network.BASE]: {},
   [Network.BERACHAIN]: {},
+  [Network.ETHEREUM]: {},
   [Network.MANTLE]: {},
   [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},

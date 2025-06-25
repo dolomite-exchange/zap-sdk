@@ -15,6 +15,7 @@ export const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketP
   },
   [Network.BASE]: {},
   [Network.BERACHAIN]: {},
+  [Network.ETHEREUM]: {},
   [Network.MANTLE]: {},
   [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},

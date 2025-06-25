@@ -114,6 +114,7 @@ export const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketP
   },
   [Network.BASE]: {},
   [Network.BERACHAIN]: {},
+  [Network.ETHEREUM]: {},
   [Network.MANTLE]: {
     [Deployments.PendlePtcmETHFeb2025IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_CM_ETH_FEB_2025_MARKET_MANTLE,
@@ -146,6 +147,7 @@ export const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketP
       maturityTimestamp: 1735171200, // 26-DEC-2024
     },
   },
+  [Network.POLYGON_ZKEVM]: {},
   [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
 };
