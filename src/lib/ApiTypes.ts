@@ -182,7 +182,7 @@ export interface ZapOutputParam {
    */
   originalAmountOutMin: Integer;
   /**
-   * True if the user wants to swap their full balance. False otherwise.
+   * True if the user wants to swap their full balance. False otherwise. Defaults to false.
    */
   isMaxSelected: boolean;
   /**
