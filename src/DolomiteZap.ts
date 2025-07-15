@@ -280,6 +280,7 @@ export class DolomiteZap {
       disallowAggregator: config?.disallowAggregator ?? false,
       gasPriceInWei: config?.gasPriceInWei,
       additionalMakerAccounts: config?.additionalMakerAccounts,
+      isMaxSelected: config?.isMaxSelected ?? false,
     };
     const marketsMap = await this.getMarketIdToMarketMap(false);
     const marketHelpersMap = await this.getMarketHelpersMap(marketsMap);
@@ -459,8 +460,9 @@ export class DolomiteZap {
         expectedAmountOut: expectedAmountOutBeforeOverwrite,
         amountWeisPath: amountsPaths[i],
         traderParams: traderParamsArrays[i],
-        makerAccounts: config?.additionalMakerAccounts ?? [],
+        makerAccounts: actualConfig.additionalMakerAccounts ?? [],
         originalAmountOutMin: amountOutMin,
+        isMaxSelected: actualConfig.isMaxSelected,
         executionFee: executionFees[i].gt(INTEGERS.ZERO) ? executionFees[i] : undefined,
       };
     });
@@ -593,6 +595,7 @@ export class DolomiteZap {
           makerAccounts: [],
           expectedAmountOut: outputWeiFromActionsWithMarket.outputValue,
           originalAmountOutMin: amountOutMin,
+          isMaxSelected: config.isMaxSelected ?? false,
         },
       ];
     } else {

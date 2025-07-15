@@ -139,6 +139,7 @@ export interface ReferralOutput {
 export interface ZapConfig {
   isLiquidation: boolean;
   isVaporizable: boolean;
+  isMaxSelected: boolean;
   slippageTolerance: number;
   blockTag: BlockTag;
   filterOutZapsWithInsufficientOutput: boolean;
@@ -178,6 +179,10 @@ export interface ZapOutputParam {
    * amountWeisPath[amountWeisPath.length - 1] (since the last amount is the `expected` amount out including slippage)
    */
   originalAmountOutMin: Integer;
+  /**
+   * True if the user wants to swap their full balance. False otherwise
+   */
+  isMaxSelected: boolean;
   /**
    * The `msg.value` to pass along to the transaction for paying for gas fees. Usually this is (slightly)
    * over-estimated.

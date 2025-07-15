@@ -14,6 +14,7 @@ describe('ParaswapAggregator', () => {
     blockTag: 'latest',
     isLiquidation: false,
     isVaporizable: false,
+    isMaxSelected: false,
     gasPriceInWei: undefined,
     disallowAggregator: false,
     subAccountNumber: undefined,

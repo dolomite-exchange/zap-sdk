@@ -17,6 +17,7 @@ describe('POLEstimator', () => {
     filterOutZapsWithInsufficientOutput: false,
     isLiquidation: false,
     isVaporizable: false,
+    isMaxSelected: false,
     slippageTolerance: 0.003,
     subAccountNumber: new BigNumber('12321'),
     disallowAggregator: false,

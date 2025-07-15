@@ -68,6 +68,7 @@ describe('DolomiteZap', () => {
           USDC_MARKET,
           minAmountOut,
           txOrigin,
+          { isMaxSelected: true },
         );
 
         expect(outputParams.length).toBe(validAggregatorsLength);
@@ -91,6 +92,7 @@ describe('DolomiteZap', () => {
         expect(outputParam.expectedAmountOut.gt(outputParam.amountWeisPath[outputParam.amountWeisPath.length - 1]))
           .toBeTruthy();
         expect(outputParam.originalAmountOutMin).toEqual(minAmountOut);
+        expect(outputParam.isMaxSelected).toEqual(true);
       });
     });
   });
