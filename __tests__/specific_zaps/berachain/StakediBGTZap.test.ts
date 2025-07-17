@@ -11,7 +11,7 @@ import { SLEEP_DURATION_BETWEEN_TESTS } from '../../helpers/TestConstants';
 const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 const network = Network.BERACHAIN;
 // eslint-disable-next-line max-len
-const subgraphUrl = 'https://subgraph.api.dolomite.io/api/public/1301d2d1-7a9d-4be4-9e9a-061cb8611549/subgraphs/dolomite-berachain-mainnet/v0.1.4/gn';
+const subgraphUrl = 'https://subgraph.api.dolomite.io/api/public/1301d2d1-7a9d-4be4-9e9a-061cb8611549/subgraphs/dolomite-berachain-mainnet/latest/gn';
 const web3Provider = new ethers.providers.JsonRpcProvider('https://rpc.berachain.com');
 
 describe('StakediBGTZap', () => {
