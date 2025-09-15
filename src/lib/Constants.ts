@@ -31,7 +31,6 @@ export const ARBITRUM_GAS_INFO_MAP: Record<Network, Address | undefined> = {
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.BOTANIX]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
@@ -108,6 +107,18 @@ export const MULTICALL_MAP: Record<Network, Address> = {
   [Network.MANTLE]: '0x6978Ffdcd509dED2F8557565e0a9FC5CFA1bEbc5',
   [Network.POLYGON_ZKEVM]: '0x4232FCE0D67839F4FD536990bDc02043d9Ab708a',
   [Network.X_LAYER]: '0x86CFc6BA3bbBC603b8deC5B032aFa10A3592470D',
+};
+
+export const ENSO_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: '0x86CFc6BA3bbBC603b8deC5B032aFa10A3592470D', // @todo update this
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.BOTANIX]: undefined,
+  [Network.ETHEREUM]: undefined,
+  [Network.INK]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
 };
 
 export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
