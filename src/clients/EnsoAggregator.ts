@@ -7,11 +7,12 @@ import { AxiosClient } from './AxiosClient';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 
 const API_URL = 'https://api.enso.finance';
+const API_KEY = process.env.ENSO_API_KEY;
 
 export default class EnsoAggregator extends AggregatorClient {
-  public constructor(network: Network, private readonly apiKey: string | undefined) {
+  public constructor(network: Network) {
     super(network);
-    if (!apiKey) {
+    if (!API_KEY) {
       throw new Error('Could not find API key for Enso');
     }
   }
@@ -21,7 +22,7 @@ export default class EnsoAggregator extends AggregatorClient {
   }
 
   public isValidForNetwork(): boolean {
-    return !!ENSO_TRADER_ADDRESS_MAP[this.network] && !!this.apiKey;
+    return !!ENSO_TRADER_ADDRESS_MAP[this.network] && !!API_KEY;
   }
 
   public async getSwapExactTokensForTokensData(
@@ -32,10 +33,6 @@ export default class EnsoAggregator extends AggregatorClient {
     _unused2: Address,
     zapConfig: ZapConfig,
   ): Promise<AggregatorOutput | undefined> {
-    if (!this.apiKey) {
-      return Promise.reject(new Error('No API key is set for Ooga Booga!'));
-    }
-
     const traderAddress = ENSO_TRADER_ADDRESS_MAP[this.network];
     if (!traderAddress) {
       return undefined;
@@ -57,7 +54,7 @@ export default class EnsoAggregator extends AggregatorClient {
       },
       {
         headers: {
-          Authorization: `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${API_KEY}`,
         },
       }
     ).then(response => response.data)
@@ -80,26 +77,28 @@ export default class EnsoAggregator extends AggregatorClient {
     }
 
     const expectedAmountOut = new BigNumber(result.amountOut);
-    const [index, updatedCalldata] = this._getIndexAndUpdateCalldata(result.tx.data);
+    const [indices, updatedCalldata] = this._getIndexAndUpdateCalldata(result.tx.data);
 
     return {
       traderAddress,
-      tradeData: defaultAbiCoder.encode(['uint256', 'bytes'], [index, updatedCalldata]),
+      tradeData: defaultAbiCoder.encode(['uint256[]', 'bytes'], [indices, updatedCalldata]),
       expectedAmountOut,
       readableName: 'Enso',
     };
   }
 
-  private _getIndexAndUpdateCalldata(calldata: string): [number, string] {
-    const index = calldata.indexOf('{$amount1}');
-    if (index === -1) {
-      throw new Error('{$amount1} not found');
+  private _getIndexAndUpdateCalldata(calldata: string): [number[], string] {
+    const indices: number[] = [];
+
+    while (calldata.includes('{$amount1}')) {
+      const index = calldata.indexOf('{$amount1}');
+      // replace {$amount1} with bytes32(0) and remove the 0x prefix
+      calldata = calldata.replace('{$amount1}', defaultAbiCoder.encode(['uint256'], [0]).slice(2));
+      indices.push((index - 10) / 2);
     }
-    // replace {$amount1} with bytes32(0) and remove the 0x prefix
-    calldata = calldata.replace('{$amount1}', defaultAbiCoder.encode(['uint256'], [0]).slice(2));
 
     // we remove the first 10 characters of the calldata (0x + function selector)
     // then divide index by 2 because 2 char = 1 byte
-    return [(index - 10) / 2, `0x${calldata.slice(10)}`];
+    return [indices, `0x${calldata.slice(10)}`];
   }
 }

@@ -5,8 +5,6 @@ import { USDC_MARKET, WETH_MARKET } from '../helpers/ArbitrumOneConstants';
 import EnsoAggregator from '../../src/clients/EnsoAggregator';
 import { ENSO_TRADER_ADDRESS_MAP } from '../../src/lib/Constants';
 
-const secretKey = process.env.ENSO_API_KEY!;
-
 describe('EnsoAggregator', () => {
   const networkIdOverride = Network.ARBITRUM_ONE;
   const config: ZapConfig = {
@@ -24,7 +22,7 @@ describe('EnsoAggregator', () => {
 
   describe('#getSwapExactTokensForTokensData', () => {
     it('should work normally', async () => {
-      const enso = new EnsoAggregator(networkIdOverride, secretKey);
+      const enso = new EnsoAggregator(networkIdOverride);
       const inputMarket: ApiMarket = WETH_MARKET;
       const outputMarket: ApiMarket = USDC_MARKET;
       const inputAmount = new BigNumber('1000000000000000000'); // 1 ETH
@@ -48,7 +46,7 @@ describe('EnsoAggregator', () => {
     });
 
     it('should fail when the swap does not make sense', async () => {
-      const enso = new EnsoAggregator(networkIdOverride, secretKey);
+      const enso = new EnsoAggregator(networkIdOverride);
       const inputMarket: ApiMarket = {
         ...USDC_MARKET,
         tokenAddress: '0x0000000000000000000000000000000000000001',
