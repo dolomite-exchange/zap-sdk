@@ -48,6 +48,7 @@ export default class OogaBoogaAggregator extends AggregatorClient {
       amount: inputAmountWei.toFixed(),
       to: traderAddress,
       slippage: zapConfig.slippageTolerance.toString(),
+      excludeDolomiteTokens: 'true',
     });
     const quoteResponse: any | Error = await AxiosClient.get(
       `${API_URL_MAP[this.network]}/v1/swap?${queryParams.toString()}`,
