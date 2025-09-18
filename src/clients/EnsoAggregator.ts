@@ -77,14 +77,13 @@ export default class EnsoAggregator extends AggregatorClient {
     }
 
     const expectedAmountOut = new BigNumber(result.amountOut);
-    const minAmountOut = expectedAmountOut.multipliedBy(1 - zapConfig.slippageTolerance).integerValue(BigNumber.ROUND_DOWN);
     const [indices, updatedCalldata] = this._getIndexAndUpdateCalldata(result.tx.data);
 
     return {
       traderAddress,
       tradeData: defaultAbiCoder.encode(
-        ['uint256[]', 'uint256', 'uint256', 'bytes'],
-        [indices, inputAmountWei.toFixed(), minAmountOut.toFixed(), updatedCalldata]
+        ['uint256[]', 'uint256', 'bytes'],
+        [indices, inputAmountWei.toFixed(), updatedCalldata]
       ),
       expectedAmountOut,
       readableName: 'Enso',
