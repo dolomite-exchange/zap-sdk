@@ -18,6 +18,7 @@ describe('DolomiteZap', () => {
     subgraphUrl,
     web3Provider,
     referralInfo: {
+      ensoApiKey: undefined,
       referralAddress: undefined,
       odosReferralCode: undefined,
       oogaBoogaApiKey: process.env.OOGA_BOOGA_SECRET_KEY!,
@@ -26,7 +27,7 @@ describe('DolomiteZap', () => {
   const validAggregatorsLength = zap.validAggregators.length;
 
   const allTraders = [
-    Deployments.OogaBoogaAggregatorTrader[network].address,
+    Deployments.OogaBoogaAggregatorTraderV2[network].address,
   ];
 
   beforeAll(async () => {

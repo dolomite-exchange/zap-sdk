@@ -5,7 +5,7 @@ import { ApiMarket, DolomiteZap, Network, ZapConfig } from '../../src';
 import OogaBoogaAggregator from '../../src/clients/OogaBoogaAggregator';
 import { USDC_MARKET, WETH_MARKET } from '../helpers/BerachainConstants';
 
-const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address;
+const oogaBoogaTraderAddress = Deployments.OogaBoogaAggregatorTraderV2[Network.BERACHAIN].address;
 const secretKey = process.env.OOGA_BOOGA_SECRET_KEY!;
 
 describe('OogaBoogaAggregator', () => {
@@ -59,6 +59,7 @@ describe('OogaBoogaAggregator', () => {
         web3Provider,
         network: Network.BERACHAIN,
         referralInfo: {
+          ensoApiKey: undefined,
           odosReferralCode: undefined,
           oogaBoogaApiKey: process.env.OOGA_BOOGA_SECRET_KEY!,
           referralAddress: undefined,

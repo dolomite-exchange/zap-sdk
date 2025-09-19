@@ -1,10 +1,11 @@
 import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
-import { ApiMarket, Network } from '../../src';
 import {
+  ApiMarket,
   ISOLATION_MODE_CONVERSION_MARKET_ID_MAP,
   LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP,
-} from '../../src/lib/MarketIds';
+  Network,
+} from '../../src';
 import { EZ_ETH_MAP, WE_ETH_MAP } from '../../src/lib/Tokens';
 import { toChecksumOpt } from '../../src/lib/Utils';
 import { getApiMarket } from './TestConstants';
