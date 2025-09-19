@@ -42,7 +42,7 @@ describe('OdosAggregator', () => {
       const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
       expect(tradeData).toBeDefined();
       expect(tradeData.length).toBeGreaterThanOrEqual(100);
-      expect(traderAddress).toEqual(Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address);
+      expect(traderAddress).toEqual(Deployments.OdosAggregatorTraderV2[Network.ARBITRUM_ONE].address);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
 
@@ -66,7 +66,7 @@ describe('OdosAggregator', () => {
       const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
       expect(tradeData).toBeDefined();
       expect(tradeData.length).toBeGreaterThanOrEqual(100);
-      expect(traderAddress).toEqual(Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address);
+      expect(traderAddress).toEqual(Deployments.OdosAggregatorTraderV2[Network.ARBITRUM_ONE].address);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
 
@@ -90,7 +90,7 @@ describe('OdosAggregator', () => {
       const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
       expect(tradeData).toBeDefined();
       expect(tradeData.length).toBeGreaterThanOrEqual(100);
-      expect(traderAddress).toEqual(Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address);
+      expect(traderAddress).toEqual(Deployments.OdosAggregatorTraderV2[Network.ARBITRUM_ONE].address);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
 
@@ -114,7 +114,7 @@ describe('OdosAggregator', () => {
       const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
       expect(tradeData).toBeDefined();
       expect(tradeData.length).toBeGreaterThanOrEqual(100);
-      expect(traderAddress).toEqual(Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address);
+      expect(traderAddress).toEqual(Deployments.OdosAggregatorTraderV2[Network.ARBITRUM_ONE].address);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
 

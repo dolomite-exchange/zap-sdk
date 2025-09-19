@@ -1,20 +1,17 @@
 import BigNumber from 'bignumber.js';
+import { defaultAbiCoder } from 'ethers/lib/utils';
 import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
 import { ENSO_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 import { AxiosClient } from './AxiosClient';
-import { defaultAbiCoder } from 'ethers/lib/utils';
 
 const API_URL = 'https://api.enso.finance';
-const API_KEY = process.env.ENSO_API_KEY;
+// const API_KEY = process.env.ENSO_API_KEY;
 
 export default class EnsoAggregator extends AggregatorClient {
-  public constructor(network: Network) {
+  public constructor(network: Network, private readonly apiKey: string | undefined) {
     super(network);
-    if (!API_KEY) {
-      throw new Error('Could not find API key for Enso');
-    }
   }
 
   public get name(): string {
@@ -22,7 +19,7 @@ export default class EnsoAggregator extends AggregatorClient {
   }
 
   public isValidForNetwork(): boolean {
-    return !!ENSO_TRADER_ADDRESS_MAP[this.network] && !!API_KEY;
+    return !!ENSO_TRADER_ADDRESS_MAP[this.network] && !!this.apiKey;
   }
 
   public async getSwapExactTokensForTokensData(
@@ -34,8 +31,8 @@ export default class EnsoAggregator extends AggregatorClient {
     zapConfig: ZapConfig,
   ): Promise<AggregatorOutput | undefined> {
     const traderAddress = ENSO_TRADER_ADDRESS_MAP[this.network];
-    if (!traderAddress) {
-      return undefined;
+    if (!this.isValidForNetwork() || !traderAddress) {
+      return Promise.reject(new Error('Enso not enabled!'));
     }
 
     const result: any | Error = await AxiosClient.post(
@@ -54,9 +51,9 @@ export default class EnsoAggregator extends AggregatorClient {
       },
       {
         headers: {
-          Authorization: `Bearer ${API_KEY}`,
+          Authorization: `Bearer ${this.apiKey}`,
         },
-      }
+      },
     ).then(response => response.data)
       .catch(error => {
         Logger.error({
@@ -83,7 +80,7 @@ export default class EnsoAggregator extends AggregatorClient {
       traderAddress,
       tradeData: defaultAbiCoder.encode(
         ['uint256[]', 'uint256', 'bytes'],
-        [indices, inputAmountWei.toFixed(), updatedCalldata]
+        [indices, inputAmountWei.toFixed(), updatedCalldata],
       ),
       expectedAmountOut,
       readableName: 'Enso',

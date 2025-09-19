@@ -110,11 +110,11 @@ export const MULTICALL_MAP: Record<Network, Address> = {
 };
 
 export const ENSO_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: '0x86CFc6BA3bbBC603b8deC5B032aFa10A3592470D', // @todo update this
+  [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.BOTANIX]: undefined,
-  [Network.ETHEREUM]: undefined,
+  [Network.ETHEREUM]: Deployments.EnsoAggregatorTraderV1[Network.ETHEREUM].address,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
   [Network.POLYGON_ZKEVM]: undefined,
@@ -122,13 +122,14 @@ export const ENSO_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
 };
 
 export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: Deployments.OdosAggregatorTrader[Network.ARBITRUM_ONE].address,
+  [Network.ARBITRUM_ONE]: Deployments.OdosAggregatorTraderV2[Network.ARBITRUM_ONE].address,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.BOTANIX]: undefined,
-  [Network.ETHEREUM]: Deployments.OdosAggregatorTrader[Network.ETHEREUM].address,
+  // [Network.ETHEREUM]: Deployments.OdosAggregatorTraderV2[Network.ETHEREUM].address,
+  [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
-  [Network.MANTLE]: Deployments.OdosAggregatorTrader[Network.MANTLE].address,
+  [Network.MANTLE]: Deployments.OdosAggregatorTraderV2[Network.MANTLE].address,
   [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
@@ -136,7 +137,7 @@ export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
 export const OOGA_BOOGA_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
-  [Network.BERACHAIN]: Deployments.OogaBoogaAggregatorTrader[Network.BERACHAIN].address,
+  [Network.BERACHAIN]: Deployments.OogaBoogaAggregatorTraderV2[Network.BERACHAIN].address,
   [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,

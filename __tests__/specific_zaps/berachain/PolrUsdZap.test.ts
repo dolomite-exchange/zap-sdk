@@ -22,6 +22,7 @@ describe('pol-rUSD', () => {
     web3Provider,
     cacheSeconds: NO_CACHE,
     referralInfo: {
+      ensoApiKey: undefined,
       odosReferralCode: undefined,
       oogaBoogaApiKey: process.env.OOGA_BOOGA_SECRET_KEY,
       referralAddress: undefined,

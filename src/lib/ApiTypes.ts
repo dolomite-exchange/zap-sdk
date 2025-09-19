@@ -133,9 +133,10 @@ export interface AggregatorOutput {
 }
 
 export interface ReferralOutput {
-  referralAddress: Address | undefined;
+  ensoApiKey: string | undefined;
   oogaBoogaApiKey: string | undefined;
   odosReferralCode: Integer | undefined;
+  referralAddress: Address | undefined;
 }
 
 export interface ZapConfig {

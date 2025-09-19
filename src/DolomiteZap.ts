@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import AggregatorClient from './clients/AggregatorClient';
 import DolomiteClient from './clients/DolomiteClient';
+import EnsoAggregator from './clients/EnsoAggregator';
 import OdosAggregator from './clients/OdosAggregator';
 import OogaBoogaAggregator from './clients/OogaBoogaAggregator';
-import ParaswapAggregator from './clients/ParaswapAggregator';
 import {
   Address,
   ApiAsyncAction,
@@ -119,6 +119,7 @@ export class DolomiteZap {
       defaultSlippageTolerance = THIRTY_BASIS_POINTS,
       defaultBlockTag = 'latest',
       referralInfo = {
+        ensoApiKey: undefined,
         odosReferralCode: undefined,
         oogaBoogaApiKey: undefined,
         referralAddress: undefined,
@@ -632,10 +633,10 @@ export class DolomiteZap {
     referralInfo: ReferralOutput,
     useProxyServer: boolean,
   ): AggregatorClient[] {
+    const ensoAggregator = new EnsoAggregator(network, referralInfo.ensoApiKey);
     const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer);
     const oogaBoogaAggregator = new OogaBoogaAggregator(network, referralInfo.oogaBoogaApiKey);
-    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer);
-    return [odosAggregator, oogaBoogaAggregator, paraswapAggregator];
+    return [odosAggregator, oogaBoogaAggregator, ensoAggregator];
   }
 
   protected async getMarketIdToMarketMap(forceRefresh: boolean): Promise<Record<string, ApiMarket>> {

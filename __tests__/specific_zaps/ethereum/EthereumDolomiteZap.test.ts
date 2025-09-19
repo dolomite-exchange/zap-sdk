@@ -10,7 +10,7 @@ const txOrigin = '0x52256ef863a713Ef349ae6E97A7E8f35785145dE';
 
 describe('DolomiteZap', () => {
   const network = Network.ETHEREUM;
-  const subgraphUrl = 'https://api.goldsky.com/api/public/project_clyuw4gvq4d5801tegx0aafpu/subgraphs/dolomite-ethereum/v0.1.6-mainnet/gn';
+  const subgraphUrl = 'https://api.goldsky.com/api/public/project_clyuw4gvq4d5801tegx0aafpu/subgraphs/dolomite-ethereum/latest/gn';
   const web3Provider = new ethers.providers.JsonRpcProvider(
     'https://stylish-solitary-hill.quiknode.pro/ea06668d615e4f3492e41d8a80700dccc439eb28/',
   );
@@ -18,11 +18,17 @@ describe('DolomiteZap', () => {
     network,
     subgraphUrl,
     web3Provider,
+    referralInfo: {
+      ensoApiKey: process.env.ENSO_AGGREGATOR_API_KEY,
+      odosReferralCode: undefined,
+      referralAddress: undefined,
+      oogaBoogaApiKey: undefined,
+    },
   });
   const validAggregatorsLength = zap.validAggregators.length;
 
   const allTraders = [
-    Deployments.OdosAggregatorTrader[network].address,
+    Deployments.EnsoAggregatorTraderV1[network].address,
   ];
 
   beforeAll(async () => {

@@ -20,7 +20,7 @@ describe('DolomiteZap', () => {
   const validAggregatorsLength = zap.validAggregators.length;
 
   const allTraders = [
-    Deployments.OdosAggregatorTrader[network].address,
+    Deployments.OdosAggregatorTraderV2[network].address,
   ];
 
   beforeAll(async () => {

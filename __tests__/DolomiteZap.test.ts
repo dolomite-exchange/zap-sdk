@@ -46,7 +46,7 @@ describe('DolomiteZap', () => {
 
   const allTraders = [
     Deployments.ParaswapAggregatorTraderV2[network].address,
-    Deployments.OdosAggregatorTrader[network].address,
+    Deployments.OdosAggregatorTraderV2[network].address,
   ];
 
   beforeAll(async () => {
@@ -77,9 +77,10 @@ describe('DolomiteZap', () => {
         defaultSlippageTolerance,
         defaultBlockTag,
         referralInfo: {
-          referralAddress: ADDRESS_ZERO,
+          ensoApiKey: process.env.ENSO_AGGREGATOR_API_KEY,
           odosReferralCode: new BigNumber(21231),
           oogaBoogaApiKey: process.env.OOGA_BOOGA_SECRET_KEY,
+          referralAddress: ADDRESS_ZERO,
         },
         useProxyServer,
         gasMultiplier,

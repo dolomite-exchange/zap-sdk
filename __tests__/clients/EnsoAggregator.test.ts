@@ -1,12 +1,11 @@
-// import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ApiMarket, Network, ZapConfig } from '../../src';
-import { USDC_MARKET, WETH_MARKET } from '../helpers/ArbitrumOneConstants';
+import { USDC_MARKET, WETH_MARKET } from '../helpers/EthereumConstants';
 import EnsoAggregator from '../../src/clients/EnsoAggregator';
 import { ENSO_TRADER_ADDRESS_MAP } from '../../src/lib/Constants';
 
 describe('EnsoAggregator', () => {
-  const networkIdOverride = Network.ARBITRUM_ONE;
+  const networkIdOverride = Network.ETHEREUM;
   const config: ZapConfig = {
     slippageTolerance: 0.003,
     filterOutZapsWithInsufficientOutput: false,
@@ -22,7 +21,7 @@ describe('EnsoAggregator', () => {
 
   describe('#getSwapExactTokensForTokensData', () => {
     it('should work normally', async () => {
-      const enso = new EnsoAggregator(networkIdOverride);
+      const enso = new EnsoAggregator(networkIdOverride, process.env.ENSO_AGGREGATOR_API_KEY);
       const inputMarket: ApiMarket = WETH_MARKET;
       const outputMarket: ApiMarket = USDC_MARKET;
       const inputAmount = new BigNumber('1000000000000000000'); // 1 ETH
@@ -41,12 +40,12 @@ describe('EnsoAggregator', () => {
       const { tradeData, traderAddress, expectedAmountOut } = aggregatorOutput!;
       expect(tradeData).toBeDefined();
       expect(tradeData.length).toBeGreaterThanOrEqual(100);
-      expect(traderAddress).toEqual(ENSO_TRADER_ADDRESS_MAP[Network.ARBITRUM_ONE]);
+      expect(traderAddress).toEqual(ENSO_TRADER_ADDRESS_MAP[Network.ETHEREUM]);
       expect(expectedAmountOut.gt(minOutputAmount)).toBe(true);
     });
 
     it('should fail when the swap does not make sense', async () => {
-      const enso = new EnsoAggregator(networkIdOverride);
+      const enso = new EnsoAggregator(networkIdOverride, process.env.ENSO_AGGREGATOR_API_KEY);
       const inputMarket: ApiMarket = {
         ...USDC_MARKET,
         tokenAddress: '0x0000000000000000000000000000000000000001',
