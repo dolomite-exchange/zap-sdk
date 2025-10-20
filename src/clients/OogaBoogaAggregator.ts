@@ -7,13 +7,14 @@ import { AxiosClient } from './AxiosClient';
 
 const API_URL_MAP = {
   [Network.BERACHAIN]: 'https://mainnet.api.oogabooga.io',
+  [Network.BOTANIX]: 'https://botanix.api.oogabooga.io'
 };
 
 export default class OogaBoogaAggregator extends AggregatorClient {
   public constructor(network: Network, private readonly apiKey: string | undefined) {
     super(network);
-    if (network === Network.BERACHAIN && !apiKey) {
-      throw new Error('Could not find API key for BERACHAIN network');
+    if ((network === Network.BERACHAIN || network === Network.BOTANIX) && !apiKey) {
+      throw new Error('Could not find API key for BERACHAIN or BOTANIX network');
     }
   }
 
