@@ -28,7 +28,7 @@ describe('OogaBoogaAggregator', () => {
       const aggregator = new OogaBoogaAggregator(networkIdOverride, secretKey);
       const inputMarket: ApiMarket = PBTC_MARKET;
       const outputMarket: ApiMarket = USDC_MARKET;
-      const inputAmount = new BigNumber('10000000000000000'); // .001 pBTC
+      const inputAmount = new BigNumber('10000000000000000'); // 0.01 pBTC
       const minOutputAmount = new BigNumber('10000000'); // 10 USDC
       const solidAccount = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
       const aggregatorOutput = await aggregator.getSwapExactTokensForTokensData(
@@ -67,7 +67,7 @@ describe('OogaBoogaAggregator', () => {
       });
       const inputMarket: ApiMarket = PBTC_MARKET;
       const outputMarket: ApiMarket = USDC_MARKET;
-      const inputAmount = new BigNumber('10000000000000000'); // .001 pBTC
+      const inputAmount = new BigNumber('10000000000000000'); // 0.01 pBTC
       const minOutputAmount = new BigNumber('10000000'); // 10 USDC
       const solidAccount = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
       const aggregatorOutput = await client.getSwapExactTokensForTokensParams(
@@ -98,7 +98,7 @@ describe('OogaBoogaAggregator', () => {
       };
       const outputMarket: ApiMarket = PBTC_MARKET;
       const inputAmount = new BigNumber('1000000'); // 1 USDC
-      const minOutputAmount = new BigNumber('10000000000000000'); // .001 pBTC
+      const minOutputAmount = new BigNumber('10000000000000000'); // 0.01 pBTC
       const solidAccount = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
       const aggregatorOutput = await aggregator.getSwapExactTokensForTokensData(
         inputMarket,

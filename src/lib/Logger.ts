@@ -6,7 +6,7 @@ const test = process.env.NODE_ENV === 'test';
 class StackTransport extends Transport {
   log(info, callback) {
     setImmediate(() => {
-      if (info && info.error) {
+      if (info?.error?.stack) {
         // eslint-disable-next-line
         console.error(info.error.stack);
       }
@@ -37,7 +37,7 @@ const transports = [
   }),
 ];
 
-if (!test || process.env.LOGS) {
+if (!test || process.env.LOGS === 'true') {
   transports.push(
     new winston.transports.Console({
       level: 'debug',
@@ -55,5 +55,9 @@ const Logger = winston.createLogger({
   transports,
   exitOnError: false,
 });
+
+if (test && process.env.LOGS !== 'true') {
+  console.warn('Skipping logs due to testing. To turn it on, set `process.env.LOGS=true`')
+}
 
 export default typeof window !== 'undefined' ? console : Logger;
