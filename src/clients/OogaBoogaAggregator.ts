@@ -7,13 +7,14 @@ import { AxiosClient } from './AxiosClient';
 
 const API_URL_MAP = {
   [Network.BERACHAIN]: 'https://mainnet.api.oogabooga.io',
+  [Network.BOTANIX]: 'https://botanix.api.oogabooga.io',
 };
 
 export default class OogaBoogaAggregator extends AggregatorClient {
   public constructor(network: Network, private readonly apiKey: string | undefined) {
     super(network);
-    if (network === Network.BERACHAIN && !apiKey) {
-      throw new Error('Could not find API key for BERACHAIN network');
+    if ((network === Network.BERACHAIN || network === Network.BOTANIX) && !apiKey) {
+      throw new Error('Could not find API key for BERACHAIN or BOTANIX network');
     }
   }
 
@@ -48,9 +49,12 @@ export default class OogaBoogaAggregator extends AggregatorClient {
       amount: inputAmountWei.toFixed(),
       to: traderAddress,
       slippage: zapConfig.slippageTolerance.toString(),
-      liquiditySourcesBlacklist: 'Burve',
       excludeDolomiteTokens: 'true',
     });
+    if (this.network === Network.BERACHAIN) {
+      queryParams.set('liquiditySourcesBlacklist', 'Burve');
+    }
+
     const quoteResponse: any | Error = await AxiosClient.get(
       `${API_URL_MAP[this.network]}/v1/swap?${queryParams.toString()}`,
       {
@@ -66,7 +70,7 @@ export default class OogaBoogaAggregator extends AggregatorClient {
       Logger.error({
         message: 'Found error in ooga-booga#swap',
         error: quoteResponse.message ?? null,
-        data: quoteResponse.response?.data?.detail ?? null,
+        data: quoteResponse.response?.data,
       });
       return undefined;
     }
