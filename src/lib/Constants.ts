@@ -215,6 +215,13 @@ export function getPendlePtMarketForIsolationModeToken(
   return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.marketTokenAddress;
 }
 
+export function getPendlePtTokenForIsolationModeToken(
+  network: Network,
+  isolationModeToken: Address,
+): Address | undefined {
+  return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.ptTokenAddress;
+}
+
 export function getPendleYtTokenForIsolationModeToken(
   network: Network,
   isolationModeTokenPtToken: Address,

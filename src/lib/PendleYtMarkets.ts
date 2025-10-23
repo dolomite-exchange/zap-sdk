@@ -10,6 +10,7 @@ export const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketP
       marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
       transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x56051f8e46b67b4d286454995dbc6f5f3c433e34',
+      ptTokenAddress: '0x96015D0Fb97139567a9ba675951816a0Bb719E3c',
       maturityTimestamp: 1711584000, // 28-MAR-2024
     },
   },
