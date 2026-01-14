@@ -138,7 +138,7 @@ export const OOGA_BOOGA_TRADER_ADDRESS_MAP: Record<Network, Address | undefined>
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: Deployments.OogaBoogaAggregatorTraderV2[Network.BERACHAIN].address,
-  [Network.BOTANIX]: undefined,
+  [Network.BOTANIX]: Deployments.OogaBoogaAggregatorTraderV2[Network.BOTANIX].address,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
