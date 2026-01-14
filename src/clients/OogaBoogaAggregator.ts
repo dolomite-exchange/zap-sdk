@@ -51,6 +51,8 @@ export default class OogaBoogaAggregator extends AggregatorClient {
       liquiditySourcesBlacklist: 'Burve',
       excludeDolomiteTokens: 'true',
     });
+    queryParams.append('liquiditySourcesBlacklist', 'Euler');
+
     const quoteResponse: any | Error = await AxiosClient.get(
       `${API_URL_MAP[this.network]}/v1/swap?${queryParams.toString()}`,
       {
