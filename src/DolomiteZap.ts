@@ -32,7 +32,8 @@ import {
 import {
   ADDRESS_ZERO,
   BYTES_EMPTY,
-  getGmxV2IsolationModeAsset,
+  getGmxV2GlvIsolationModeAsset,
+  getGmxV2GmIsolationModeAsset,
   getPendlePtMarketForIsolationModeToken,
   INTEGERS,
   INVALID_NAME,
@@ -219,12 +220,17 @@ export class DolomiteZap {
       return undefined;
     }
 
-    const gmMarket = getGmxV2IsolationModeAsset(this.network, converter.tokenAddress);
-    if (!gmMarket) {
-      return undefined;
+    const gmMarket = getGmxV2GmIsolationModeAsset(this.network, converter.tokenAddress);
+    if (gmMarket) {
+      return [gmMarket.longTokenId, gmMarket.shortTokenId].filter((id): id is BigNumber => !!id);
     }
 
-    return [gmMarket.longTokenId, gmMarket.shortTokenId].filter((id): id is BigNumber => !!id);
+    const glvMarket = getGmxV2GlvIsolationModeAsset(this.network, converter.tokenAddress);
+    if (glvMarket) {
+      return [glvMarket.longTokenId, glvMarket.shortTokenId].filter((id): id is BigNumber => !!id);
+    }
+
+    return undefined;
   }
 
   // noinspection JSUnusedGlobalSymbols

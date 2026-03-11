@@ -1,7 +1,7 @@
 import * as Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Address, GmMarketWithMarketId, Network, POLMarketProps } from './ApiTypes';
+import { Address, GlvMarket, GmMarketWithMarketId, Network, POLMarketProps } from './ApiTypes';
 import { GLV_MARKETS_MAP } from './GlvMarkets';
 import { GM_MARKETS_MAP } from './GmMarkets';
 import { GraphqlToken } from './GraphqlTypes';
@@ -200,7 +200,17 @@ export function isPOLIsolationModeAsset(network: Network, tokenAddress: Address)
   return !!POL_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
-export function getGmxV2IsolationModeAsset(network: Network, tokenAddress: Address): GmMarketWithMarketId | undefined {
+export function getGmxV2GlvIsolationModeAsset(
+  network: Network,
+  tokenAddress: Address,
+): GlvMarket | undefined {
+  return GLV_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
+}
+
+export function getGmxV2GmIsolationModeAsset(
+  network: Network,
+  tokenAddress: Address,
+): GmMarketWithMarketId | undefined {
   return GM_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
