@@ -290,6 +290,7 @@ export interface PendleMarketProps {
   marketTokenAddress: string;
   transformerTokenAddress: string;
   ytTokenAddress: string;
+  ptTokenAddress: string;
   maturityTimestamp: number;
 }
 
