@@ -21,6 +21,7 @@ describe('OogaBoogaAggregator', () => {
     disallowAggregator: false,
     subAccountNumber: undefined,
     additionalMakerAccounts: undefined,
+    debug: false,
   };
 
   describe('#getSwapExactTokensForTokensData', () => {

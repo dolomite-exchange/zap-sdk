@@ -35,78 +35,91 @@ export const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketP
   [Network.ARBITRUM_ONE]: {
     [Deployments.PendlePtEzETHJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_EZ_ETH_JUN_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x8ea5040d423410f1fdc363379af88e1db5ea1c34',
       transformerTokenAddress: EZ_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x05735b65686635f5c87aa9d2dae494fb2e838f38',
       maturityTimestamp: 1719446400, // 27-JUN-2024
     },
     [Deployments.PendlePtEzETHSep2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_EZ_ETH_SEP_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x2ccfce9be49465cc6f947b5f6ac9383673733da9',
       transformerTokenAddress: EZ_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x05735b65686635f5c87aa9d2dae494fb2e838f38',
       maturityTimestamp: 1727308800, // 26-SEP-2024
     },
     [Deployments.PendlePtGLPMar2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x96015d0fb97139567a9ba675951816a0bb719e3c',
       transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x56051f8e46b67b4d286454995dbc6f5f3c433e34',
       maturityTimestamp: 1711584000, // 28-MAR-2024
     },
     [Deployments.PendlePtGLPSep2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_GLP_SEP_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x89cd713a6607787f93d6743e67777be9ad73c54b',
       transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0xf875f32648BE14d04e0Df4a977Afd4290DD92713',
       maturityTimestamp: 1727308800, // 26-SEP-2024
     },
     [Deployments.PendlePtREthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_R_ETH_2025_MARKET_ARBITRUM,
+      ptTokenAddress: '0x685155d3bd593508fe32be39729810a591ed9c87',
       transformerTokenAddress: R_ETH_MAP[Network.ARBITRUM_ONE]!,
       maturityTimestamp: 1750896000, // 28-JUN-2025
       ytTokenAddress: '0xe822ae44eb2466b4e263b1cbc94b4833ddef9700',
     },
     [Deployments.PendlePtRsETHDec2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_RS_ETH_DEC_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x355ec27c9d4530de01a103fa27f884a2f3da65ef',
       transformerTokenAddress: RS_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x4b755c030b455b959246fc0f940de3a95f8e81ec',
       maturityTimestamp: 1735171200, // 26-DEC-2024
     },
     [Deployments.PendlePtRsETHSep2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_RS_ETH_SEP_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x30c98c0139b62290e26ac2a2158ac341dcaf1333',
       transformerTokenAddress: RS_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x2fdc424946aa72d42e2f897447d7c335e64845f0',
       maturityTimestamp: 1727308800, // 26-SEP-2024
     },
     [Deployments.PendlePtWeETHApr2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WE_ETH_APR_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x9becd6b4fb076348a455518aea23d3799361fe95',
       transformerTokenAddress: WE_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0xf28db483773e3616da91fdfa7b5d4090ac40cc59',
       maturityTimestamp: 1714003200, // 25-APR-2024
     },
     [Deployments.PendlePtWeETHDec2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WE_ETH_DEC_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0xe2b2d203577c7cb3d043e89ccf90b5e24d19b66f',
       transformerTokenAddress: WE_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x7f37674e5c6dc16b30829b7ae1e0b7fe08144b7d',
       maturityTimestamp: 1735171200, // 26-DEC-2024
     },
     [Deployments.PendlePtWeETHJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WE_ETH_JUN_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x1c27Ad8a19Ba026ADaBD615F6Bc77158130cfBE4',
       transformerTokenAddress: WE_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0xDcdC1004d5C271ADc048982d7EB900cC4F472333',
       maturityTimestamp: 1719446400, // 27-JUN-2024
     },
     [Deployments.PendlePtWeETHSep2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WE_ETH_SEP_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0xb8b0a120F6A68Dd06209619F62429fB1a8e92feC',
       transformerTokenAddress: WE_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0xfb2a7ac0372c2425c273932f8d438518402a873e',
       maturityTimestamp: 1727308800, // 26-SEP-2024
     },
     [Deployments.PendlePtWstEthJun2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WST_ETH_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x9741CAc1a22Ff3615FA074fD0B439975a5E137e9',
       transformerTokenAddress: WST_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x0052b6096f8c1dcbefb9ba381eb6b67479b5c56b',
       maturityTimestamp: 1719446400, // 27-JUN-2024
     },
     [Deployments.PendlePtWstEthJun2025IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_WST_ETH_2025_MARKET_ARBITRUM,
+      ptTokenAddress: '0x1255638efeca62e12e344e0b6b22ea853ec6e2c7',
       transformerTokenAddress: WST_ETH_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0xc8d9369809e48d03ff7b69d7979b174e2d34874c',
       maturityTimestamp: 1750896000, // 28-JUN-2025
@@ -120,30 +133,35 @@ export const PENDLE_PT_MARKET_MAP: Record<Network, Record<Address, PendleMarketP
   [Network.MANTLE]: {
     [Deployments.PendlePtcmETHFeb2025IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_CM_ETH_FEB_2025_MARKET_MANTLE,
+      ptTokenAddress: '0xebf4ff21459fecf96e36cf1dd00db01367254bcd',
       transformerTokenAddress: CM_ETH_MAP[Network.MANTLE]!,
       ytTokenAddress: '0x22bdbbec06611cfca7bfe3a53e9e574771851176',
       maturityTimestamp: 1739404800, // 13-FEB-2025
     },
     [Deployments.PendlePtmETHDec2024IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_METH_DEC_2024_MARKET_MANTLE,
+      ptTokenAddress: '0x1333b49bbdd06544a25647f9127358d9a9486105',
       transformerTokenAddress: METH_MAP[Network.MANTLE]!,
       ytTokenAddress: '0x007d35c67f97f2a898102a66df346f9e9422f7f0',
       maturityTimestamp: 1735171200, // 26-DEC-2024
     },
     [Deployments.PendlePtMntOct2024IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: '0x4604FC1C52cBfc38C4E6DFd2CD2a9bF5b84f65Cb',
+      ptTokenAddress: '0xc57c7be308cf2f52dcf095d8d4c67d5984270da0',
       transformerTokenAddress: WMNT_MAP[Network.MANTLE]!,
       ytTokenAddress: '0x40ae8dbd3c41e38fe1bbc010eee40685003945a3',
       maturityTimestamp: 1727913600, // 03-OCT-2024
     },
     [Deployments.PendlePtUSDeJul2024IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_USDE_JUL_2024_MARKET_MANTLE,
+      ptTokenAddress: '0xba567cf0d8230c0ad8d8bfc50e587e06d6f118e9',
       transformerTokenAddress: USDE_MAP[Network.MANTLE]!,
       ytTokenAddress: '0xb3c0f96c4208185cc22afd1b7cf21f1dabd9648a',
       maturityTimestamp: 1721865600, // 25-JUL-2024
     },
     [Deployments.PendlePtUSDeDec2024IsolationModeVaultFactory[Network.MANTLE].address]: {
       marketTokenAddress: PT_USDE_DEC_2024_MARKET_MANTLE,
+      ptTokenAddress: '0x8be66a48ea1f4aff89cd2beb50b02d901dfb9584',
       transformerTokenAddress: USDE_MAP[Network.MANTLE]!,
       ytTokenAddress: '0xb3c0f96c4208185cc22afd1b7cf21f1dabd9648a',
       maturityTimestamp: 1735171200, // 26-DEC-2024

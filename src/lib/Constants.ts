@@ -218,11 +218,11 @@ export function getPOLMarketAsset(network: Network, tokenAddress: Address): POLM
   return POL_MARKETS_MAP[network]?.[ethers.utils.getAddress(tokenAddress)];
 }
 
-export function getPendlePtMarketForIsolationModeToken(
+export function getPendlePtTokenForIsolationModeToken(
   network: Network,
   isolationModeToken: Address,
 ): Address | undefined {
-  return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.marketTokenAddress;
+  return PENDLE_PT_MARKET_MAP[network]?.[isolationModeToken]?.ptTokenAddress;
 }
 
 export function getPendleYtTokenForIsolationModeToken(

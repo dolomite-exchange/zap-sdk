@@ -1,9 +1,8 @@
 import Deployments from '@dolomite-exchange/modules-deployments/src/deploy/deployments.json';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { DolomiteZap, GenericTraderType, Network } from '../../../src';
+import { DolomiteZap, GenericTraderType, Network, ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src';
 
-import { ISOLATION_MODE_CONVERSION_MARKET_ID_MAP } from '../../../src/lib/MarketIds';
 import { PT_WE_ETH_APR_2024_MARKET, USDC_MARKET, WE_ETH_MARKET } from '../../helpers/ArbitrumOneConstants';
 import sleep from '../../helpers/sleep';
 import { SLEEP_DURATION_BETWEEN_TESTS } from '../../helpers/TestConstants';
@@ -23,6 +22,13 @@ describe('PendlePtWeEthApr2024Zap', () => {
     subgraphUrl,
     web3Provider,
     cacheSeconds: NO_CACHE,
+    debug: true,
+    referralInfo: {
+      odosReferralCode: new BigNumber(process.env.ODOS_REFERRAL_CODE ?? ''),
+      ensoApiKey: undefined,
+      referralAddress: undefined,
+      oogaBoogaApiKey: undefined,
+    },
   });
   zap.setMarketsToAdd([PT_WE_ETH_APR_2024_MARKET, WE_ETH_MARKET]);
 

@@ -28,6 +28,7 @@ describe('GlvEstimator', () => {
     subAccountNumber: new BigNumber('12321'),
     disallowAggregator: false,
     additionalMakerAccounts: undefined,
+    debug: false,
   }
 
   const glvEthIsolationModeAddress = ModuleDeployments.GlvETHIsolationModeVaultFactory['42161'].address;

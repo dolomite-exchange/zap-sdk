@@ -19,6 +19,7 @@ describe('ParaswapAggregator', () => {
     disallowAggregator: false,
     subAccountNumber: undefined,
     additionalMakerAccounts: undefined,
+    debug: false,
   }
 
   describe('#getSwapExactTokensForTokensData', () => {

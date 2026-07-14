@@ -11,10 +11,22 @@ const API_URL_MAP = {
 };
 
 export default class OogaBoogaAggregator extends AggregatorClient {
-  public constructor(network: Network, private readonly apiKey: string | undefined) {
+  public constructor(
+    network: Network,
+    private readonly apiKey: string | undefined,
+    private readonly useProxy: boolean = false,
+    private readonly debug: boolean = false,
+  ) {
     super(network);
     if ((network === Network.BERACHAIN || network === Network.BOTANIX) && !apiKey) {
       throw new Error('Could not find API key for BERACHAIN or BOTANIX network');
+    }
+
+    if (debug) {
+      Logger.info({
+        message: 'OogaBoogaAggregator: debug mode enabled',
+        useProxy: this.useProxy,
+      });
     }
   }
 
@@ -62,7 +74,8 @@ export default class OogaBoogaAggregator extends AggregatorClient {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
         },
-      },
+        debug: zapConfig.debug ?? this.debug,
+      } as any,
     ).then(response => response.data)
       .catch((error: any) => error);
 

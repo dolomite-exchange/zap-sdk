@@ -7,11 +7,21 @@ import AggregatorClient from './AggregatorClient';
 import { AxiosClient } from './AxiosClient';
 
 const API_URL = 'https://api.enso.finance';
-// const API_KEY = process.env.ENSO_API_KEY;
 
 export default class EnsoAggregator extends AggregatorClient {
-  public constructor(network: Network, private readonly apiKey: string | undefined) {
+  public constructor(
+    network: Network,
+    private readonly apiKey: string | undefined,
+    private readonly useProxy: boolean = false,
+    private readonly debug: boolean = false,
+  ) {
     super(network);
+    if (debug) {
+      Logger.info({
+        message: 'EnsoAggregator: debug mode enabled',
+        useProxy: this.useProxy,
+      });
+    }
   }
 
   public get name(): string {
@@ -53,7 +63,8 @@ export default class EnsoAggregator extends AggregatorClient {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
         },
-      },
+        debug: zapConfig.debug ?? this.debug,
+      } as any,
     ).then(response => response.data)
       .catch(error => {
         Logger.error({

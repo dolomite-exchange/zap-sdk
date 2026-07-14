@@ -12,6 +12,7 @@ const BASE_URL = 'https://api-v2.pendle.finance/sdk/api/v1';
 export class PendleYtEstimatorV3 {
   public constructor(
     private readonly network: Network,
+    private readonly debug: boolean = false,
   ) {
   }
 
@@ -30,7 +31,8 @@ export class PendleYtEstimatorV3 {
         tokenOutAddr: tokenOut,
         slippage: '0.0001',
       },
-    })
+      debug: this.debug,
+    } as any)
       .then(result => result.data)
       .catch(e => {
         Logger.error({
@@ -60,7 +62,8 @@ export class PendleYtEstimatorV3 {
         amountTokenIn: inputAmount.toFixed(),
         slippage: '0.0001',
       },
-    })
+      debug: this.debug,
+    } as any)
       .then(result => result.data)
       .catch(e => {
         Logger.error({

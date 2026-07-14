@@ -3,13 +3,16 @@ import { ethers } from 'ethers';
 import { AxiosClient } from '../../clients/AxiosClient';
 import { Address, EstimateOutputResult, Integer, Network } from '../ApiTypes';
 import {
-  getPendlePtMarketForIsolationModeToken,
+  getPendlePtTokenForIsolationModeToken,
   getPendlePtMaturityTimestampForIsolationModeToken,
-  getPendleYtTokenForIsolationModeToken,
 } from '../Constants';
 import Logger from '../Logger';
 
-const BASE_URL = 'https://api-v2.pendle.finance/sdk/api/v1';
+const BASE_URL = 'https://api-v2.pendle.finance/core/v3/sdk';
+
+const SLIPPAGE = 0.0005 // 5 bps
+
+const TIMEOUT_MS = 10_000;
 
 const ORDER_COMPONENTS = {
   type: 'tuple',
@@ -36,6 +39,7 @@ const ORDER_COMPONENTS = {
 export class PendlePtEstimatorV3 {
   public constructor(
     private readonly network: Network,
+    private readonly debug: boolean = false,
   ) {
   }
 
@@ -62,29 +66,39 @@ export class PendlePtEstimatorV3 {
       return Promise.reject(new Error('MATURED'));
     }
 
-    const data = await AxiosClient.get(`${BASE_URL}/swapExactTokenForPt`, {
-      params: {
-        chainId: this.network.toString(),
-        receiverAddr: wrapper,
-        marketAddr: getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken)!,
-        tokenInAddr: inputToken,
-        amountTokenIn: inputAmount.toFixed(),
-        slippage: '0.0001',
-      },
-    })
+    const data = await AxiosClient.post(`${BASE_URL}/${this.network.toString()}/convert`, {
+      receiver: wrapper,
+      slippage: SLIPPAGE,
+      inputs: [
+        {
+          token: inputToken,
+          amount: inputAmount.toFixed(),
+        },
+      ],
+      outputs: [
+        isolationModeToken,
+      ],
+      enableAggregator: false,
+      useLimitOrder: false,
+      // additionalData: {
+      //   market: getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken)!,
+      // },
+    }, { debug: this.debug } as any)
       .then(result => result.data)
       .catch(e => {
         Logger.error({
           message: 'Found error in #swapExactTokenForPt',
-          error: e,
+          error: e.message,
+          data: e.response?.data,
         });
         return Promise.reject(e);
       });
 
-    const amountOut = new BigNumber(data.data.amountPtOut);
-    const approxParams = data.contractCallParams[3];
-    const tokenInput = data.contractCallParams[4];
-    const limitOrderData = data.contractCallParams[5];
+    const route = data.routes[0];
+    const amountOut = new BigNumber(route.contractParamInfo.contractCallParams[2]);
+    const approxParams = route.contractParamInfo.contractCallParams[3];
+    const tokenInput = route.contractParamInfo.contractCallParams[4];
+    const limitOrderData = route.contractParamInfo.contractCallParams[5];
 
     const approxParamsType = 'tuple(uint256,uint256,uint256,uint256,uint256)';
     const tokenInputType = 'tuple(address,uint256,address,address,tuple(uint8,address,bytes,bool))';
@@ -155,16 +169,21 @@ export class PendlePtEstimatorV3 {
     amountInPt: Integer,
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
-    const data = await AxiosClient.get(`${BASE_URL}/swapExactPtForToken`, {
-      params: {
-        chainId: this.network.toString(),
-        receiverAddr: unwrapper,
-        marketAddr: getPendlePtMarketForIsolationModeToken(this.network, isolationModeToken)!,
-        amountPtIn: amountInPt.toFixed(),
-        tokenOutAddr: tokenOut,
-        slippage: '0.0001', // 0.01%
-      },
-    })
+    const data = await AxiosClient.post(`${BASE_URL}/${this.network.toString()}/convert`, {
+      receiver: unwrapper,
+      slippage: SLIPPAGE,
+      inputs: [
+        {
+          token: getPendlePtTokenForIsolationModeToken(this.network, isolationModeToken),
+          amount: amountInPt.toFixed(),
+        },
+      ],
+      outputs: [
+        tokenOut,
+      ],
+      enableAggregator: false,
+      useLimitOrder: false,
+    }, { debug: this.debug } as any)
       .then(result => result.data)
       .catch(e => {
         Logger.error({
@@ -174,8 +193,6 @@ export class PendlePtEstimatorV3 {
         });
         return Promise.reject(e);
       });
-
-    const amountOut = new BigNumber(data.data.amountTokenOut);
 
     const EXTRA_ORDER_DATA_TYPE = [
       {
@@ -227,8 +244,10 @@ export class PendlePtEstimatorV3 {
       },
     ];
 
-    const tokenOutput = data.contractCallParams[3];
-    const limitOrderData = data.contractCallParams[4];
+    const route = data.routes[0];
+    const tokenOutput = route.contractCallParams[3];
+    const amountOut = new BigNumber(tokenOutput.minTokenOut);
+    const limitOrderData = route.contractCallParams[4];
     const tradeData = ethers.utils.defaultAbiCoder.encode(
       EXTRA_ORDER_DATA_TYPE as any,
       [
@@ -257,29 +276,39 @@ export class PendlePtEstimatorV3 {
     amountInPt: Integer,
     tokenOut: Address,
   ): Promise<EstimateOutputResult> {
-    const data = await AxiosClient.get(`${BASE_URL}/redeemPyToToken`, {
-      params: {
-        chainId: this.network.toString(),
-        receiverAddr: unwrapper,
-        ytAddr: getPendleYtTokenForIsolationModeToken(this.network, isolationModeToken)!,
-        amountPyIn: amountInPt.toFixed(),
-        tokenOutAddr: tokenOut,
-        slippage: '0.0001',
-      },
-    })
+    const data = await AxiosClient.post(`${BASE_URL}/${this.network.toString()}/convert`, {
+      receiver: unwrapper,
+      slippage: SLIPPAGE,
+      inputs: [
+        {
+          token: getPendlePtTokenForIsolationModeToken(this.network, isolationModeToken),
+          amount: amountInPt.toFixed(),
+        },
+      ],
+      outputs: [
+        tokenOut,
+      ],
+      enableAggregator: false,
+      useLimitOrder: false,
+    }, { debug: this.debug, timeout: TIMEOUT_MS } as any)
       .then(result => result.data)
       .catch(e => {
         Logger.error({
-          message: 'Found error in #redeemPyToToken',
+          message: 'Found error in #redeemPtToToken',
           error: e.message,
           data: e.response?.data,
         });
         return Promise.reject(e);
       });
 
-    const amountOut = new BigNumber(data.data.amountTokenOut);
+    const route = data.routes[0];
 
-    const tokenOutput = data.contractCallParams[3];
+    if (route.contractParamInfo.method !== 'redeemPyToToken') {
+      throw new Error('Invalid smart contract method name, expected {redeemPyToToken}');
+    }
+
+    const tokenOutput = route.contractParamInfo.contractCallParams[3];
+    const amountOut = new BigNumber(tokenOutput.minTokenOut);
     const tradeData = ethers.utils.defaultAbiCoder.encode([
       {
         type: 'tuple',
@@ -310,7 +339,7 @@ export class PendlePtEstimatorV3 {
         [
           tokenOutput.swapData.swapType,
           tokenOutput.swapData.extRouter,
-          tokenOutput.swapData.extCalldata,
+          tokenOutput.swapData.extCalldata === '' ? '0x' : tokenOutput.swapData.extCalldata,
           tokenOutput.swapData.needScale,
         ],
       ],

@@ -11,11 +11,18 @@ const API_URL = 'https://api.odos.xyz';
 export default class OdosAggregator extends AggregatorClient {
   private readonly referralCode: Integer | undefined;
   private readonly useProxy: boolean;
+  private readonly debug: boolean;
 
-  public constructor(network: Network, referralCode: Integer | undefined, useProxy: boolean) {
+  public constructor(
+    network: Network,
+    referralCode: Integer | undefined,
+    useProxy: boolean,
+    debug: boolean = false,
+  ) {
     super(network);
     this.referralCode = referralCode;
     this.useProxy = useProxy;
+    this.debug = debug;
   }
 
   public isValidForNetwork(): boolean {
@@ -59,7 +66,9 @@ export default class OdosAggregator extends AggregatorClient {
       referralCode: this.referralCode?.toFixed() ?? undefined,
       disableRFQs: true,
       compact: false,
-    }).then(response => response.data)
+    }, {
+      debug: zapConfig.debug ?? this.debug,
+    } as any).then(response => response.data)
       .catch((error) => error);
 
     if (!quoteResponse || !quoteResponse.pathId) {
@@ -76,7 +85,9 @@ export default class OdosAggregator extends AggregatorClient {
       userAddr: traderAddress,
       pathId: quoteResponse.pathId,
       simulate: false,
-    })
+    }, {
+      debug: zapConfig.debug ?? this.debug,
+    } as any)
       .then(response => response.data)
       .catch(error => {
         Logger.error({

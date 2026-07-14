@@ -8,6 +8,7 @@ export const PENDLE_YT_MARKET_MAP: Record<Network, Record<Address, PendleMarketP
   [Network.ARBITRUM_ONE]: {
     [Deployments.PendleYtGLPMar2024IsolationModeVaultFactory[Network.ARBITRUM_ONE].address]: {
       marketTokenAddress: PT_GLP_MAR_2024_MARKET_ARBITRUM,
+      ptTokenAddress: '0x96015d0fb97139567a9ba675951816a0bb719e3c',
       transformerTokenAddress: S_GLP_MAP[Network.ARBITRUM_ONE]!,
       ytTokenAddress: '0x56051f8e46b67b4d286454995dbc6f5f3c433e34',
       maturityTimestamp: 1711584000, // 28-MAR-2024

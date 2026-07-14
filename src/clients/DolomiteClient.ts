@@ -23,9 +23,10 @@ export default class DolomiteClient {
     private _subgraphUrl: string,
     web3Provider: ethers.providers.Provider,
     gasMultiplier: BigNumber,
+    private readonly debug: boolean = false,
   ) {
     this.marketsToAdd = [];
-    this.standardEstimator = new StandardEstimator(this.network, web3Provider, gasMultiplier);
+    this.standardEstimator = new StandardEstimator(this.network, web3Provider, gasMultiplier, debug);
   }
 
   public set subgraphUrl(subgraphUrl: string) {
@@ -190,7 +191,10 @@ export default class DolomiteClient {
           skip: pageIndex * GraphqlPageable.MAX_PAGE_SIZE,
         },
       },
-      defaultAxiosConfig,
+      {
+        ...defaultAxiosConfig,
+        debug: this.debug,
+      } as any,
     )
       .then(response => response.data)
       .then(json => json as GraphqlMarketResult);

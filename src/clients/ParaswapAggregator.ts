@@ -12,11 +12,18 @@ export default class ParaswapAggregator extends AggregatorClient {
   private readonly partnerAddress: Address | undefined;
   // @ts-ignore
   private readonly useProxy: boolean;
+  private readonly debug: boolean;
 
-  public constructor(network: Network, partnerAddress: Address | undefined, useProxy: boolean) {
+  public constructor(
+    network: Network,
+    partnerAddress: Address | undefined,
+    useProxy: boolean,
+    debug: boolean = false,
+  ) {
     super(network);
     this.partnerAddress = partnerAddress;
     this.useProxy = useProxy;
+    this.debug = debug;
   }
 
   public get name(): string {
@@ -58,7 +65,9 @@ export default class ParaswapAggregator extends AggregatorClient {
     //   ? axios.post(`${PROXY_API_URL}/quote?${pricesQueryParams}`)
     //   : axios.get(`${API_URL}/prices?${pricesQueryParams}`))
 
-    const priceRouteResponse = await AxiosClient.get(`${API_URL}/prices?${pricesQueryParams}`)
+    const priceRouteResponse = await AxiosClient.get(`${API_URL}/prices?${pricesQueryParams}`, {
+      debug: _unused.debug ?? this.debug,
+    } as any)
       .then(response => response.data)
       .catch((error) => error);
     if (!priceRouteResponse || !priceRouteResponse.priceRoute || priceRouteResponse?.data?.error) {
@@ -95,7 +104,9 @@ export default class ParaswapAggregator extends AggregatorClient {
       partnerAddress: this.partnerAddress,
       partner: 'dolomite',
       takeSurplus: !!this.partnerAddress, // if there's a partner address, positive slippage goes to the partner
-    })
+    }, {
+      debug: _unused.debug ?? this.debug,
+    } as any)
       .then(response => response.data)
       .catch(error => {
         Logger.error({

@@ -22,6 +22,7 @@ describe('POLEstimator', () => {
     subAccountNumber: new BigNumber('12321'),
     disallowAggregator: false,
     additionalMakerAccounts: [{ owner: ADDRESS_ZERO, number: 1 }],
+    debug: false,
   };
 
   describe('#getUnwrappedAmount', () => {

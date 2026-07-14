@@ -107,7 +107,9 @@ export class GmxV2GmEstimator {
   }
 
   static async getTokenPrices(): Promise<Record<Address, SignedPriceData>> {
-    return AxiosClient.get('https://arbitrum-api.gmxinfra.io/prices/tickers')
+    return AxiosClient.get('https://arbitrum-api.gmxinfra.io/prices/tickers', {
+      debug: (global as any).dolomiteZapDebug,
+    } as any)
       .then(res => res.data)
       .then(data => (data as any[]).reduce((memo, priceData) => {
         const tokenAddress = ethers.utils.getAddress(priceData.tokenAddress);

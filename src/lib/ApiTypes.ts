@@ -149,6 +149,7 @@ export interface ZapConfig {
   subAccountNumber: Integer | undefined;
   gasPriceInWei: Integer | undefined;
   disallowAggregator: boolean;
+  debug: boolean;
   additionalMakerAccounts: AccountInfo[] | undefined
 }
 
@@ -288,6 +289,7 @@ export interface GmMarketWithMarketId extends GmMarket {
 
 export interface PendleMarketProps {
   marketTokenAddress: string;
+  ptTokenAddress: string;
   transformerTokenAddress: string;
   ytTokenAddress: string;
   maturityTimestamp: number;

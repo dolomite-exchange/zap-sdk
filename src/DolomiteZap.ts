@@ -5,6 +5,7 @@ import DolomiteClient from './clients/DolomiteClient';
 import EnsoAggregator from './clients/EnsoAggregator';
 import OdosAggregator from './clients/OdosAggregator';
 import OogaBoogaAggregator from './clients/OogaBoogaAggregator';
+import ParaswapAggregator from './clients/ParaswapAggregator';
 import {
   Address,
   ApiAsyncAction,
@@ -34,7 +35,7 @@ import {
   BYTES_EMPTY,
   getGmxV2GlvIsolationModeAsset,
   getGmxV2GmIsolationModeAsset,
-  getPendlePtMarketForIsolationModeToken,
+  getPendlePtTokenForIsolationModeToken,
   INTEGERS,
   INVALID_NAME,
 } from './lib/Constants';
@@ -99,12 +100,17 @@ export interface DolomiteZapConfig {
    * GMX V2).
    */
   gasMultiplier?: BigNumber;
+  /**
+   * If true, detailed telemetry and logging will be enabled for all API requests.
+   */
+  debug?: boolean;
 }
 
 export class DolomiteZap {
   public readonly network: Network;
   public readonly validAggregators: AggregatorClient[];
   private readonly _defaultIsLiquidation: boolean;
+  private readonly _debug: boolean;
   private client: DolomiteClient;
   private marketsCache: LocalCache<Record<string, ApiMarket>>;
   private marketHelpersCache: LocalCache<Record<string, ApiMarketHelper>>;
@@ -127,6 +133,7 @@ export class DolomiteZap {
       },
       useProxyServer = true,
       gasMultiplier = new BigNumber('1'),
+      debug = false,
     }: DolomiteZapConfig,
   ) {
     this.network = network;
@@ -135,12 +142,16 @@ export class DolomiteZap {
     this._defaultIsLiquidation = defaultIsLiquidation;
     this._defaultSlippageTolerance = defaultSlippageTolerance;
     this._defaultBlockTag = defaultBlockTag;
+    this._debug = debug;
+    if (debug) {
+      (global as any).dolomiteZapDebug = true;
+    }
 
-    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, gasMultiplier);
+    this.client = new DolomiteClient(network, subgraphUrl, web3Provider, gasMultiplier, debug);
     this.marketsCache = new LocalCache<Record<string, ApiMarket>>(cacheSeconds);
     this.marketHelpersCache = new LocalCache<Record<string, ApiMarketHelper>>(cacheSeconds);
 
-    this.validAggregators = this.getAllAggregators(network, referralInfo, useProxyServer)
+    this.validAggregators = this.getAllAggregators(network, referralInfo, useProxyServer, debug)
       .filter(aggregator => aggregator.isValidForNetwork());
   }
 
@@ -234,8 +245,8 @@ export class DolomiteZap {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  public getPendleMarketByIsolationModeAddress(isolationModeAddress: Address): Address | undefined {
-    return getPendlePtMarketForIsolationModeToken(this.network, isolationModeAddress);
+  public getPendlePtTokenByIsolationModeToken(isolationModeAddress: Address): Address | undefined {
+    return getPendlePtTokenForIsolationModeToken(this.network, isolationModeAddress);
   }
 
   public setDefaultSlippageTolerance(slippageTolerance: number): void {
@@ -286,6 +297,7 @@ export class DolomiteZap {
       subAccountNumber: config?.subAccountNumber,
       disallowAggregator: config?.disallowAggregator ?? false,
       gasPriceInWei: config?.gasPriceInWei,
+      debug: config?.debug ?? this._debug,
       additionalMakerAccounts: config?.additionalMakerAccounts,
       isMaxSelected: config?.isMaxSelected ?? false,
     };
@@ -638,11 +650,13 @@ export class DolomiteZap {
     network: Network,
     referralInfo: ReferralOutput,
     useProxyServer: boolean,
+    debug: boolean = false,
   ): AggregatorClient[] {
-    const ensoAggregator = new EnsoAggregator(network, referralInfo.ensoApiKey);
-    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer);
-    const oogaBoogaAggregator = new OogaBoogaAggregator(network, referralInfo.oogaBoogaApiKey);
-    return [odosAggregator, oogaBoogaAggregator, ensoAggregator];
+    const ensoAggregator = new EnsoAggregator(network, referralInfo.ensoApiKey, useProxyServer, debug);
+    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer, debug);
+    const oogaBoogaAggregator = new OogaBoogaAggregator(network, referralInfo.oogaBoogaApiKey, useProxyServer, debug);
+    const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer, debug);
+    return [odosAggregator, oogaBoogaAggregator, ensoAggregator, paraswapAggregator];
   }
 
   protected async getMarketIdToMarketMap(forceRefresh: boolean): Promise<Record<string, ApiMarket>> {
