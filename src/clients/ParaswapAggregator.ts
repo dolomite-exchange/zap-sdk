@@ -7,7 +7,7 @@ import AggregatorClient from './AggregatorClient';
 import { AxiosClient } from './AxiosClient';
 
 const PROXY_API_URL = 'https://api.dolomite.io/aggregator/paraswap';
-const API_URL = 'https://apiv5.paraswap.io';
+const API_URL = 'https://api.paraswap.io';
 
 export default class ParaswapAggregator extends AggregatorClient {
   private readonly partnerAddress: Address | undefined;
@@ -59,6 +59,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       includeContractMethods: 'megaSwap,multiSwap,simpleSwap',
       partner: 'dolomite',
       excludeDEXS: 'ParaSwapPool,ParaSwapLimitOrders',
+      excludeRFQ: 'true',
       version: '6.2',
     }).toString();
 
@@ -137,7 +138,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       traderAddress,
       tradeData,
       expectedAmountOut,
-      readableName: 'Paraswap',
+      readableName: 'Velora',
     };
   }
 }

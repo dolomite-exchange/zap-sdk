@@ -116,7 +116,7 @@ export const OOGA_BOOGA_TRADER_ADDRESS_MAP: Record<Network, Address | undefined>
 };
 
 export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address,
+  [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV3[Network.ARBITRUM_ONE].address,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.ETHEREUM]: undefined,
