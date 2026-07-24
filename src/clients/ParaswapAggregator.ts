@@ -1,14 +1,14 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
-import { PARASWAP_TRADER_ADDRESS_MAP } from '../lib/Constants';
+import { VELORA_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 import { AxiosClient } from './AxiosClient';
 
 const API_URL = 'https://apiv5.paraswap.io';
 
-export default class ParaswapAggregator extends AggregatorClient {
+export default class VeloraAggregator extends AggregatorClient {
   private readonly partnerAddress: Address | undefined;
   // @ts-ignore
   private readonly useProxy: boolean;
@@ -27,11 +27,11 @@ export default class ParaswapAggregator extends AggregatorClient {
   }
 
   public get name(): string {
-    return 'Paraswap';
+    return 'Velora';
   }
 
   public isValidForNetwork(): boolean {
-    return !!PARASWAP_TRADER_ADDRESS_MAP[this.network];
+    return !!VELORA_TRADER_ADDRESS_MAP[this.network];
   }
 
   public async getSwapExactTokensForTokensData(
@@ -43,7 +43,7 @@ export default class ParaswapAggregator extends AggregatorClient {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _unused: ZapConfig,
   ): Promise<AggregatorOutput | undefined> {
-    const traderAddress = PARASWAP_TRADER_ADDRESS_MAP[this.network];
+    const traderAddress = VELORA_TRADER_ADDRESS_MAP[this.network];
     if (!traderAddress) {
       return undefined;
     }
@@ -73,7 +73,7 @@ export default class ParaswapAggregator extends AggregatorClient {
     if (!priceRouteResponse || !priceRouteResponse.priceRoute || priceRouteResponse?.data?.error) {
       // GUARD: If we don't have a price route, we can't execute the trade
       Logger.error({
-        message: 'Found error in paraswap#prices',
+        message: 'Found error in velora#prices',
         errorMessage: priceRouteResponse?.message ?? null,
         data: priceRouteResponse?.data?.error ?? null,
       });
@@ -110,7 +110,7 @@ export default class ParaswapAggregator extends AggregatorClient {
       .then(response => response.data)
       .catch(error => {
         Logger.error({
-          message: 'Found error in paraswap#transactions',
+          message: 'Found error in velora#transactions',
           errorMessage: error.message,
           data: error.data,
         });
