@@ -1,14 +1,15 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Address, AggregatorOutput, ApiMarket, ApiToken, Integer, Network, ZapConfig } from '../lib/ApiTypes';
-import { VELORA_TRADER_ADDRESS_MAP } from '../lib/Constants';
+import { PARASWAP_TRADER_ADDRESS_MAP } from '../lib/Constants';
 import Logger from '../lib/Logger';
 import AggregatorClient from './AggregatorClient';
 import { AxiosClient } from './AxiosClient';
 
+const PROXY_API_URL = 'https://api.dolomite.io/aggregator/paraswap';
 const API_URL = 'https://apiv5.paraswap.io';
 
-export default class VeloraAggregator extends AggregatorClient {
+export default class ParaswapAggregator extends AggregatorClient {
   private readonly partnerAddress: Address | undefined;
   // @ts-ignore
   private readonly useProxy: boolean;
@@ -31,7 +32,7 @@ export default class VeloraAggregator extends AggregatorClient {
   }
 
   public isValidForNetwork(): boolean {
-    return !!VELORA_TRADER_ADDRESS_MAP[this.network];
+    return !!PARASWAP_TRADER_ADDRESS_MAP[this.network];
   }
 
   public async getSwapExactTokensForTokensData(
@@ -43,7 +44,7 @@ export default class VeloraAggregator extends AggregatorClient {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _unused: ZapConfig,
   ): Promise<AggregatorOutput | undefined> {
-    const traderAddress = VELORA_TRADER_ADDRESS_MAP[this.network];
+    const traderAddress = PARASWAP_TRADER_ADDRESS_MAP[this.network];
     if (!traderAddress) {
       return undefined;
     }
@@ -61,19 +62,16 @@ export default class VeloraAggregator extends AggregatorClient {
       version: '6.2',
     }).toString();
 
-    // const priceRouteResponse = await (this.useProxy
-    //   ? axios.post(`${PROXY_API_URL}/quote?${pricesQueryParams}`)
-    //   : axios.get(`${API_URL}/prices?${pricesQueryParams}`))
-
-    const priceRouteResponse = await AxiosClient.get(`${API_URL}/prices?${pricesQueryParams}`, {
-      debug: _unused.debug ?? this.debug,
-    } as any)
+    const priceRouteResponse = await (this.useProxy
+      ? AxiosClient.post(`${PROXY_API_URL}/quote?${pricesQueryParams}`)
+      : AxiosClient.get(`${API_URL}/prices?${pricesQueryParams}`))
       .then(response => response.data)
       .catch((error) => error);
+
     if (!priceRouteResponse || !priceRouteResponse.priceRoute || priceRouteResponse?.data?.error) {
       // GUARD: If we don't have a price route, we can't execute the trade
       Logger.error({
-        message: 'Found error in velora#prices',
+        message: 'Found error in paraswap#prices',
         errorMessage: priceRouteResponse?.message ?? null,
         data: priceRouteResponse?.data?.error ?? null,
       });
@@ -86,11 +84,9 @@ export default class VeloraAggregator extends AggregatorClient {
       onlyParams: 'false',
     }).toString();
 
-    // const result = await axios.post(this.useProxy
-    //   ? `${PROXY_API_URL}/assemble?${transactionsQueryParams}`
-    //   : `${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
-
-    const result = await AxiosClient.post(`${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
+    const result = await AxiosClient.post(this.useProxy
+      ? `${PROXY_API_URL}/assemble?${transactionsQueryParams}`
+      : `${API_URL}/transactions/${this.network}?${transactionsQueryParams}`, {
       txOrigin,
       priceRoute: priceRouteResponse?.priceRoute,
       srcToken: inputMarket.tokenAddress,
@@ -110,7 +106,7 @@ export default class VeloraAggregator extends AggregatorClient {
       .then(response => response.data)
       .catch(error => {
         Logger.error({
-          message: 'Found error in velora#transactions',
+          message: 'Found error in paraswap#transactions',
           errorMessage: error.message,
           data: error.data,
         });

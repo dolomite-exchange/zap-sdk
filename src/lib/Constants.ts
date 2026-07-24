@@ -30,11 +30,9 @@ export const ARBITRUM_GAS_INFO_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x000000000000000000000000000000000000006C',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -42,22 +40,18 @@ export const BERACHAIN_REWARDS_REGISTRY_MAP: Record<Network, Address | undefined
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: '0x20c8323a22BBaD344Ae2aceEd2022E60B933c61F',
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 export const GLV_READER_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x6a9505D0B44cFA863d9281EA5B0b34cB36243b45',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -65,11 +59,9 @@ export const GLV_REGISTRY_PROXY_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x14F7137BAD9339c0901Df6728FF4B798F0f4429C',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -77,11 +69,9 @@ export const GMX_V2_DATA_STORE_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -89,11 +79,9 @@ export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: '0x0537C767cDAC0726c76Bb89e92904fe28fd02fE1',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -101,11 +89,9 @@ export const MULTICALL_MAP: Record<Network, Address> = {
   [Network.ARBITRUM_ONE]: '0xB18B8B1A5BDEa1f3c9776715b9325F932803FB1f',
   [Network.BASE]: '0x836b557Cf9eF29fcF49C776841191782df34e4e5',
   [Network.BERACHAIN]: '0x58142bd85E67C40a7c0CCf2e1EEF6eB543617d2A',
-  [Network.BOTANIX]: '0x58142bd85E67C40a7c0CCf2e1EEF6eB543617d2A',
   [Network.ETHEREUM]: '0x58142bd85E67C40a7c0CCf2e1EEF6eB543617d2A',
   [Network.INK]: '0x58142bd85E67C40a7c0CCf2e1EEF6eB543617d2A',
   [Network.MANTLE]: '0x6978Ffdcd509dED2F8557565e0a9FC5CFA1bEbc5',
-  [Network.POLYGON_ZKEVM]: '0x4232FCE0D67839F4FD536990bDc02043d9Ab708a',
   [Network.X_LAYER]: '0x86CFc6BA3bbBC603b8deC5B032aFa10A3592470D',
 };
 
@@ -113,24 +99,9 @@ export const ENSO_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: Deployments.EnsoAggregatorTraderV1[Network.BERACHAIN].address,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: Deployments.EnsoAggregatorTraderV1[Network.ETHEREUM].address,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
-  [Network.X_LAYER]: undefined,
-};
-
-export const ODOS_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: Deployments.OdosAggregatorTraderV2[Network.ARBITRUM_ONE].address,
-  [Network.BASE]: undefined,
-  [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
-  // [Network.ETHEREUM]: Deployments.OdosAggregatorTraderV2[Network.ETHEREUM].address,
-  [Network.ETHEREUM]: undefined,
-  [Network.INK]: undefined,
-  [Network.MANTLE]: Deployments.OdosAggregatorTraderV2[Network.MANTLE].address,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -138,24 +109,19 @@ export const OOGA_BOOGA_TRADER_ADDRESS_MAP: Record<Network, Address | undefined>
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: Deployments.OogaBoogaAggregatorTraderV2[Network.BOTANIX].address,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
 export const PARASWAP_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
-  // [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address,
-  [Network.ARBITRUM_ONE]: undefined,
+  [Network.ARBITRUM_ONE]: Deployments.ParaswapAggregatorTraderV2[Network.ARBITRUM_ONE].address,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: Deployments.ParaswapAggregatorTraderV2[Network.POLYGON_ZKEVM].address,
   [Network.X_LAYER]: undefined,
 };
 
@@ -168,11 +134,9 @@ const SIMPLE_ISOLATION_MODE_MAP: Record<Network, Record<string, boolean | undefi
   [Network.BERACHAIN]: {
     [Deployments.InfraredBGTIsolationModeVaultFactory[Network.BERACHAIN].address]: true,
   },
-  [Network.BOTANIX]: {},
   [Network.ETHEREUM]: {},
   [Network.INK]: {},
   [Network.MANTLE]: {},
-  [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
 };
 

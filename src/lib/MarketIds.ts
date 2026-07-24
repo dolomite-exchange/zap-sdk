@@ -18,11 +18,9 @@ export const ARB_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> =
   [Network.ARBITRUM_ONE]: new BigNumber(28),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -30,11 +28,9 @@ export const ARB_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(7),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -42,11 +38,9 @@ export const CM_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(14),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -54,11 +48,9 @@ export const EZ_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(37),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -66,11 +58,9 @@ export const GLV_BTC_ISOLATED_MARKET_ID: Record<Network, MarketId | undefined> =
   [Network.ARBITRUM_ONE]: new BigNumber(67),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -78,11 +68,9 @@ export const GLV_ETH_ISOLATED_MARKET_ID: Record<Network, MarketId | undefined> =
   [Network.ARBITRUM_ONE]: new BigNumber(68),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -90,11 +78,9 @@ export const GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(40),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -102,11 +88,9 @@ export const GM_AAVE_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefine
   [Network.ARBITRUM_ONE]: new BigNumber(55),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -114,11 +98,9 @@ export const GM_ARB_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.ARBITRUM_ONE]: new BigNumber(31),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -126,11 +108,9 @@ export const GM_BTC_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.ARBITRUM_ONE]: new BigNumber(32),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -138,11 +118,9 @@ export const GM_BTC_SINGLE_SIDED_ISOLATED_MARKET_ID_MAP: Record<Network, MarketI
   [Network.ARBITRUM_ONE]: new BigNumber(44),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -150,11 +128,9 @@ export const GM_DOGE_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefine
   [Network.ARBITRUM_ONE]: new BigNumber(56),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -162,11 +138,9 @@ export const GM_ETH_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.ARBITRUM_ONE]: new BigNumber(33),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -174,11 +148,9 @@ export const GM_ETH_SINGLE_SIDED_ISOLATED_MARKET_ID_MAP: Record<Network, MarketI
   [Network.ARBITRUM_ONE]: new BigNumber(45),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -186,11 +158,9 @@ export const GM_GMX_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.ARBITRUM_ONE]: new BigNumber(57),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -198,11 +168,9 @@ export const GM_GMX_SINGLE_SIDED_ISOLATED_MARKET_ID_MAP: Record<Network, MarketI
   [Network.ARBITRUM_ONE]: new BigNumber(63),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -210,11 +178,9 @@ export const GM_LINK_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefine
   [Network.ARBITRUM_ONE]: new BigNumber(34),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -222,11 +188,9 @@ export const GM_PENDLE_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefi
   [Network.ARBITRUM_ONE]: new BigNumber(64),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -234,11 +198,9 @@ export const GM_PEPE_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefine
   [Network.ARBITRUM_ONE]: new BigNumber(65),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -246,11 +208,9 @@ export const GM_SOL_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.ARBITRUM_ONE]: new BigNumber(58),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -258,11 +218,9 @@ export const GM_UNI_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.ARBITRUM_ONE]: new BigNumber(47),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -270,11 +228,9 @@ export const GM_WIF_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined
   [Network.ARBITRUM_ONE]: new BigNumber(66),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -282,11 +238,9 @@ export const GM_WST_ETH_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undef
   [Network.ARBITRUM_ONE]: new BigNumber(59),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -294,11 +248,9 @@ export const GMX_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> =
   [Network.ARBITRUM_ONE]: new BigNumber(30),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -306,11 +258,9 @@ export const GMX_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(29),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -318,11 +268,9 @@ export const IBGT_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: new BigNumber(34),
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -330,11 +278,9 @@ export const IBGT_STAKED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = 
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: new BigNumber(38),
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -342,11 +288,9 @@ export const ISOLATED_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> =
   [Network.ARBITRUM_ONE]: new BigNumber(6),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -354,11 +298,9 @@ export const JONES_USDC_V2_MARKET_ID_MAP: Record<Network, MarketId | undefined> 
   [Network.ARBITRUM_ONE]: new BigNumber(43),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -366,11 +308,9 @@ export const LINK_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(3),
   [Network.BASE]: new BigNumber(3),
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: new BigNumber(3),
   [Network.X_LAYER]: undefined,
 };
 
@@ -378,11 +318,9 @@ export const MAGIC_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(8),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -390,11 +328,9 @@ export const METH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(5),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -402,11 +338,9 @@ export const MNT_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(1),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -414,11 +348,9 @@ export const NATIVE_USDC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = 
   [Network.ARBITRUM_ONE]: new BigNumber(17),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -426,11 +358,9 @@ export const PENDLE_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(21),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -438,11 +368,9 @@ export const PENDLE_PT_CM_ETH_FEB_2025_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(15),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -450,11 +378,9 @@ export const PENDLE_PT_EZ_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: new BigNumber(38),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -462,11 +388,9 @@ export const PENDLE_PT_EZ_ETH_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: new BigNumber(51),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -474,11 +398,9 @@ export const PENDLE_PT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | un
   [Network.ARBITRUM_ONE]: new BigNumber(11),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -486,11 +408,9 @@ export const PENDLE_PT_GLP_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId | un
   [Network.ARBITRUM_ONE]: new BigNumber(41),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -498,11 +418,9 @@ export const PENDLE_PT_METH_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | u
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(11),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -510,11 +428,9 @@ export const PENDLE_PT_MNT_OCT_2024_MARKET_ID_MAP: Record<Network, MarketId | un
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(12),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -522,11 +438,9 @@ export const PENDLE_PT_R_ETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId | 
   [Network.ARBITRUM_ONE]: new BigNumber(22),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -534,11 +448,9 @@ export const PENDLE_PT_RS_ETH_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: new BigNumber(61),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -546,11 +458,9 @@ export const PENDLE_PT_RS_ETH_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: new BigNumber(52),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -558,11 +468,9 @@ export const PENDLE_PT_USDE_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId | u
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(10),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -570,11 +478,9 @@ export const PENDLE_PT_USDE_JUL_2024_MARKET_ID_MAP: Record<Network, MarketId | u
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(7),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -582,11 +488,9 @@ export const PENDLE_PT_WE_ETH_APR_2024_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: new BigNumber(36),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -594,11 +498,9 @@ export const PENDLE_PT_WE_ETH_DEC_2024_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: new BigNumber(60),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -606,11 +508,9 @@ export const PENDLE_PT_WE_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: new BigNumber(42),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -618,11 +518,9 @@ export const PENDLE_PT_WE_ETH_SEP_2024_MARKET_ID_MAP: Record<Network, MarketId |
   [Network.ARBITRUM_ONE]: new BigNumber(50),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -630,11 +528,9 @@ export const PENDLE_PT_WST_ETH_JUN_2024_MARKET_ID_MAP: Record<Network, MarketId 
   [Network.ARBITRUM_ONE]: new BigNumber(23),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -642,11 +538,9 @@ export const PENDLE_PT_WST_ETH_JUN_2025_MARKET_ID_MAP: Record<Network, MarketId 
   [Network.ARBITRUM_ONE]: new BigNumber(24),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -654,11 +548,9 @@ export const PENDLE_YT_GLP_MAR_2024_MARKET_ID_MAP: Record<Network, MarketId | un
   [Network.ARBITRUM_ONE]: new BigNumber(16),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -666,11 +558,9 @@ export const PLV_GLP_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(9),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -678,11 +568,9 @@ export const POL_RUSD_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: new BigNumber(39),
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -690,11 +578,9 @@ export const R_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(49),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -702,11 +588,9 @@ export const RS_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(49),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -714,11 +598,29 @@ export const RUSD_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: new BigNumber(8),
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+export const SAV_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(75),
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.ETHEREUM]: undefined,
+  [Network.INK]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+export const SAV_ETH_ISOLATED_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
+  [Network.ARBITRUM_ONE]: new BigNumber(76),
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.ETHEREUM]: undefined,
+  [Network.INK]: undefined,
+  [Network.MANTLE]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -726,11 +628,9 @@ export const SMNT_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(9),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -738,11 +638,9 @@ export const UNI_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(12),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -750,11 +648,9 @@ export const USDC_MARKET_ID_MAP: Record<Network, MarketId> = {
   [Network.ARBITRUM_ONE]: new BigNumber(2),
   [Network.BASE]: new BigNumber(2),
   [Network.BERACHAIN]: new BigNumber(2),
-  [Network.BOTANIX]: new BigNumber(2),
   [Network.ETHEREUM]: new BigNumber(2),
   [Network.INK]: new BigNumber(2),
   [Network.MANTLE]: new BigNumber(2),
-  [Network.POLYGON_ZKEVM]: new BigNumber(7),
   [Network.X_LAYER]: new BigNumber(2),
 };
 
@@ -762,11 +658,9 @@ export const USDE_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(54),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(6),
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -775,7 +669,6 @@ export const USDE_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
 //   [Network.BASE]: undefined,
 //   [Network.BERACHAIN]: undefined,
 //   [Network.MANTLE]: new BigNumber(4),
-//   [Network.POLYGON_ZKEVM]: new BigNumber(5),
 //   [Network.X_LAYER]: new BigNumber(4),
 // };
 
@@ -783,11 +676,9 @@ export const WBTC_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(4),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: new BigNumber(4),
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: new BigNumber(3),
-  [Network.POLYGON_ZKEVM]: new BigNumber(4),
   [Network.X_LAYER]: new BigNumber(3),
 };
 
@@ -795,11 +686,9 @@ export const WE_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(35),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -807,11 +696,9 @@ export const WETH_MARKET_ID_MAP: Record<Network, MarketId> = {
   [Network.ARBITRUM_ONE]: new BigNumber(0),
   [Network.BASE]: new BigNumber(0),
   [Network.BERACHAIN]: new BigNumber(0),
-  [Network.BOTANIX]: new BigNumber(0),
   [Network.ETHEREUM]: new BigNumber(0),
   [Network.INK]: new BigNumber(0),
   [Network.MANTLE]: new BigNumber(0),
-  [Network.POLYGON_ZKEVM]: new BigNumber(0),
   [Network.X_LAYER]: new BigNumber(0),
 };
 
@@ -819,11 +706,9 @@ export const WST_ETH_MARKET_ID_MAP: Record<Network, MarketId | undefined> = {
   [Network.ARBITRUM_ONE]: new BigNumber(14),
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
-  [Network.BOTANIX]: undefined,
   [Network.ETHEREUM]: undefined,
   [Network.INK]: undefined,
   [Network.MANTLE]: undefined,
-  [Network.POLYGON_ZKEVM]: undefined,
   [Network.X_LAYER]: undefined,
 };
 
@@ -1232,6 +1117,16 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       wrapperReadableName: 'plvGLP Isolation Mode Wrapper',
       isAsync: false,
     },
+    [SAV_ETH_ISOLATED_MARKET_ID_MAP[Network.ARBITRUM_ONE]!.toFixed()]: {
+      tokenAddress: Deployments.SimpleSavEthIsolationModeVaultFactory[Network.ARBITRUM_ONE].address,
+      unwrapper: Deployments.SimpleSavEthIsolationModeUnwrapperTraderV2[Network.ARBITRUM_ONE].address,
+      wrapper: Deployments.SimpleSavEthIsolationModeWrapperTraderV2[Network.ARBITRUM_ONE].address,
+      unwrapperMarketIds: [SAV_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      wrapperMarketIds: [SAV_ETH_MARKET_ID_MAP[Network.ARBITRUM_ONE]!],
+      unwrapperReadableName: 'savETH Isolation Mode Unwrapper',
+      wrapperReadableName: 'savETH Isolation Mode Wrapper',
+      isAsync: false,
+    },
   },
   [Network.BASE]: {},
   [Network.BERACHAIN]: {
@@ -1256,7 +1151,6 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
   },
-  [Network.BOTANIX]: {},
   [Network.ETHEREUM]: {},
   [Network.INK]: {},
   [Network.MANTLE]: {
@@ -1321,7 +1215,6 @@ export const ISOLATION_MODE_CONVERSION_MARKET_ID_MAP: Record<Network, Record<str
       isAsync: false,
     },
   },
-  [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
 };
 // eslint-disable-next-line max-len
@@ -1350,10 +1243,8 @@ export const LIQUIDITY_TOKEN_CONVERSION_MARKET_ID_MAP: Record<Network, Record<st
   },
   [Network.BASE]: {},
   [Network.BERACHAIN]: {},
-  [Network.BOTANIX]: {},
   [Network.ETHEREUM]: {},
   [Network.INK]: {},
   [Network.MANTLE]: {},
-  [Network.POLYGON_ZKEVM]: {},
   [Network.X_LAYER]: {},
 };

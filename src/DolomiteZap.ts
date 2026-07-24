@@ -3,7 +3,6 @@ import { ethers } from 'ethers';
 import AggregatorClient from './clients/AggregatorClient';
 import DolomiteClient from './clients/DolomiteClient';
 import EnsoAggregator from './clients/EnsoAggregator';
-import OdosAggregator from './clients/OdosAggregator';
 import OogaBoogaAggregator from './clients/OogaBoogaAggregator';
 import ParaswapAggregator from './clients/ParaswapAggregator';
 import {
@@ -653,10 +652,9 @@ export class DolomiteZap {
     debug: boolean = false,
   ): AggregatorClient[] {
     const ensoAggregator = new EnsoAggregator(network, referralInfo.ensoApiKey, useProxyServer, debug);
-    const odosAggregator = new OdosAggregator(network, referralInfo.odosReferralCode, useProxyServer, debug);
     const oogaBoogaAggregator = new OogaBoogaAggregator(network, referralInfo.oogaBoogaApiKey, useProxyServer, debug);
     const paraswapAggregator = new ParaswapAggregator(network, referralInfo.referralAddress, useProxyServer, debug);
-    return [odosAggregator, oogaBoogaAggregator, ensoAggregator, paraswapAggregator];
+    return [oogaBoogaAggregator, ensoAggregator, paraswapAggregator];
   }
 
   protected async getMarketIdToMarketMap(forceRefresh: boolean): Promise<Record<string, ApiMarket>> {
