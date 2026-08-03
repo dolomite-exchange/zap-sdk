@@ -105,6 +105,17 @@ export const ENSO_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.X_LAYER]: undefined,
 };
 
+export const MATCHA_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
+  [Network.ARBITRUM_ONE]: undefined,
+  [Network.BASE]: undefined,
+  [Network.BERACHAIN]: undefined,
+  [Network.ETHEREUM]: undefined,
+  [Network.INK]: undefined,
+  [Network.MANTLE]: undefined,
+  [Network.X_LAYER]: undefined,
+};
+
+
 export const OOGA_BOOGA_TRADER_ADDRESS_MAP: Record<Network, Address | undefined> = {
   [Network.ARBITRUM_ONE]: undefined,
   [Network.BASE]: undefined,
