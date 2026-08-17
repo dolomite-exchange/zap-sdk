@@ -46,7 +46,7 @@ export const BERACHAIN_REWARDS_REGISTRY_MAP: Record<Network, Address | undefined
   [Network.X_LAYER]: undefined,
 };
 export const GLV_READER_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: '0x6a9505D0B44cFA863d9281EA5B0b34cB36243b45',
+  [Network.ARBITRUM_ONE]: '0x85fcBD684D08053f1efAB302dCb04F22E20E65B1',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.ETHEREUM]: undefined,
@@ -76,7 +76,7 @@ export const GMX_V2_DATA_STORE_MAP: Record<Network, Address | undefined> = {
 };
 
 export const GMX_V2_READER_MAP: Record<Network, Address | undefined> = {
-  [Network.ARBITRUM_ONE]: '0x0537C767cDAC0726c76Bb89e92904fe28fd02fE1',
+  [Network.ARBITRUM_ONE]: '0xfA26cBb46e2614609406de08CA1Dc7f70a684184',
   [Network.BASE]: undefined,
   [Network.BERACHAIN]: undefined,
   [Network.ETHEREUM]: undefined,
